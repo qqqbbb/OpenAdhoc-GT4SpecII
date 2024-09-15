@@ -10,7 +10,7 @@
 
 #define CAR_WASH_PRICE 50
 
-module PROJECT::ROOT
+module GTmodeProject::CarWashRoot
 {
     static done;
 
@@ -80,7 +80,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Wash
+module GTmodeProject::CarWashRoot::Wash
 {
     function onActivate(context)
     {
@@ -234,7 +234,7 @@ module PROJECT::ROOT::Wash
     }
 }
 
-module PROJECT::ROOT::Exit
+module GTmodeProject::CarWashRoot::Exit
 {
     function onActivate(context)
     {

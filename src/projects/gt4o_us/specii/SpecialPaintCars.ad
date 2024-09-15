@@ -1,0 +1,23 @@
+module SpecialPaintCars 
+{
+    // 0 for general special colour, 1 for black test cars
+    // There are some expectations that black cars should be treated as more exclusive, so flagging them helps categorise
+    static _117_coupe_68 = 0;
+    static _2cv_typea_54 = 0;
+    static _360_58 = 0;
+    static _787b_91 = 1;
+    static avantime_30_v6_bvm6_02 = 0;
+    static cerbera_speed12_00 = 0;
+    static db9_03 = 0;
+    static delta_hf_integrale_evo_91 = 0;
+    static formula_gran_turismo_04 = 1;
+    static gt_one_race_99 = 1;
+    static gt_one_race_exxon_99 = 1;
+    static mgf_vvc_97 = 0;
+    static r390_race_98 = 1;
+    static r92cp_92 = 1;
+    static spitfire_1500_74 = 0;
+    static storia_x4_98 = 0;
+    static vitz_rs15_00 = 0;
+    static vitz_rs_turbo_02 = 0;
+}

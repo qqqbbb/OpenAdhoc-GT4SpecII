@@ -10,13 +10,15 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::WheelShopRoot
 {
     static current_wheel_category;
     static current_wheel_maker;
     static current_car;
     static current_list;
     static last_tried_wheel;
+    static is_maker_wheels;
+    static price;
 
     function getUsedWheelPeriod()
     {
@@ -38,14 +40,28 @@ module PROJECT::ROOT
 
     function getWheelList()
     {
+        // The wheel list and is_maker_wheels are passed in from WheelMakerRoot if loading a maker's wheels - if this is the case just return it early
+        if (is_maker_wheels)
+            return current_list;
+
         var listname;
         if (current_wheel_maker == "used")
             listname = "used%02d_carlist".format(main::game.calendar.getElapsedDate(period));
         else
             listname = current_wheel_maker + "_carlist";
 
+
         if (!WheelData.defined(listname))
-            return [];
+        {
+            MakerWheelData.load("/projects/specii/makerwheelinfo");
+            if (!MakerWheelData::MakerWheels.defined(listname))
+                return [];
+            else 
+            {
+                is_maker_wheels = true;
+                return MakerWheelData::MakerWheels[listname];
+            }
+        }
         else
             return WheelData[listname];
     }
@@ -62,7 +78,12 @@ module PROJECT::ROOT
         current_car.setupPartsBuffer();
         current_list = getWheelList();
 
-        Price.text = main::menu::MUtility::GetMoneyString(500);
+        if (!is_maker_wheels)
+            price = 500;
+        else
+            price = 1000;
+
+        Price.text = main::menu::MUtility::GetMoneyString(price);
 
         if (current_wheel_maker == "used")
         {
@@ -99,6 +120,10 @@ module PROJECT::ROOT
             var wheel = current_list[i];
             var item = hidden::Item.doCopy();
             item["bg"].image_path = "image/piece/wheel_mini/" + wheel + ".png";
+
+            if (!context.existGpbBinary("image/piece/wheel_mini/" + wheel + ".png") || is_maker_wheels)
+                item["bg"].image_path = "image/piece/wheel_mini/generic.png";
+
             ScrollBox::SelectBox.appendChild(context, item);
             item.defineStatic("wheel", wheel);
         }
@@ -109,6 +134,10 @@ module PROJECT::ROOT
     function onFinalize(context)
     {
         ScrollBox::SelectBox.clearChildren(context);
+        
+        if (ROOT.defined("MakerWheelData"))
+            MakerWheelData.clearStatic();
+
         leavePage(context, ROOT);
 
         current_wheel_maker = nil;
@@ -134,17 +163,34 @@ module PROJECT::ROOT
 
     function onKeyPress(context, event)
     {
-        switch (event.keysym) 
+        switch (event.keysym)
         {
+            case PS2_PAD_CTRL_L1:
+                if (ScrollBox::SelectBox.index > 0)
+                    main::sound.play("cursor");
 
+                ScrollBox::SelectBox.index -= 10;
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_R1:
+                if (ScrollBox::SelectBox.index < (ScrollBox::SelectBox.Count() - 1))
+                    main::sound.play("cursor");
+
+                ScrollBox::SelectBox.index += 10;
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
         }
-
         return EVENTRESULT_CONTINUE;
     }
 
     function onActivate(context, event)
     {
         var wheel = event.widget["wheel"];
+        logInfo("Wheel = %{wheel}, category = %{current_wheel_category}, haveTireCategoryWheel = %{current_car.haveTireCategoryWheel(current_wheel_category, wheel)}");
         tryon(wheel);
 
         if (current_car.haveTireCategoryWheel(current_wheel_category, wheel))
@@ -154,7 +200,7 @@ module PROJECT::ROOT
         }
         else
         {
-            if (!sureEnoughMoney(context, 500))
+            if (!sureEnoughMoney(context, price))
                 return EVENTRESULT_FILTER;
 
             main::sound.play("ok");
@@ -162,7 +208,7 @@ module PROJECT::ROOT
             var res = openConfirmDialog(context, 1, context.translate(ROOT, "Do you buy this?"));
             if (res)
             {
-                main::game.incMoney(-500);
+                main::game.incMoney(-price);
                 refreshMoney(ROOT);
                 main::game.calendar.putBuyWheelEvent(wheel, current_wheel_category, current_wheel_maker == "used" ? true : false);
                 current_car.setTireCategoryWheel(current_wheel_category, wheel);
@@ -178,19 +224,20 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::ScrollBox::SelectBox
+module GTmodeProject::WheelShopRoot::ScrollBox::SelectBox
 {
     function onValueChanged(context, index) { }
 }
 
-module PROJECT::ROOT::hidden::Item
+module GTmodeProject::WheelShopRoot::hidden::Item
 {
     function onFocusEnter(context, event)
     {
         var item = event.widget;
         var name = item["wheel"];
-        Name.text = getWheelName(context, name, current_wheel_maker == "used");
+        Name.text = getWheelName(context, name, current_wheel_maker == "used" || is_maker_wheels);
         tryon(name);
+        print name;
         return EVENTRESULT_FILTER;
     }
 }

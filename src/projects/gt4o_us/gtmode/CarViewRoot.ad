@@ -9,9 +9,13 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::CarViewRoot
 {
     static current_car;
+    static zoom = 1.0;
+    static zoom_range = 0.3;
+    static camera_view_angle;
+    static watcher = nil;
 
     function setMoveActor(widget, x, y)
     {
@@ -29,6 +33,11 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+        camera_view_angle = CarFace.view_angle
+        watcher = main::menu::MScriptWatcher(context, onTick);
+        watcher.interval = 1;
+        watcher.append();
+
         enterPage(context, ROOT, "Garage");
 
         CarFace.action_type = "normal";
@@ -63,6 +72,7 @@ module PROJECT::ROOT
 
     function onFinalize(context)
     {
+        watcher.remove();
         ROOT["Common"]["ToolTip"]["tip"].lock = false;
         current_car = nil;
         leavePage(context, ROOT);
@@ -73,6 +83,42 @@ module PROJECT::ROOT
         main::sound.play("cancel");
         start_page(context, GarageRoot);
         return EVENTRESULT_FILTER;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
+    }
+
+    function onTick(context)
+    {
+        var update_context = context.getUpdateContext();
+        var ry = update_context.getPadAnalogChannel(0, 1) * -1;
+        var target = 1.0;
+        
+        if (ry > 0.0)
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+        else 
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+
+        zoom.value += (target - zoom) * 0.1;
+        var fovy = (Math::atan(Math::tan(camera_view_angle * 0.5 * 3.1415927 / 180.0) * zoom)) * 2.0;
+        CarFace.view_angle = (fovy * 180.0) / 3.1415927;
     }
 
     function set_car(context)
@@ -101,7 +147,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::CarFace
+module GTmodeProject::CarViewRoot::CarFace
 {
     function move_car()
     {
@@ -117,7 +163,7 @@ module PROJECT::ROOT::CarFace
     }
 }
 
-module PROJECT::ROOT::Pane::Change
+module GTmodeProject::CarViewRoot::Pane::Change
 {
     function onActivate(context)
     {
@@ -141,7 +187,7 @@ module PROJECT::ROOT::Pane::Change
                     main::game.garage.setRidingCar(current_car.getGarageIndex(), current_car);
                     if (doAutoSave(context, ROOT, nil, 0, 0))
                     {
-                        refreshRideCar(ROOT, context);
+                        refreshRideCar(ROOT, context, true);
                         start_page(context, GarageRoot);
                         break;
                     }
@@ -165,7 +211,7 @@ module PROJECT::ROOT::Pane::Change
     }
 }
 
-module PROJECT::ROOT::Pane::Assessment
+module GTmodeProject::CarViewRoot::Pane::Assessment
 {
     function onActivate(context)
     {
@@ -194,6 +240,7 @@ module PROJECT::ROOT::Pane::Assessment
                 CarFace.car_model.fadein = false;
                 refreshRideCar(ROOT, context);
                 refreshMoney(ROOT);
+                refreshOwnedCars();
 
                 openConfirmDialog(context, 0, context.translate(ROOT, price > 0 ? "sell car" : "throw car"));
                 main::game.calendar.putSellCarEvent(current_car.car_code, current_car.getColorIndex(), price);

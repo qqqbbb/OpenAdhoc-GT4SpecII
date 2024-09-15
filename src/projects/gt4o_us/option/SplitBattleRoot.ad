@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::SplitBattleRoot
 {
     function open(context)
     {
@@ -53,7 +53,7 @@ module PROJECT::ROOT
         setupSlider(Pane::Handicap::slider, 5, context.translate(ROOT, "None"));
     }
 
-    function onFinalize(context)
+    function onFinalize()
     {
 
     }
@@ -62,11 +62,11 @@ module PROJECT::ROOT
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::RaceLaps::slider
+module OptionProject::SplitBattleRoot::Pane::RaceLaps::slider
 {
     function onValueChanged(context)
     {
@@ -74,7 +74,7 @@ module PROJECT::ROOT::Pane::RaceLaps::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Handicap::slider
+module OptionProject::SplitBattleRoot::Pane::Handicap::slider
 {
     function onValueChanged(context)
     {
@@ -82,23 +82,23 @@ module PROJECT::ROOT::Pane::Handicap::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::SplitBattleRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::SplitBattleRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

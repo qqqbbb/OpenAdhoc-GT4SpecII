@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::ScreenRoot
 {
     static sWide = false;
     static sHiVision = "";
@@ -50,7 +50,7 @@ module PROJECT::ROOT
         Pane::HiVision::OptionMenu.setIndex(context, ModeType[mode]);
     }
 
-    function apply()
+    function apply(context)
     {
         main::game.setNeedSave();
         var option = main::game.option;
@@ -59,17 +59,19 @@ module PROJECT::ROOT
         option.screen_adjust_v = Pane::Vertical::slider.index;
         option.screen_adjust_h = Pane::Horizontal::slider.index;
         option.race_display_mode = ModeString[Pane::HiVision::OptionMenu.index];
-        option.apply();
+        // Save display res as a Spec II option
+        video_mode = Pane::HiVision::OptionMenu.index;
+        saveNewSettings(context);
     }
 
-    function applyOrg()
+    function applyOrg(context)
     {
         var option = main::game.option;
         option.wide_mode = sWide;
         option.race_display_mode = sHiVision;
         option.screen_adjust_v = sVertical;
         option.screen_adjust_h = sHorizontal;
-        option.apply();
+        option.apply(context);
     }
 
     function WatcherHandler(context)
@@ -82,6 +84,7 @@ module PROJECT::ROOT
     {
         var option = main::game.option;
         option.race_display_mode = mode;
+
         option.applyRaceDisplayMode();
 
         sTime = main::menu::MSystem::GetCurrentDateTime();
@@ -105,7 +108,7 @@ module PROJECT::ROOT
 
         var option = main::game.option;
         sWide = option.wide_mode;
-        sHiVision = option.race_display_mode;
+        sHiVision = video_mode;
         sVertical = option.screen_adjust_v;
         sHorizontal = option.screen_adjust_h;
 
@@ -116,47 +119,54 @@ module PROJECT::ROOT
         setupSlider(Pane::Horizontal::slider);
     }
 
-    function onFinalize(context)
-    {
-
-    }
+    function onFinalize(context) { }
 
     function onCancel(context)
     {
         main::sound.play("cancel");
-        applyOrg();
+        applyOrg(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Wide::OptionMenu
+module OptionProject::ScreenRoot::Pane::Wide::OptionMenu
 {
     function onValueChanged(context)
     {
-        apply();
+        apply(context);
     }
 }
 
-module PROJECT::ROOT::Pane::Vertical::slider
+module OptionProject::ScreenRoot::Pane::Vertical::slider
 {
     function onValueChanged(context)
     {
-        apply();
+        apply(context);
         setupSlider(slider);
     }
 }
 
-module PROJECT::ROOT::Pane::Horizontal::slider
+module OptionProject::ScreenRoot::Pane::Horizontal::slider
 {
     function onValueChanged(context)
     {
-        apply();
+        apply(context);
         setupSlider(slider);
     }
 }
 
-module PROJECT::ROOT::Pane::HiVision::OptionMenu
+module OptionProject::ArcadeRoot::Pane::Buttons::Cancel
+{
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+        close(context);
+        return STATE_YIELD;
+    }
+}
+
+module OptionProject::ScreenRoot::Pane::HiVision::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -169,7 +179,7 @@ module PROJECT::ROOT::Pane::HiVision::OptionMenu
             if (!ret)
                 OptionMenu.setIndex(context, 0);
             else
-                Pane::Wide::OptionMenu.setIndex(context, 1);
+                OptionMenu.setIndex(context, 2);
         }
         else if (OptionMenu.index == 1)
         {
@@ -183,24 +193,24 @@ module PROJECT::ROOT::Pane::HiVision::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::ScreenRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
-        applyOrg();
+        applyOrg(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::ScreenRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply();
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

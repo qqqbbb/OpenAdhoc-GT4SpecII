@@ -6,8 +6,12 @@
 
 
 
+#define FLAG_BONNET_CAM (1);
+#define FLAG_INTERIOR_CAM (1 << 1);
+#define FLAG_GT3_CAM (1 << 2);
+#define FLAG_ROOF_CAM (1 << 3);
 
-module PROJECT
+module BootProject
 {
     static DEMO = main.defined("DEMO_SKIP_CHECKING_MEMCARD");
 
@@ -17,7 +21,14 @@ module PROJECT
     #include "../share/course_define.ad";
 
     // Loads "<region>_carlist.adc"
-    PROJECT.load(main::game.option.game_zone + "_carlist");
+    //BootProject.load(main::game.option.game_zone + "_carlist");
+
+    function logInfo(msg)
+    {
+        print "\n--------------------\n";
+        print "\n%{msg}\n";
+        print "\n--------------------\n";
+    }
 
     function initCourse()
     {
@@ -37,7 +48,9 @@ module PROJECT
         var list = InitData::car_carlist;
         for (var i = 0; i < list.size; i++)
         {
-            main::game.setCarAvailable(list[i]);
+            print i;
+            if (list[i] != nil)
+                main::game.setCarAvailable(list[i]);
         }
 
         list = InitData::course_carlist;
@@ -120,17 +133,20 @@ module PROJECT
 
         LanguageRoot::onLoad(render_context);
 
+        // No real need to do these anymore as everything is always available in arcade + favourites will be set up by the player
+        /*
         if (main::game.last_sequence == "boot")
         {
             initCourse();
             initAvailable();
             initFavorite();
         }
+        */
 
         if (main::game.next_menu_arg == "")
             render_context.startPage(LoadRoot)
         else
-            render_context.startPage(PROJECT[main::game.next_menu_arg]);
+            render_context.startPage(BootProject[main::game.next_menu_arg]);
     }
 
     function onUnload(context)
@@ -170,6 +186,52 @@ module PROJECT
 
     function endBoot(context)
     {
+        var ModeString = ["normal", "480p", "1080i"];
+        var settings = main::game.option.entrance_addr.split(";");
+        for (var i = 0; i < settings.size; i++)
+        {
+            var [k, v] = settings[i].split("=");
+            print [k, v];
+            switch (k)
+            {
+                case "vm":
+                    // If for some reason the saved video mode was invalid, e.g. skipping boot setup but making it past the intro, set it to 480p
+                    // This is fine for non-480p screens on real hardware as menus are always interlaced anyway
+                    if (v < 0)
+                        v = 1;
+                    main::game.option.race_display_mode = ModeString[v];
+                    break;
+
+                case "c":
+                    var val = v.toInt();
+                    //print "Saved camera flags == %{val}";
+                    var bonnetCamActive = val & FLAG_BONNET_CAM;
+                    var interiorCamActive = val & FLAG_INTERIOR_CAM;
+                    var gt3CamActive = val & FLAG_GT3_CAM;
+                    var roofCamActive = val & FLAG_ROOF_CAM;
+
+                    // If you're using this code to build your own mod you probably want to remove these calls
+                    // New engine functions added by my C code - if you're using a vanilla executable these won't exist so these calls will crash
+                    bonnetCamActive ? main::game.toggleBonnetCam(1) : main::game.toggleBonnetCam();
+                    interiorCamActive ? main::game.toggleInteriorCam(1) : main::game.toggleInteriorCam();
+                    gt3CamActive ? main::game.toggleGT3Cam(1) : main::game.toggleGT3Cam();
+                    roofCamActive ? main::game.toggleRoofCam(1) : main::game.toggleRoofCam();
+                    break;
+
+                case "g":
+                    print "Setting gauge mode to %{v}";
+                    main::game.toggleGaugeMode(v.toInt());
+                    break;
+
+                case "tm":
+                    print "Setting transmission volume to %{v}";
+                    main::game.setTransmissionVolume(v.toInt());
+                    break;
+            }
+        }
+
+        print "made it here";
+
         if (main::game.major_menu_project == "gtmode")
         {
             start_project(context, "gtmode");

@@ -1,0 +1,176 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module ChampionshipProject::PrizeRoot
+{
+    static prize_amount = nil;
+    static grand_prize_mode = false;
+
+    /*static model_files = [
+        "1st.mdl",
+        "2nd.mdl",
+        "3rd.mdl",
+        "other.mdl",
+        "other.mdl",
+        "other.mdl"
+    ]*/
+
+    static ordinal_keys = [
+        "Rank1st",
+        "Rank2nd",
+        "Rank3rd",
+        "Rank4th",
+        "Rank5th",
+        "Rank6th",
+        "Rank7th",
+        "Rank8th",
+        "Rank9th",
+        "Rank10th",
+        "Rank11th",
+        "Rank12th"
+    ]
+    
+    function onInitialize(context)
+    {
+        context.unloadGpb("MediateRoot");
+        var quick_work = main::menu::MQuickWork();
+
+        Prize.text = "";
+        Money::label.text = "Cr." + main::game.money;
+        context.cursor_visible = false;
+        OK.visible = false;
+        
+        var race_code = quick_work.raceLabel;
+        var name = getEventNameByRaceCode(context, ROOT, race_code);
+
+        var series = getSeriesRaceIndex(race_code);
+        var order = grand_prize_mode ? quick_work.SeriesRank : quick_work.playerGridNumber;
+        ToolTip::tip.remove();
+
+        if (grand_prize_mode)
+            Info::label.text = context.translate(ROOT, "you won championship").build(name);
+        else 
+        {
+            if (main::menu::MSystem::GetRegionCode() == "us")
+            {
+                var oname = context.translate(ROOT, "RaceDisplay", ordinal_keys[order]);
+                Info::label.text = context.translate(ROOT, "you got a prize").build(name, oname, series);
+            }
+            else 
+                Info::label.text = context.translate(ROOT, "you got a prize").build(name, order + 1, series);
+        }
+        Info::label.adjustScale();
+
+        // Interesting difference here - GT4O loads other.mdl (the keyfob) where PAL loads champ.mdl (identical trophy)
+        // other.mdl is 60KB whereas champ.mdl is a whopping 528KB - did they do this because GT4O was already running out of memory?
+        // We're keeping this for Spec II release but if it still causes issues then the model may have to go entirely
+
+        // ...it survived until September 9th and had to be cut for memory lol
+        /*var champ_mdl = "other.mdl";
+        var modelfile = grand_prize_mode ? champ_mdl : model_files[order];
+
+        model.setModelSetPath("piece/prize/" + modelfile, 0, 5, 0);
+        model.doInitialize(context);*/
+
+        rank.text = (order + 1).toString();
+
+        switch (order + 1)
+        {
+            case 1:
+                rank.text_color = main::menu::MColorObject(0.828, 0.671, 0.043, 1.0);
+                Prize.text_color = main::menu::MColorObject(0.828, 0.671, 0.043, 1.0)
+                break;
+
+            case 2:
+                rank.text_color = main::menu::MColorObject(0.55, 0.55, 0.575, 1.0);
+                Prize.text_color = main::menu::MColorObject(0.55, 0.55, 0.575, 1.0);
+                break;
+
+            case 3:
+                rank.text_color = main::menu::MColorObject(0.762, 0.543, 0.358, 1.0);
+                Prize.text_color = main::menu::MColorObject(0.762, 0.543, 0.358, 1.0);
+                break;
+
+            default:
+                rank.text_color = main::menu::MColorObject(0.284, 0.284, 0.334, 1.0);
+                Prize.text_color = main::menu::MColorObject(0.284, 0.284, 0.334, 1.0);
+                rank.shadow_color = main::menu::MColorObject(0.0, 0.0, 0.0, 0.0);
+                Prize.shadow_color = main::menu::MColorObject(0.0, 0.0, 0.0, 0.0);
+                break;
+        }
+
+        prize_amount = grand_prize_mode ? quick_work.GrandPrize : quick_work.prize;
+
+        context.pushEvent(main::menu::MScriptEvent(context, ROOT, "doAction"));
+    }
+
+    function onFinalize(context)
+    {
+        Info::label.text = nil;
+        prize_amount = nil;
+    }
+
+    function onKeyPress(context)
+    {
+        return makePrizeFast();
+    }
+
+    function onKeyRelease(context)
+    {
+        return makePrizeSlow();
+    }
+
+    function doAction(context)
+    {
+        prize_action(context, ROOT, prize_amount, Prize, Money::label, OK, rank);
+    }
+
+    function goNext(context)
+    {
+        var quick_work = main::menu::MQuickWork();
+
+        /*model.setModelSetPath("", 0, 0, 0);
+        model.doInitialize(context);*/
+
+        if (!grand_prize_mode && quick_work.GrandPrize != false)
+        {
+            grand_prize_mode = true;
+            MediateRoot::open(context, ROOT);
+        }
+        else 
+        {
+            quick_work.prize = 0;
+            quick_work.GrandPrize = 0;
+
+            start_page(context, AfterRoot);
+        }
+    }
+
+    function onCancel(context)
+    {
+        main::sound.play("cancel");
+        goNext(context);
+        return STATE_YIELD;
+    }
+}
+
+module ChampionshipProject::PrizeRoot::OK
+{
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+        goNext(context);
+        return STATE_YIELD;
+    }
+}

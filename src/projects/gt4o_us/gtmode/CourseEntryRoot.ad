@@ -10,7 +10,7 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::CourseEntryRoot
 {
     static page_title;
     static course_list;
@@ -22,6 +22,7 @@ module PROJECT::ROOT
     static photo_drive_info;
     static event_info;
     static menu_mode;
+    //static prev_page_title;
 
     function setFreeRunInfo(info)
     {
@@ -67,6 +68,8 @@ module PROJECT::ROOT
         BG::image.from_disk = false;
         BG::image.visible = true;
         BG::image.cache = false;
+        // Working around the GT4O GPB image loading bug here as well
+        BG::image.setImagePath("image/gtmode/course/bg_doesntexist.png");
         BG::image.setImagePath("image/gtmode/course/bg_" + page_title + ".png");
         BG::image.doInitialize(context);
 
@@ -84,6 +87,9 @@ module PROJECT::ROOT
         Buttons::Unit.actor.out = true;
         Buttons::Unit.actor.warp();
 
+        var last_course_img = CourseImage.image.image_path;
+        CourseImage.image.image_path = "image/gtmode/course/bg_doesntexist.png";
+        CourseImage.image.image_path = last_course_img;
         CourseImage.visible = false;
         CourseImage.actor = main::menu::MFadeActor(CourseImage, 1.0);
         CourseImage.actor.repeat = false;
@@ -112,6 +118,8 @@ module PROJECT::ROOT
 
         var event = main::menu::MScriptEvent(context, ROOT, "openCB");
         context.pushEvent(event);
+
+        Buttons::Unit::Family.insensitive = true;
 
         if (page_title == "PowerAndSpeed")
             main::sound.keepMusic("POWERSPEED");
@@ -156,7 +164,7 @@ module PROJECT::ROOT
         leavePage(context, ROOT);
 
         context.unloadGpb(page_title);
-
+        
         page_title = nil;
         course_list = nil;
         last_select_course = nil;
@@ -167,6 +175,7 @@ module PROJECT::ROOT
         photo_drive_info = nil;
         event_info = nil;
         menu_mode = nil;
+        
     }
 
     function onCancel(context)
@@ -187,6 +196,18 @@ module PROJECT::ROOT
         }
 
         return EVENTRESULT_FILTER;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
     }
 
     function init_mode(context, mode)
@@ -267,11 +288,12 @@ module PROJECT::ROOT
         {
             var code1 = course_list[i][0];
             var code2 = course_list[i][1];
-            if (code1 != nil && !main::game.isCourseAvailable(code1))
+
+            /*if (code1 != nil && !main::game.isCourseAvailable(code1))
                 code1 = nil;
 
             if (code2 != nil && !main::game.isCourseAvailable(code2))
-                code2 = nil;
+                code2 = nil;*/
 
             if (code1 != nil || code2 != nil)
                 num++;
@@ -290,11 +312,11 @@ module PROJECT::ROOT
             var code1 = course_list[i][0];
             var code2 = course_list[i][1];
 
-            if (code1 != nil && !main::game.isCourseAvailable(code1))
+            /*if (code1 != nil && !main::game.isCourseAvailable(code1))
                 code1 = nil;
 
             if (code2 != nil && !main::game.isCourseAvailable(code2))
-                code2 = nil;
+                code2 = nil;*/
 
             if (code1 != nil || code2 != nil)
             {
@@ -327,7 +349,12 @@ module PROJECT::ROOT
         image.adjustSize();
         
         var scale = 0.9;
-        var w = image.w * scale;
+        var scalew = scale;
+
+        if (wide)
+            scalew = 0.75;
+        
+        var w = image.w * scalew;
         var h = image.h * scale;
         image.x = center_x - (w / 2);
         image.y = center_y - (h / 2);
@@ -409,7 +436,13 @@ module PROJECT::ROOT
             Buttons::Unit::FreeRun.x = x;
             x += step;
 
-            var freerun_image_path = "image/gtmode/course/icon_" + freerun_info.race_code + ".png";
+            var freerun_image_path;
+
+            if (page_title == "PowerAndSpeed")
+                freerun_image_path = "image/gtmode/course/icon_" + freerun_info.race_code + ".png";
+            else
+                freerun_image_path = "image/gtmode/course/icon_family.png";
+            
             Buttons::Unit::FreeRun::image.from_disk = false;
             Buttons::Unit::FreeRun::image.cache = false;
             Buttons::Unit::FreeRun::image.setImagePath(freerun_image_path);
@@ -446,7 +479,12 @@ module PROJECT::ROOT
             Buttons::Unit::Practice.x = x;
             x += step;
 
-            var practice_image_path = "image/gtmode/course/icon_" + practice_info.race_code + ".png";
+            var practice_image_path;
+
+            if (page_title == "PowerAndSpeed")
+                practice_image_path = "image/gtmode/course/icon_" + practice_info.race_code + ".png";
+            else
+                practice_image_path = "image/gtmode/course/icon_practice.png";
             Buttons::Unit::Practice::image.from_disk = false;
             Buttons::Unit::Practice::image.cache = false;
             Buttons::Unit::Practice::image.setImagePath(practice_image_path);
@@ -519,7 +557,7 @@ module PROJECT::ROOT
         {
             Buttons::Unit::RaceEvent.x = x;
 
-            var race_event_image_path = "image/gtmode/course/icon_" + event_info.race_code + ".png";
+            var race_event_image_path = "image/gtmode/course/icon_freerun.png";
             Buttons::Unit::RaceEvent::image.from_disk = false;
             Buttons::Unit::RaceEvent::image.cache = false;
             Buttons::Unit::RaceEvent::image.setImagePath(race_event_image_path);
@@ -567,7 +605,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::CourseList::SelectBox
+module GTmodeProject::CourseEntryRoot::CourseList::SelectBox
 {
     function onValueChanged(context)
     {
@@ -654,7 +692,7 @@ module PROJECT::ROOT::CourseList::SelectBox
     }
 }
 
-module PROJECT::ROOT::Buttons::Unit::FreeRun
+module GTmodeProject::CourseEntryRoot::Buttons::Unit::FreeRun
 {
     function onActivate(context, event, object)
     {
@@ -687,7 +725,7 @@ module PROJECT::ROOT::Buttons::Unit::FreeRun
     }
 }
 
-module PROJECT::ROOT::Buttons::Unit::Practice
+module GTmodeProject::CourseEntryRoot::Buttons::Unit::Practice
 {
     function onActivate(context, event, object)
     {
@@ -748,7 +786,7 @@ module PROJECT::ROOT::Buttons::Unit::Practice
     }
 }
 
-module PROJECT::ROOT::Buttons::Unit::PhotoDrive
+module GTmodeProject::CourseEntryRoot::Buttons::Unit::PhotoDrive
 {
     function onActivate(context, event, object)
     {
@@ -778,10 +816,17 @@ module PROJECT::ROOT::Buttons::Unit::PhotoDrive
     }
 }
 
-module PROJECT::ROOT::Buttons::Unit::RaceEvent
+module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
 {
     function onActivate(context, event, object)
     {
+        if (!main::game.race_record.isLicensePassed("lib"))
+        {
+            main::sound.play("disable");
+            openConfirmDialog(context, 2, context.translate(TopRoot, "International B License required"));
+            return EVENTRESULT_FILTER;
+        }
+
         if (!sureRiding(context))
             return EVENTRESULT_FILTER;
 
@@ -799,17 +844,28 @@ module PROJECT::ROOT::Buttons::Unit::RaceEvent
         if (!checkEntryTire(context, event_info.race_code, main::game.course_code))
             return EVENTRESULT_FILTER;
 
-        main::sound.play("next");
+        main::sound.play("ok");
         SettingPopup::open(context, doRaceEvent);
 
         return EVENTRESULT_FILTER;
     }
 
+    function setFadeActor2(widget)
+    {
+        var actor = main::menu::MFadeActor(widget, 1.0);
+        widget.actor = actor;
+        widget.actor.period = 1.0;
+        widget.actor.out = true;
+        widget.actor.warp();
+    }
+
     function doRaceEvent(context, level)
     {
-       var price = event_info.entrance_fee;
-       main::game.incMoney(-price); 
-       main::game.race_code = event_info.race_code;
+        var price = event_info.entrance_fee;
+        main::game.incMoney(-price); 
+        main::game.race_code = "eventgen_0000";
+        if (main::game.course_code == "nurburgring" || main::game.course_code.beginWith("sarthe"))
+            main::game.race_code = "eventgenlong_0000";
 
         var ctype = main::menu::MCourseData::GetType(main::game.course_code);
         var dirt = ctype == "dirt" || ctype == "snow";
@@ -832,6 +888,28 @@ module PROJECT::ROOT::Buttons::Unit::RaceEvent
         main::game.major_menu_project = "gtmode";
         main::game.major_menu_page = ROOT.name;
 
+        var veil_bg = ROOT["Common"]["Veil"]["bg"];
+        var veil_title = ROOT["Common"]["Veil"]["Title"];
+        var veil_course = ROOT["Common"]["Veil"]["Course"];
+
+        setFadeActor2(veil_bg);
+        setFadeActor2(veil_title);
+        setFadeActor2(veil_course);
+
+        SettingPopup::close(context);
+
+        context.cursor_visible = false;
+        veil_title.text = "Event Synthesizer";
+        veil_course.text = context.translate(TopRoot, "CourseName", main::game.course_code);    
+        veil_course.adjustScale();
+
+        ROOT["Common"]["Veil"].visible = true;
+        veil_bg.actor.out = false;
+        veil_title.actor.out = false;
+        veil_course.actor.out = false;
+        
+        context.sync(1.0);
+
         if (page_title == "PowerAndSpeed")
             exit_menu(context, "machinetest");
         else
@@ -841,7 +919,7 @@ module PROJECT::ROOT::Buttons::Unit::RaceEvent
     }
 }
 
-module PROJECT::ROOT::Template::CourseItem
+module GTmodeProject::CourseEntryRoot::Template::CourseItem
 {
     function onFocusEnter(context, event)
     {
@@ -885,6 +963,7 @@ module PROJECT::ROOT::Template::CourseItem
             CourseMap.actor.warp();
             CourseMap::image.from_disk = false;
             CourseMap::image.cache = false;
+            CourseMap::image.setImagePath("image/piece/crs_map_l/doesntexist.png");
             CourseMap::image.setImagePath("image/piece/crs_map_l/" + name + ".png");
             CourseMap::image.doInitialize(context);
             CourseMap::image.adjustSize();

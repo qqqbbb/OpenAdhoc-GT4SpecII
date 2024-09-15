@@ -10,7 +10,12 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT
+#define FLAG_BONNET_CAM (1);
+#define FLAG_INTERIOR_CAM (1 << 1);
+#define FLAG_GT3_CAM (1 << 2);
+#define FLAG_ROOF_CAM (1 << 3);
+
+module GTmodeProject
 {
     PROJECT.load(main::game.option.game_zone + "_carlist");
 
@@ -27,7 +32,7 @@ module PROJECT
     #include "wheel.ad"
     #include "../share/memorycard.ad"
 
-    #define MISSION_COUNT 34
+    #define MISSION_COUNT 40
 
     static color_transition = nil;
     static cross_transition = nil;
@@ -40,6 +45,28 @@ module PROJECT
 
     static getcourse_list = [];
 
+    static wide = main::game.option.wide_mode;
+
+    static last_dealer_img = nil;
+    static randomizer_enabled = -1;
+    static global_asmo = -1;
+    static global_asmu = -1;
+    static global_tcsc = -1;
+    static aspec_reward = -1;
+    static show_owned_cars = -1;
+    static video_mode = -1;
+    static cam_flag = 8; // Bitflag to enable just roof cam by default
+    static gauge_mode = -1; // -1 = Default, 0 = Always analog, 1 = Always digital
+    static transmission_volume = 2; // 0 = off, 1 = quiet, 2 = normal, 3 = loud
+
+    static owned_cars = [];
+    static is_kaizo = false;
+    static is_debug = true; // TODO: Disable for release
+    static special_paint_allowed = true;
+    
+    static discount_tuner;
+    static discount_pricemult;
+
     function pushGetCourse(pair)
     {
         getcourse_list.push(pair);
@@ -49,7 +76,7 @@ module PROJECT
     {
         if (getcourse_list.size > 0)
         {
-            context.pushEvent(main::menu::MScriptEvent(context, PROJECT, "getcourseCB", [endFunc]));
+            context.pushEvent(main::menu::MScriptEvent(context, GTmodeProject, "getcourseCB", [endFunc]));
         }
         else if (endFunc != nil)
             endFunc(context);
@@ -61,7 +88,7 @@ module PROJECT
         {
             var crs = getcourse_list[i][0];
             var place = getcourse_list[i][1];
-            var crs_name = context.translate(PROJECT, "CourseNameCaption", crs);
+            var crs_name = context.translate(GTmodeProject, "CourseNameCaption", crs);
             var place_name = context.translate(TopRoot, "place_" + place);
             var message = context.translate(TopRoot, "you can run a course").build(crs_name, place_name);
             GetCourseDialog::open(context, message, crs);
@@ -72,21 +99,96 @@ module PROJECT
             endFunc(context);
     }
 
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+
+        }
+        return EVENTRESULT_CONTINUE;
+    }
+
     function onLoad(context)
     {
         main::sound.load();
+
+        var option = main::game.option;
+        
+        if (option.automatic_gear != option.race_display_car_name)
+        {
+            print "Transmission setting was not changed by player, resetting...";
+            option.automatic_gear = option.race_display_car_name;
+        }
         
         context.loadGpb("projects/gtmode", "Template");
 
-        switch (main::menu::MSystem::GetRegionCode())
+        // Leftover kaizo run-related stuff, may use this post-release
+        // If we're on a kaizo run and it's the first time we've played, complete licence B to gold and enable the randomizer
+        if (is_kaizo && main::game.option.narration == 0)
         {
-            case "jp":
-                description = main::menu::MGpb("description/JP/JP_" + main::menu::MSystem::GetContainmentVersion() + "_description.gpb");
-                break;
+            var licences = ["l0b", "l0a", "lib", "lia", "l0s"];
+            logInfo("Kaizo initial setup");
+            main::game.option.entrance_addr = "r=1;o=0;u=0;t=0;as=1;so=1;vm=1;c=8;g=-1;tm=2";
 
-            case "kr":
-                description = main::menu::MGpb("description/KR/KR_" + main::menu::MSystem::GetContainmentVersion() + "_description.gpb");
-                break;
+            for (var i = 0; i < licences.size; i++)
+            {
+                for (var j = 0; j < 16; j++)
+                {
+                    var race_code = licences[i] + "%04d".format(j + 1);
+                    var unit = main::game.race_record.getUnit(race_code);
+                    unit.update("license", "gold");
+                    main::game.calendar.putRunLicenseEvent("jp" + race_code, unit.result, "", 10000);
+                }
+            }
+        }
+
+        var settings = main::game.option.entrance_addr.split(";");
+
+        for (var i = 0; i < settings.size; i++)
+        {
+            var [k, v] = settings[i].split("=");
+            switch (k)
+            {
+                case "r":
+                    randomizer_enabled = v.toInt();
+                    break; 
+
+                case "o":
+                    global_asmo = v.toInt();
+                    break;
+                
+                case "u":
+                    global_asmu = v.toInt();
+                    break;
+
+                case "t":
+                    global_tcsc = v.toInt();
+                    break;
+
+                case "as":
+                    aspec_reward = v.toInt();
+                    break;
+
+                case "so":
+                    show_owned_cars = v.toInt();
+                    break;
+
+                case "vm":
+                    video_mode = v.toInt();
+                    break;
+
+                case "c":
+                    cam_flag = v.toInt();
+                    break;
+
+                case "g":
+                    gauge_mode = v.toInt();
+                    break;
+
+                case "tm":
+                    transmission_volume = v.toInt();
+                    break;
+            }
         }
 
         context.createRenderContext(1);
@@ -100,6 +202,9 @@ module PROJECT
         render_context.transition.panIn(render_context);
 
         var present_list = PresentRoot::makeEntitledPresentListByProject();
+
+        checkASpecPoints(context, present_list); // Checked here as cars are pushed to the present list as necessary
+        
         var page = nil;
 
         if (main::game.isSuspended())
@@ -118,8 +223,8 @@ module PROJECT
         }
         else if (main::game.major_menu_project == "gtmode" && main::game.major_menu_page != "")
         {
-            if (PROJECT.defined(main::game.major_menu_page))
-                page = PROJECT[main::game.major_menu_page];
+            if (GTmodeProject.defined(main::game.major_menu_page))
+                page = GTmodeProject[main::game.major_menu_page];
             else
                 page = TopRoot;
 
@@ -139,8 +244,7 @@ module PROJECT
         {
             if (page.defined("onStart"))
                 page["onStart"](context.getRenderContext(0));
-            
-            render_context.startPage(page);
+                render_context.startPage(page);
         }
 
         main::game.major_menu_project = "gtmode";
@@ -171,13 +275,14 @@ module PROJECT
 
     function saveAuto(context, root, end_func, progress)
     {
+        print "SaveAuto called";
         if (progress == nil)
             progress = 1;
 
         main::game.major_menu_project = "gtmode";
         main::game.major_menu_page = root.name;
 
-        context.pushEvent(main::menu::MScriptEvent(context, PROJECT, "doAutoSave", [root, end_func, progress]));
+        context.pushEvent(main::menu::MScriptEvent(context, GTmodeProject, "doAutoSave", [root, end_func, progress]));
     }
 
     function saveAutoBlock(context, root, end_func, progress)
@@ -196,7 +301,7 @@ module PROJECT
         setCursor(context, "wait");
 
         if (progress)
-            openProgressDialog(context, context.translate(PROJECT, "MemoryCard", "now_saving"));
+            openProgressDialog(context, context.translate(GTmodeProject, "MemoryCard", "now_saving"));
 
         var r = autoSave2(context, root["Common"]["Header"]["Memorycard"], nil, makeEnable);
         if (progress)
@@ -210,7 +315,7 @@ module PROJECT
         return r;
     }
 
-    function refreshRideCar(root, context)
+    function refreshRideCar(root, context, isUserTriggered)
     {
         var garage = main::game.garage;
         var car = root["Common"]["Header"]["Car"];
@@ -222,6 +327,60 @@ module PROJECT
         {
             label.text = garage.riding_car.short_name;
             label.abbreviate();
+            var curr_car = main::game.garage.riding_car;
+
+            // Settings can be saved as -1 to disable the overrides entirely
+            if (global_asmo != nil && global_asmo != -1)
+            {
+                if (global_asmo == 0)
+                    curr_car.setASCCSetting(0, global_asmo);
+                else
+                {
+                    // Weird off by one indexing?
+                    global_asmo += 1;
+                    curr_car.setASCCSetting(0, global_asmo);
+                }
+            }
+
+            if (global_asmu != nil && global_asmu != -1)
+            {
+                if (global_asmu == 0)
+                    curr_car.setASCCSetting(1, global_asmu);
+                else
+                {
+                    global_asmu += 1;
+                    curr_car.setASCCSetting(1, global_asmu);
+                }
+            }
+
+            if (global_tcsc != nil && global_tcsc != -1)
+            {   
+                if (global_tcsc == 0)
+                    curr_car.setTCSCSetting(0, global_tcsc);
+                else
+                {
+                    //var tcsc = (curr_car.getTCSCRange()[0] - global_tcsc) + 1;
+                    curr_car.setTCSCSetting(0, (10 - global_tcsc) + 1);
+                }
+            }
+
+            if (isUserTriggered != nil && isUserTriggered)
+            {
+                var opt = main::game.option;
+
+                // Seems there's no clean way to do this on car purchase, so checking on manual car change instead
+                // Safe to do if they already exist as it does nothing
+                print curr_car.car_code;
+                if (isCarInCategory(curr_car.car_code, "rally"))
+                {
+                    print "Adding rally tires";
+                    curr_car.getParts(25, 11);
+                    curr_car.getParts(25, 12);
+                    curr_car.getParts(26, 11);
+                    curr_car.getParts(26, 12);
+                }
+            }
+
             car["chip"].setData(garage.riding_car);
             car["chip"].doInitialize(context);
             car["chip"].visible = true;
@@ -322,6 +481,360 @@ module PROJECT
 
     }
 
+    function checkASpecPoints(context, present_list)
+    {
+        var pts = getRaceEventRecordStatistics()[1];
+
+        if (pts >= 10000 && aspec_reward < 1)
+        {
+            aspec_reward = 1;
+            present_list.push(177); // ID in present list, not a car ID
+        }
+
+        if (pts >= 15000 && aspec_reward < 2)
+        {
+            aspec_reward = 2;
+            present_list.push(178);
+        }
+
+        if (pts >= 20000 && aspec_reward < 3)
+        {
+            aspec_reward = 3;
+            present_list.push(179);
+        }
+
+        saveNewSettings(context, false, false);
+    }
+
+    function refreshOwnedCars()
+    {
+        owned_cars = [];
+        var garage = main::game.garage;
+        var list = garage.pickup();
+        print list;
+        for (var i = 0; i < list.size; i++)
+        {
+            owned_cars.push(main::menu::MCarData::GetCarNumericCode(list[i].car_code));
+        }
+        owned_cars.sort();
+    }
+
+    function getCarCategory(car_label)
+    {
+        module CarCategoryModule { }
+        CarCategoryModule.load("/projects/specii/carcategories");
+        var res = nil;
+        
+        if (CarCategoryModule::CarCategories.defined("categories"))
+        {
+            var cc = CarCategoryModule::CarCategories;
+            var categories = cc["categories"];
+            for (var i = 0; i < categories.size; i++)
+            {
+                if (cc.defined(categories[i] + "_cars"))
+                {
+                    if (cc[categories[i] + "_cars"].bsearch(car_label))
+                    {
+                        res = categories[i];
+                        break;
+                    }
+                }
+                else
+                    print "CarCategoryModule::CarCategories[\"%{categories[i]}\"] not defined";                    
+            }
+        }
+        else
+            print "CarCategories not defined";
+
+        CarCategoryModule.clearStatic();
+
+        return res;
+    }
+
+    function isCarInCategory(car_label, category_name)
+    {
+        module CarCategoryModule { }
+        var res = -1;
+
+        CarCategoryModule.load("/projects/specii/carcategories");
+        var cc = CarCategoryModule::CarCategories;
+
+        if (cc.defined(category_name + "_cars"))
+            res = cc[category_name + "_cars"].bsearch(car_label);
+
+        CarCategoryModule.clearStatic();
+
+        return res != -1;
+    }
+
+    function isHallComplete(hall)
+    {
+        var events = EventData[hall];
+        var allWon = true;
+        
+        for (var i = 1; i < events.size; i++)
+        {
+            var event = events[i].race_code;
+            var won = wonRace(event);
+            //print "Race %{event} won = %{won}";
+
+            if (!won)
+            {
+                allWon = false;
+                break;
+            }
+        }
+
+        if (allWon)
+        {
+            print "Event hall %{hall} fully won";
+            return true;
+        }
+        else
+        {
+            print "Event hall %{hall} NOT fully won";
+            return false;
+        }
+    }
+
+    function isCarOwned(car_label)
+    {
+        var current_code = main::menu::MCarData::GetCarNumericCode(car_label);
+        var res = owned_cars.bsearch(current_code);
+        return res != -1;
+    }
+
+    function reloadCarList(context)
+    {
+        NewCarData.clearStatic();
+        LegendCarData.clearStatic();
+        CompleteCarData.clearStatic();
+        PresentData.clearStatic();
+        PresentTimeData.clearStatic();
+        EnemyCarData.clearStatic();
+        LicenseCarData.clearStatic();
+        PROJECT.load("projects/gtmode/" + main::game.option.game_zone + "_carlist");
+    }
+
+    function copyGarageCar(context, new_col_idx)
+    {
+        var riding_car = main::game.garage.riding_car;
+        riding_car.updateCurrentStatus();
+        riding_car.setupPartsBuffer();
+
+        var cg = main::menu::MCarGarage(riding_car.car_code);
+
+        cg.setupPartsBuffer();
+
+        var conv_mult = 1.0;
+        
+        if (riding_car.getOdometer("%.1t%s").endWith("miles"))
+            conv_mult = 1.60934;
+
+        cg.makeUsed(0, new_col_idx, (riding_car.getOdometer("%.1t").toFloat() * 1000) * conv_mult);
+
+        var idx = main::game.garage.addUsedCar(cg);
+
+        copyParts(context, riding_car, idx);
+
+        riding_car.replaceOil();
+    }
+
+    function copyParts(context, from_car, idx)
+    {
+        var ownedParts = [];
+        var fittedParts = [];
+        var wing = from_car.getCurrentWing();
+        logInfo(wing);
+        var prev_idx = from_car.getGarageIndex();
+
+        for (var i = 1; i < 33; i++)
+        {
+            for (var j = 0; j < from_car.getPartsTypeMax(i); j++)
+            {
+                if (from_car.isHavingParts(i, j))
+                {
+                    ownedParts.push([i, j]);
+
+                    if (from_car.getEquipedParts(i, j))
+                        fittedParts.push([i, j]);
+                }
+            }
+        }
+
+        logInfo(fittedParts);
+
+        var manager = checkGameData(context, 0, nil);
+        if (manager != nil)
+        {
+            var r = main::game.garage.changeRidingCar(idx, manager);
+            if (r == "OK")
+            {
+                var new_car = main::game.garage.riding_car;
+
+                for (var i = 0; i < ownedParts.size; i++)
+                {
+                    new_car.getParts(ownedParts[i][0], ownedParts[i][1]);
+                }
+
+                new_car.updateCurrentStatus();
+                new_car.loadPartsInfo();
+
+                for (var i = 0; i < fittedParts.size; i++)
+                {
+                    new_car.setParts(fittedParts[i][0], fittedParts[i][1]);
+                }
+
+                new_car.setWing(wing);
+
+                for (var i = 0; i < 10; i++)
+                    new_car.setGearSetting(i, from_car.getGearSetting(i));
+                new_car.setDriveTrainSetting(from_car.getDriveTrainSetting());
+                new_car.setRacingModifySetting(from_car.getRacingModifySetting());
+                new_car.setLSDSetting(from_car.getLSDSetting());
+                new_car.setSuspensionSetting(from_car.getSuspensionSetting());
+                new_car.setTCSCSetting(from_car.getTCSCSetting());
+                new_car.setASCCSetting(from_car.getASCCSetting());
+                new_car.setBallastSetting(from_car.getBallastSetting());
+                new_car.setNOSSetting(from_car.getNOSSetting());
+
+
+                main::game.garage.delCar(prev_idx);
+            }
+        }        
+    }
+
+    function checkPrizeCars(context)
+    {
+        var unobtainableCars = "";
+        for (var i = 0; i < PresentData::allcars_carlist.size; i++)
+        {
+            var thisCar = PresentData::allcars_carlist[i];
+
+            var tuner = main::menu::MCarData::GetTuner(thisCar)
+            var info = "";
+            var isInNewDealer = false;
+            var isInClassicDealer = false;
+            var isInTunerDealer = false;
+            var isInUsedDealer = false;
+            var isPrizeCar = false;
+
+            if (NewCarData.defined(tuner + "_carlist"))
+            {
+                var newcar = NewCarData[tuner + "_carlist"];
+                newcar.sort();
+
+                if (newcar.bsearch(thisCar) != -1)
+                    isInNewDealer = true;
+            }
+
+            if (LegendCarData.defined(tuner + "_carlist"))
+            {
+                var legendcar = LegendCarData[tuner + "_carlist"];
+                legendcar.sort();
+
+                if (legendcar.bsearch(thisCar) != -1)
+                    isInClassicDealer = true;
+            }
+
+            if (CompleteCarData.defined(tuner + "_carlist"))
+            {
+                var completecar = CompleteCarData[tuner + "_carlist"];
+                completecar.sort();
+
+                if (completecar.bsearch(thisCar) != -1)
+                    isInTunerDealer = true;
+            }
+
+            if (isInNewDealer)
+                info = "present in new %{tuner} dealer";
+            if (isInClassicDealer)
+                info = "present in classic %{tuner} dealer";
+            if (isInTunerDealer)
+                info = "present in tuned car %{tuner} dealer";
+            if (!isInNewDealer && !isInClassicDealer && !isInTunerDealer)
+            {
+                var game_zone = main::game.option.game_zone;
+                // Only do this if the others don't work as it's intensive
+                for (var j = 0; j < 100; j++)
+                {
+                    module UsedCarModule {}
+                    //UsedCarModule.clearStatic();
+                    UsedCarModule.load("usedcar/" + game_zone + "_used%04d".format(j));
+
+                    for (var k = 0; k < 3; k++)
+                    {
+                        var usedcar = UsedCarModule::UsedCarData["usedcar_0%{k}_carlist"];
+                        usedcar.sort();
+
+                        var res = usedcar.bsearch(thisCar);
+                        if (res != -1)
+                            isInUsedDealer = true;
+
+                        if (isInUsedDealer)
+                            break;
+                    }
+                    if (isInUsedDealer)
+                        break;
+                }
+
+                // If we got here then we couldn't find the car in any dealer or prize list, it must be impossible to unlock
+                if (!isInUsedDealer)
+                    unobtainableCars += "%{thisCar};";
+            }
+                
+            if (main::menu::MCarData::NotForSell(thisCar))
+            {
+                var prizecar = PresentData::content_carlist;
+                prizecar.sort();
+
+                if (prizecar.bsearch(thisCar) != -1)
+                    isPrizeCar = true;
+
+                // If flagged as not for sale, but no way to unlock it (ignoring presence in dealers), it must be unobtainable
+                if (!isPrizeCar)
+                    unobtainableCars += "%{main::menu::MCarData::GetCarName(thisCar)} (%{thisCar});";
+            }
+
+            //print "\n%{thisCar},%{info}\n";
+        }
+        //var opps = TypicalOpponentsData["opponents_%{event}"];
+        unobtainableCars = unobtainableCars.substr(0, unobtainableCars.size - 1);
+        var cars = unobtainableCars.split(";");
+        var col1 = "";
+        var col2 = "";
+
+        for (var i = 0; i < cars.size; i++)
+        {
+            if (i >= 32)
+            {
+                col2 += "etc.";
+                break;
+            }
+
+            if (i > 16)
+                col2 += i == cars.size - 1 ? "- %{cars[i]}" : "- %{cars[i]}\n"; 
+            else
+                col1 += i == cars.size - 1 ? "- %{cars[i]}" : "- %{cars[i]}\n"; 
+            
+        }
+        main::sound.play("ok");
+        reloadCarList(context); // Because variables are references and we sorted the existing lists - now refresh them
+        TypicalOpponentsPopup::open(context, col1, col2, "Unobtainable Cars");
+        //openConfirmDialog(context, 0, unobtainableCars);
+    }
+
+    function saveNewSettings(context, refreshCar, doMcSave)
+    {
+        main::game.option.entrance_addr = "r=%{randomizer_enabled};o=%{global_asmo};u=%{global_asmu};t=%{global_tcsc};as=%{aspec_reward};so=%{show_owned_cars};vm=%{video_mode};c=%{cam_flag};g=%{gauge_mode};tm=%{transmission_volume}";
+        
+        if (refreshCar)
+            PROJECT.refreshRideCar(TopRoot, context, true);
+
+        if (doMcSave)
+            PROJECT.saveAuto(context, TopRoot, nil, false);
+    }
+
     function checkRegulation(race_code, result_array)
     {
         var race_spec = main::menu::MRaceData(race_code);
@@ -365,7 +878,7 @@ module PROJECT
                 main::sound.play("ok");
                 openConfirmDialog(context, 0, context.translate(TopRoot, "you change tire").format(tire_name));
             }
-
+            
             return true;
         }
         else
@@ -405,8 +918,22 @@ module PROJECT
             label.x = kokki.w;
             label.w = Template::original_label_w;
             label.adjustScale();
+            label.scale_x = 0.9;
             kokki.visible = true;
             kokki.image_path = "image/arcade/common/" + l2 + ".png";
+
+            // Kokki is copied at a different point to gtmode init, so these are hardcoded to avoid doing something more annoying
+            if (wide)
+            {
+                kokki.h = 30;
+                kokki.y = 3;
+            }
+            else
+            {
+                kokki.h = 25;
+                kokki.y = 5;
+            }
+
             kokki.doInitialize(context);
         }
         else
@@ -420,13 +947,13 @@ module PROJECT
     function enterPage(context, root, title, no_translate)
     {
         __enterPage(context, root, title, no_translate);
-        showGetCourse(context);
+        //showGetCourse(context);
     }
 
     function enterPage2(context, root, getcourseEndFunc)
     {
         __enterPage(context, root, "", 1);
-        showGetCourse(context, getcourseEndFunc);
+        //showGetCourse(context, getcourseEndFunc);
     }
 
     function __enterPage(context, root, title, no_translate)
@@ -467,6 +994,7 @@ module PROJECT
             title = "";
 
         header["Title"]["label"].text = title;
+        header["Title"]["label"].scale_x = 0.9;
     }
 
     function setHeaderStyle(context, root, title, carname, money, date)
@@ -507,6 +1035,10 @@ module PROJECT
 
         var cg = main::game.garage.riding_car;
         var open_model_type = main::menu::MCarData::GetOpenModelType(cg.car_code);
+
+        if (cg.car_code == "formula_gran_turismo_04")
+            return true;
+
         if (cg.isStrange())
         {
             main::sound.play("disable");
@@ -563,7 +1095,7 @@ module PROJECT
         if (main::game.isSuspended())
         {
             var race_code = main::game.suspended_racecode;
-            var race_name = getEventNameByRaceCode(context, PROJECT, race_code);
+            var race_name = getEventNameByRaceCode(context, GTmodeProject, race_code);
             var session = main::game.suspended_session + 1;
 
             if (!event_hall)
@@ -572,7 +1104,7 @@ module PROJECT
                 openConfirmDialog(context, 2, context.translate(TopRoot, "YouAreDuringRace").format(race_name, session));
             }
 
-            if (openConfirmDialog(context, 1, context.translate(TopRoot, "Do you restart the race?").build(race_name, session)))
+            if (openConfirmDialog(context, 4, context.translate(TopRoot, "Do you restart the race?").build(race_name, session)))
             {
                 if (main::game.loadMenuStack())
                 {
@@ -588,7 +1120,7 @@ module PROJECT
                     openConfirmDialog(context, 2, context.translate(TopRoot, "fail to restart the race").build(race_name, session));
                 }
             }
-            else if (openConfirmDialog(context, 1, context.translate(TopRoot, "Do you abandon the race?").format(race_name, session)))
+            else if (openConfirmDialog(context, 4, context.translate(TopRoot, "Do you abandon the race?").format(race_name, session)))
             {
                 main::game.abandonRace();
                 main::game.major_menu_project = "";
@@ -628,38 +1160,38 @@ module PROJECT
             return 0;
     }
 
+    function logInfo(msg, noLines)
+    {
+        if (!is_debug)
+            return;
+
+        if (noLines == nil)
+            noLines = false;
+
+        if (!noLines)
+            print "\n--------------------\n";
+        print "\n%{msg}\n";
+        if (!noLines)
+            print "\n--------------------\n";
+    }
+
     function canEntryGTWorldChamp()
     {
-        var events = EventData::BeginnerHallEvents;
-        for (var i = 1; i < events.size; i++)
-        {
-            if (!wonRace(events[i].race_code))
-                return false;
-        }
-
-        events = EventData::ProfessionalHallEvents;
-        for (var i = 1; i < events.size; i++)
-        {
-            var race = events[i].race_code;
-            if (race == "pr_gtworld_1000")
-                continue;
-
-            if (!wonRace(race))
-                return false;
-        }
-
         return true;
     }
 
     function canEntryExtreme()
     {
-        return wonRace("pr_gtworld_1000");
+        return main::game.race_record.isLicensePassed("lib");//wonRace("pr_gtworld_1000");
     }
 
     function canEntryEndurance()
     {
+        // TODO: Remove this
+        if (is_debug)
+            return true;
         var [achieve, score] = getRaceEventRecordStatistics();
-        return achieve >= 250.0;
+        return achieve >= 200.0;
     }
 
     function haveRunEvent(event_list_name)
@@ -737,7 +1269,7 @@ module PROJECT
         }
         else
         {
-            return context.translate(PROJECT, "WheelName", name);
+            return context.translate(GTmodeProject, "WheelName", name);
         }
     }
 
@@ -769,7 +1301,8 @@ module PROJECT
 
     function craft(context, event, command_list, func)
     {
-        if (main::game.calendar.getElapsedDate() > 365 && craft_index < command_list.size && event.keysym == command_list[craft_index])
+        // Cheat set to work on any day
+        if (main::game.calendar.getElapsedDate() > -1 && craft_index < command_list.size && event.keysym == command_list[craft_index])
         {
             craft_index++;
             if (craft_index >= command_list.size)

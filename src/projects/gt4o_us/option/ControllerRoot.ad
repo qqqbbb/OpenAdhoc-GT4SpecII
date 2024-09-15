@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::ControllerRoot
 {
     function open(context)
     {
@@ -50,36 +50,33 @@ module PROJECT::ROOT
         reflect(context);
     }
 
-    function onFinalize(context)
-    {
-
-    }
+    function onFinalize(context) { }
 
     function onCancel(context)
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::ControllerRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::ControllerRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

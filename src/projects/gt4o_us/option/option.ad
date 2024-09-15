@@ -1,38 +1,44 @@
-module PROJECT::MComponent::SetupPanel::SetupWindow
+#define FLAG_BONNET_CAM (1);
+#define FLAG_INTERIOR_CAM (1 << 1);
+#define FLAG_GT3_CAM (1 << 2);
+#define FLAG_ROOF_CAM (1 << 3);
+
+module OptionProject::MComponent::SetupPanel::SetupWindow
 {
     method doColorize()
     {
         var title = MComponent::SetupPanel::SetupWindow::Title;
         var slider;
+        var pulldown;
+        var text_input;
+        var number_input;
+        var vacant;
+        var bottom_spacer;
+        var buttons;
 
         if (MComponent::SetupPanel.defined("Slider"))
             slider = MComponent::SetupPanel::Slider;
 
-        var pulldown;
         if (MComponent::SetupPanel.defined("Pulldown"))
             pulldown = MComponent::SetupPanel::Pulldown;
 
-        var text_input;
         if (MComponent::SetupPanel.defined("TextInput"))
             text_input = MComponent::SetupPanel::TextInput;
 
-        var number_input;
         if (MComponent::SetupPanel.defined("NumberInput"))
             number_input = MComponent::SetupPanel::NumberInput;
 
-        var vacant;
         if (MComponent::SetupPanel.defined("Vacant"))
             vacant = MComponent::SetupPanel::Vacant;
 
-        var bottom_spacer;
         if (MComponent::SetupPanel.defined("BottomSpacer"))
             bottom_spacer = MComponent::SetupPanel::BottomSpacer;
 
-        var buttons;
         if (MComponent::SetupPanel.defined("Buttons"))
             buttons = MComponent::SetupPanel::Buttons;
 
         var i = 0;
+        
 
         for (var it = self.first_window; it != nil; it = it.next_window)
         {
@@ -71,7 +77,7 @@ module PROJECT::MComponent::SetupPanel::SetupWindow
     }
 }
 
-module PROJECT::MComponent::SetupPanel::Buttons::OK::bgf
+module OptionProject::MComponent::SetupPanel::Buttons::OK::bgf
 {
     method __copy_init__()
     {
@@ -81,7 +87,7 @@ module PROJECT::MComponent::SetupPanel::Buttons::OK::bgf
     }
 }
 
-module PROJECT::MComponent::SetupPanel::Buttons::CancelOK::No::bgf
+module OptionProject::MComponent::SetupPanel::Buttons::CancelOK::No::bgf
 {
     method __copy_init__()
     {
@@ -91,7 +97,7 @@ module PROJECT::MComponent::SetupPanel::Buttons::CancelOK::No::bgf
     }
 }
 
-module PROJECT::MComponent::SetupPanel::Buttons::CancelOK::Yes::bgf
+module OptionProject::MComponent::SetupPanel::Buttons::CancelOK::Yes::bgf
 {
     method __copy_init__()
     {
@@ -101,8 +107,27 @@ module PROJECT::MComponent::SetupPanel::Buttons::CancelOK::Yes::bgf
     }
 }
 
-module PROJECT
+module OptionProject
 {
+    // Spec II options to save
+    static randomizer_enabled = -1;
+    static global_asmo = -1;
+    static global_asmu = -1;
+    static global_tcsc = -1;
+    static aspec_reward = -1;
+    static show_owned_cars = -1;
+    static video_mode = -1;
+    static cam_flag = 8; // Bitflag to enable just roof cam by default
+    static gauge_mode = -1; // -1 = Default, 0 = Always analog, 1 = Always digital
+    static transmission_volume = 2; // 0 = off, 1 = quiet, 2 = normal, 3 = loud
+
+    function logInfo(msg)
+    {
+        print "\n--------------------\n";
+        print "\n%{msg}\n";
+        print "\n--------------------\n";
+    }
+
     #include "../share/dialog.ad"
     #include "../share/page_util.ad"
     #include "../share/course_define.ad"
@@ -113,6 +138,55 @@ module PROJECT
     function onLoad(context)
     {
         main::sound.load();
+
+        var settings = main::game.option.entrance_addr.split(";");
+
+        for (var i = 0; i < settings.size; i++)
+        {
+            var [k, v] = settings[i].split("=");
+            switch (k)
+            {
+                case "r":
+                    randomizer_enabled = v.toInt();
+                    break; 
+
+                case "o":
+                    global_asmo = v.toInt();
+                    break;
+                
+                case "u":
+                    global_asmu = v.toInt();
+                    break;
+
+                case "t":
+                    global_tcsc = v.toInt();
+                    break;
+
+                case "as":
+                    aspec_reward = v.toInt();
+                    break;
+
+                case "so":
+                    show_owned_cars = v.toInt();
+                    break;
+
+                case "vm":
+                    video_mode = v.toInt();
+                    break;
+
+                case "c":
+                    cam_flag = v.toInt();
+                    break;
+
+                case "g":
+                    gauge_mode = v.toInt();
+                    break;
+
+                case "tm":
+                    transmission_volume = v.toInt();
+                    break;
+            }
+        }
 
         context.createRenderContext(1);
         var render_context = context.getRenderContext(0);
@@ -145,7 +219,7 @@ module PROJECT
 
         if (none != nil && slider.index == 0)
             slider["label"].text = none;
-        else
+        else 
             slider["label"].text = slider.index * bias;
 
         var popup = slider["popup"];
@@ -158,5 +232,11 @@ module PROJECT
             popup["min"].text = min.toInt();
             popup["max"].text = max.toInt();
         }
+    }
+
+    function saveNewSettings(context)
+    {
+        main::game.option.entrance_addr = "r=%{randomizer_enabled};o=%{global_asmo};u=%{global_asmu};t=%{global_tcsc};as=%{aspec_reward};so=%{show_owned_cars};vm=%{video_mode};c=%{cam_flag};g=%{gauge_mode};tm=%{transmission_volume}";
+        main::game.setNeedSave();
     }
 }

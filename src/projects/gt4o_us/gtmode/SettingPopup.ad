@@ -10,7 +10,7 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::SettingPopup
 {
     function setMoveActor(widget)
     {
@@ -75,7 +75,7 @@ module PROJECT::ROOT
     function onInitialize(context)
     {
         Pane.minimum_height = false;
-        Pane::Difficulty::slider.range = [-10, 10];
+        Pane::Difficulty::slider.range = [-15, 15];
         Pane::Difficulty::slider.index = 0;
         setupSlider(Pane::Difficulty::slider);
     }
@@ -90,7 +90,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Pane::Difficulty::slider
+module GTmodeProject::SettingPopup::Pane::Difficulty::slider
 {
     function onValueChanged(context)
     {
@@ -98,7 +98,7 @@ module PROJECT::ROOT::Pane::Difficulty::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Button::OK
+module GTmodeProject::SettingPopup::Pane::Button::OK
 {
     function onActivate(context, event, item)
     {

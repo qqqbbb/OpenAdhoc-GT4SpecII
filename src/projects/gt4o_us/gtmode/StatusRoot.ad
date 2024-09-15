@@ -10,7 +10,7 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::StatusRoot
 {
     function onInitialize(context)
     {
@@ -40,7 +40,7 @@ module PROJECT::ROOT
         var today = calendar.today;
         var jurian_today = main::menu::MCalendar::dateToDay(today[0], today[1], today[2]);
 
-        PlayerName::day.text = context.translate(ROOT, "DayFormat").format(main::menu::MCalendar::dayToGameDay(jurian_today) + 1);
+        PlayerName::day.text = context.translate(ROOT, "DayFormat").format(main::menu::MCalendar::dayToGameDay(jurian_today) + 1) + " (Cycle week %{main::game.calendar.getElapsedWeek(100)})";
 
         print "calcurating ... start\n";
         var game_stat = getRaceEventRecordStatistics();
@@ -101,7 +101,7 @@ module PROJECT::ROOT
         var wins = main::game.getTotalRankCount(1);
         var all = main::game.getTotalRaceCount();
 
-        var percentage_1000 = all > 0 ? (1000 * wins) / all : 0
+        var percentage_1000 = all > 0 ? (1000 * wins) / all : 0;
         var percentage_str = main::menu::MUtility::GetFormatString("%.1t", percentage_1000.toInt());
         WinningPercentage::value.text = context.translate(ROOT, "WinningPercentageFormat").format(wins, all, percentage_str);
         WinningPercentage::value.adjustScale();
@@ -118,8 +118,27 @@ module PROJECT::ROOT
         PrizeMoney::value.text = main::game.getTotalPrizeMoney();
         PrizeMoney::value.adjustScale();
 
-        NumberOfCars::value.text = context.translate(ROOT, "NumberOfCarsFormat").format(main::game.garage.count);
+        
+
+        var distinct_cars_owned = 0;
+
+        for (var i = 0; i < PresentData::allcars_carlist.size; i++)
+        {
+            if (isCarOwned(PresentData::allcars_carlist[i]))
+                distinct_cars_owned++;
+        }
+
+        var owned_cars_perc_1000 = (main::game.garage.count.toFloat() / PresentData::allcars_carlist.size.toFloat()) * 1000;
+        var owned_cars_str = main::menu::MUtility::GetFormatString("%.1t", owned_cars_perc_1000.toInt());
+
+        var distinct_cars_perc_1000 = (distinct_cars_owned.toFloat() / PresentData::allcars_carlist.size.toFloat()) * 1000;
+        var distinct_cars_str = main::menu::MUtility::GetFormatString("%.1t", distinct_cars_perc_1000.toInt());
+
+        logInfo(distinct_cars_str);
+        
+        NumberOfCars::value.text = "%{main::game.garage.count} (%{distinct_cars_owned} / %{PresentData::allcars_carlist.size} = %{"%s%s".format(distinct_cars_str, "%%")})";//context.translate(ROOT, "NumberOfCarsFormat").format(main::game.garage.count);
         NumberOfCars::value.adjustScale();
+        NumberOfCars::label.adjustScale();
 
         var skillformat = context.translate(ROOT, "SkillFormat");
         var skillvalueformat = "%d";
@@ -153,6 +172,26 @@ module PROJECT::ROOT
                     inheritDataCheck(context);
                     return EVENTRESULT_FILTER;
                 }
+
+            case PS2_PAD_CTRL_R1:
+                if (is_debug)
+                {
+                    var calendar = main::game.calendar;
+                    var today = calendar.today;
+                    var jurian_today = main::menu::MCalendar::dateToDay(today[0], today[1], today[2]);
+                    main::sound.play("ok");
+                    for (var i = 0; i < 7; i++)
+                        calendar.incDate();
+                    PlayerName::day.text = context.translate(ROOT, "DayFormat").format(main::menu::MCalendar::dayToGameDay(jurian_today) + 1) + " (Cycle week %{main::game.calendar.getElapsedWeek(100)})";
+                    return EVENTRESULT_FILTER;
+                }
+                else
+                    return EVENTRESULT_CONTINUE;
+
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
         }
 
         return EVENTRESULT_CONTINUE;

@@ -129,7 +129,7 @@ function isEquipedLimitedTire(limited_tire, riding_car) // PD typo
             if (equiped_tire == TIRE_DIRT)
                 return true;
             break;
-
+        
         case TIRE_SNOW:
             if (equiped_tire == TIRE_SNOW)
                 return true;

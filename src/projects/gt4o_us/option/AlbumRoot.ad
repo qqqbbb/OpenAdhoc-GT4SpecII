@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::AlbumRoot
 {
     module QualityType
     {
@@ -51,9 +51,9 @@ module PROJECT::ROOT
         var option = main::game.option;
 
         option.album_slide_effect = 1 - Pane::Effect::OptionMenu.index;
-        option.album_slide_play_time = Pane::PlayTime::slider.index;
+        option.album_slide_play_time = 1 - Pane::PlayTime::slider.index;
         option.album_slide_transition_time = Pane::TransitionTime::slider.index;
-        option.album_memory_card_slot = Pane::McSlot::OptionMenu.index;
+        option.album_memory_card_slot = Pane::McSlot::slider.index;
         option.photo_quality = QualityTypeString[Pane::Quality::OptionMenu.index];
         option.ustorage_photo_quality = QualityTypeString[Pane::UsbQuality::OptionMenu.index];
 
@@ -90,11 +90,11 @@ module PROJECT::ROOT
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Shutter::OptionMenu
+module OptionProject::AlbumRoot::Pane::Shutter::OptionMenu
 {
     static ShutterType = [
         "typeA",
@@ -159,7 +159,7 @@ module PROJECT::ROOT::Pane::Shutter::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::PlayTime::slider
+module OptionProject::AlbumRoot::Pane::PlayTime::slider
 {
     function onValueChanged(context)
     {
@@ -167,7 +167,7 @@ module PROJECT::ROOT::Pane::PlayTime::slider
     }
 }
 
-module PROJECT::ROOT::Pane::TransitionTime::slider
+module OptionProject::AlbumRoot::Pane::TransitionTime::slider
 {
     function onValueChanged(context)
     {
@@ -175,23 +175,23 @@ module PROJECT::ROOT::Pane::TransitionTime::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::AlbumRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::AlbumRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply();
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

@@ -26,7 +26,7 @@ function getSeriesRaceCount(race_code)
         print "getSeriesRaceCount ... race=%{race_code}%{""}";
         return 0;
     }
-    
+
     var series = race_code.substr(race_code.size - 4, 2);
     return series.toInt();
 }
@@ -38,7 +38,7 @@ function getSeriesRaceIndex(race_code)
         print "getSeriesRaceIndex ... race=%{race_code}%{""}";
         return 0;
     }
-
+    
     var series = race_code.substr(race_code.size - 2, 2);
     return series.toInt();
 }
@@ -197,6 +197,11 @@ function wonRace(race_code)
     if (isChampionship(race_code))
     {
         var unit = main::game.race_record.getUnit(race_code);
+        if (unit == nil)
+        {
+            print "!!!! Race code \"%{race_code}\" not found !!!!";
+            return false;
+        }
         return unit.result == "1";
     }
     else 

@@ -1,0 +1,27 @@
+module ChampionshipProject::MediateRoot
+{
+    static sNextPage = nil;
+
+    function open(context, next)
+    {
+        sNextPage = next;
+        start_page(context, ROOT);
+    }
+
+    function onInitialize(context)
+    {
+        context.sync(0.25);
+        var event = main::menu::MScriptEvent(context, ROOT, "on_initialize");
+        context.pushEvent(event);
+    }
+
+    function on_initialize(context)
+    {
+        start_page(context, sNextPage);
+    }
+
+    function onFinalize(context)
+    {
+        sNextPage = nil;
+    }
+}

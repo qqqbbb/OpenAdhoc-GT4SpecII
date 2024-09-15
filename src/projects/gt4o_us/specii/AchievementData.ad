@@ -1,0 +1,28 @@
+module AchievementData 
+{
+    // Title, Description, stat, requirement, evaluate, reward type, reward
+    static achievements = []; /* [
+        ["Aspiring Rookie", "Earn 2500 A-Spec points.", "aspec", 2500, false, "car", "impreza_wrx_pro_01"],
+        ["Clubman Driver", "Earn 2500 A-Spec points.", "aspec", 2500, false, "cash", 35000],
+        ["Professional Driver", "Earn 5000 A-Spec points.", "aspec", 5000, false, "cash", 70000],
+        ["Expert Driver", "Earn 10000 A-Spec points.", "aspec", 10000, false, "cash", 150000],
+        ["Collector I", "Win 5 prize cars.", "prize_cars", 5, false, "cash", 50000],
+        ["Collector II", "Win 25 prize cars.", "prize_cars", 25, false, "cash", 100000],
+        ["Collector III", "Win 50 prize cars.", "prize_cars", 50, false, "cash", 150000],
+        ["Going the Distance I", "Drive 250 miles.", "dist", 250, false, "cash", 20000],
+        ["Going the Distance II", "Drive 500 miles.", "dist", 500, false, "cash", 50000],
+        ["Going the Distance III", "Drive 1000 miles.", "dist", 1000, false, "cash", 100000]
+    ];*/
+
+    // Title, Description, track label, min, sec, ms, allowed car(s) (empty = any), reward type, reward
+    static time_trial_achievements = []; /* [
+        ["Test Nurb", "Set a lap time of 8'25.511 or better on the Nurburgring Nordschleife.", "nurburgring", 8, 25, 511, [], "cash", 50000],
+        ["Test Seattle", "Set a lap time of 1'50.000 or better on Seattle Circuit in the Toyota WOODONE Tom's Supra (JGTC) '03.", "seattle", 1, 50, 0, ["Toyota WOODONE Tom's Supra (JGTC) '03"], "cash", 50000],
+        ["Time Trial Mountain", "Set a lap time of 1'18.000 or better on Trial Mountain Circuit in the Suzuki ESCUDO Dirt Trial Car '98.", "trialmt", 1, 18, 0, ["Suzuki ESCUDO Dirt Trial Car '98"], "cash", 50000]
+    ];*/
+
+    function test(context)
+    {
+        print "\n\nThis is a test\n\n";
+    }
+}

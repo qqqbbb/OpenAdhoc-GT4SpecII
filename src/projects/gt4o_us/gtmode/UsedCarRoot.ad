@@ -10,7 +10,7 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::UsedCarRoot
 {
     static current_region = nil;
     
@@ -43,38 +43,19 @@ module PROJECT::ROOT
     
     module UsedCarModule { }
 
-    function onInitialize(context)
+    function setFadeActor2(widget)
     {
-        hidden.visible = false;
+        var actor = main::menu::MFadeActor(widget, 1.0);
+        widget.actor = actor;
+        widget.actor.period = 0.15;
+        widget.actor.repeat = false;
+    }
 
-        var week = main::game.calendar.getElapsedWeek(100);
-        var game_zone = main::game.option.game_zone;
+    setFadeActor2(ScrollBox::SelectBox);
+    ScrollBox::SelectBox.visible = false;
 
-        UsedCarModule.load("usedcar/" + game_zone + "_used%04d".format(week));
-        Title.text = context.translate(ROOT, ShopTable[current_region + "_title"]);
-        Title.adjustScale();
-
-        var bg_name = ShopTable[current_region + "_bg"];
-        Year.image_path = "image/gtmode/usedcar/" + bg_name + ".png";
-        Year.doInitialize(context);
-
-        if (main::game.used_car.week != week)
-        {
-            delayOpenConfirmDialog(context, context.translate(ROOT, "used cars updated"));
-            last_focus = nil;
-        }
-
-        enterPage(context, ROOT, "UsedCarTitle");
-        var tip = ROOT["Common"]["ToolTip"]["tip"];
-        tip.remove();
-        tip.value = context.translate(ROOT, "TOOLTIP|UsedCar");
-
-        var shop_name = ShopTable[current_region];
-        var car_list = UsedCarModule::UsedCarData["usedcar_" + shop_name + "_carlist"];
-        var col_list = UsedCarModule::UsedCarData["color_" + shop_name + "_carlist"];
-        var seed = (week + 11) * 100 + ShopTable[current_region + "_seed"];
-        var id_offset = ShopTable[current_region + "_offset"];
-
+    function loadUsedCars(context, week, seed, car_list, col_list, id_offset)
+    {
         for (var i = 0; i < car_list.size; i++)
         {
             var car = car_list[i];
@@ -89,11 +70,12 @@ module PROJECT::ROOT
             }
                 
             var cg = main::menu::MCarGarage(car);
-            cg.makeUsed(seed + (i * 111), col, meter);
+            cg.makeUsed(seed + (i * 311), col, meter);
             cg.updateCurrentStatus();
             item["chip"].setData(cg);
             item["Name"].text = cg.short_name;
             item["Name"].adjustScale();
+            item.defineStatic("col_name", cg.getColorName());
 
             var train = cg.getDTrainType();
             train = context.translate(ROOT, "DriveTrainName", train);
@@ -124,7 +106,7 @@ module PROJECT::ROOT
                 item["Spec3"].text = spec3.format(distance);
             }
 
-            item["Price"].text = "Cr." + main::menu::MUtility::GetMoneyString(cg.getUsedPrice());
+            item["Price"].text = "Cr. " + main::menu::MUtility::GetMoneyString(cg.getUsedPrice());
             item["Price"].adjustScale();
 
             item.defineStatic("gcar", cg);
@@ -135,6 +117,8 @@ module PROJECT::ROOT
             var soldout = main::game.used_car.get(week, id);
             item.defineStatic("soldout", soldout);
             item["SoldOut"].visible = soldout;
+
+            item["dot"].visible = isCarOwned(car) && show_owned_cars;
 
             ScrollBox::SelectBox.appendChild(context, item);
         }
@@ -147,12 +131,58 @@ module PROJECT::ROOT
             last_focus = nil;
         }
 
+        if (main::game.used_car.week != week)
+        {
+            delayOpenConfirmDialog(context, context.translate(ROOT, "used cars updated"));
+            last_focus = nil;
+        }
+
+        ScrollBox::SelectBox.visible = true;
+        ScrollBox::SelectBox.actor.out = false;
+        
         ScrollBox::SelectBox.callFocus(ROOT);
+
+        ScrollBox::SelectBox.onValueChanged(context, ScrollBox::SelectBox.index);
+    }
+
+    function onInitialize(context)
+    {
+        hidden.visible = false;
+
+        var week = main::game.calendar.getElapsedWeek(100);
+        var game_zone = main::game.option.game_zone;
+
+        UsedCarModule.load("usedcar/" + game_zone + "_used%04d".format(week));
+        Title.text = context.translate(ROOT, ShopTable[current_region + "_title"]);
+        Title.adjustScale();
+
+        var bg_name = ShopTable[current_region + "_bg"];
+        Year.image_path = "image/gtmode/usedcar/" + bg_name + ".png";
+        Year.doInitialize(context);
+
+        enterPage(context, ROOT, "UsedCarTitle");
+        var tip = ROOT["Common"]["ToolTip"]["tip"];
+        tip.remove();
+        tip.value = context.translate(ROOT, "TOOLTIP|UsedCar");
+
+        var shop_name = ShopTable[current_region];
+        var car_list = UsedCarModule::UsedCarData["usedcar_" + shop_name + "_carlist"];
+        var col_list = UsedCarModule::UsedCarData["color_" + shop_name + "_carlist"];
+        var seed = (week + 11) * 100 + ShopTable[current_region + "_seed"];
+        var id_offset = ShopTable[current_region + "_offset"];
+
+        // Moved this to another thread so you aren't stuck on a black screen while the UCD populates
+        // It's no faster but it gives the impression of being more responsive
+        context.pushEvent(main::menu::MScriptEvent(context, ROOT, "loadUsedCars", [week, seed, car_list, col_list, id_offset]));
     }
 
     function onFinalize(context)
     {
+        ScrollBox::SelectBox.actor.out = true;
+        context.sync(0.15);
         ScrollBox::SelectBox.clearChildren(context);
+        var tip = ROOT["Common"]["ToolTip"]["tip"];
+        tip.value = "";
         leavePage(context, ROOT);
         UsedCarModule.clearStatic();
     }
@@ -165,11 +195,31 @@ module PROJECT::ROOT
 
         return EVENTRESULT_FILTER;
     }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
+    }
 }
 
-module PROJECT::ROOT::ScrollBox::SelectBox
+module GTmodeProject::UsedCarRoot::ScrollBox::SelectBox
 {
-    function onValueChanged(context, index) { }
+    function onValueChanged(context, index) 
+    { 
+        var tip = ROOT["Common"]["ToolTip"]["tip"];
+        var widget = SelectBox.getChild(index);
+        if (widget["col_name"] != "")
+            tip.value = "%{widget["Name"].text} - %{widget["col_name"]}";
+        else
+            tip.value = widget["Name"].text;
+    }
 
     function onActivate(context, event)
     {
@@ -181,7 +231,6 @@ module PROJECT::ROOT::ScrollBox::SelectBox
             main::sound.play("ok");
             BuyCarRoot::openUsedCar(context, widget["gcar"], widget["week"], widget["idx"], ROOT);
         }
-
         return EVENTRESULT_FILTER;
     }
 }

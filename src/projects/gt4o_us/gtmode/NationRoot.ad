@@ -10,8 +10,10 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::NationRoot
 {
+    static this_tuner = nil;
+
     function arrange(widget, idx, num, clip)
     {
         if (idx >= num)
@@ -76,8 +78,10 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+
         hidden.visible = false;
         var nation = main::game.menuRef();
+        this_tuner = nil;
         enterPageNation(context, ROOT, context.translate(ROOT, "CarTown_" + nation), nation);
         
         bg.image_path = "piece/nation_bg/" + nation + ".img";
@@ -102,13 +106,17 @@ module PROJECT::ROOT
             camera.finalize();
         }
 
-        var nike_enabled = usbcamera_connected || main::game.isCarAvailable("nike_one_04");
+        var nike_enabled = true;//usbcamera_connected || main::game.isCarAvailable("nike_one_04");
+        var pd_enabled = wonRace("pr_gtworld_1000");
         var available_num = 0;
 
         for (var i = 0; i < dealers.size; i++)
         {
             var dealer = dealers[i];
             if (dealer == "nike" && !nike_enabled)
+                continue;
+
+            if (dealer == "polyphony" && !pd_enabled)
                 continue;
 
             var listname = dealer + "_carnum";
@@ -132,6 +140,9 @@ module PROJECT::ROOT
             if (dealer == "nike" && !nike_enabled)
                 continue;
 
+            if (dealer == "polyphony" && !pd_enabled)
+                continue;
+
             var listname = dealer + "_carnum";
             if (!NewCarData.defined(listname) && !LegendCarData.defined(listname) && !CompleteCarData.defined(listname))
                 continue;
@@ -139,6 +150,12 @@ module PROJECT::ROOT
             var item = hidden::Item.doCopy();
             if (first_item == nil)
                 first_item = item;
+
+            if (dealer == discount_tuner)
+            {
+                item["discount"].text = "-%{100 - discount_pricemult}%%";
+                item["discount"].visible = true;
+            }
 
             var path = "image/piece/tuner_logo2/" + dealer + ".png";
             var title = item["title"];
@@ -157,16 +174,28 @@ module PROJECT::ROOT
                     if (tuner == dealer || tuner == subtuner)
                     {
                         item.active = true;
+                        this_tuner = item;
                         break;
                     }
                 }
             }
 
             title.adjustSize();
-            title.w *= 0.85;
-            title.h *= 0.85;
-            title.x += (item.w - title.w) * 0.5;
-            title.y += (item.h - title.h) * 0.5;
+
+            if (wide)
+            {
+                title.w *= 0.7;
+                title.h *= 0.85;
+                title.x += (item.w - title.w) * 0.5;
+                title.y += (item.h - title.h) * 0.4;
+            }
+            else
+            {
+                title.w *= 0.85;
+                title.h *= 0.85;
+                title.x += (item.w - title.w) * 0.5;
+                title.y += (item.h - title.h) * 0.5;
+            }
 
             item.defineStatic("dealer", dealer);
             arrange(item, idx, available_num, ScrollWindow::clip);
@@ -223,9 +252,29 @@ module PROJECT::ROOT
         start_page(context, TopRoot);
         return EVENTRESULT_FILTER;
     }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_R1:
+                if (this_tuner != nil && ROOT.getFocusedWidget() != this_tuner)
+                {
+                    main::sound.play("cursor");
+                    ROOT.setFocus(this_tuner);
+                }
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
+    }
 }
 
-module PROJECT::ROOT::ScrollWindow::clip::space
+module GTmodeProject::NationRoot::ScrollWindow::clip::space
 {
     function check_camera(context)
     {
@@ -291,7 +340,7 @@ module PROJECT::ROOT::ScrollWindow::clip::space
     }
 }
 
-module PROJECT::ROOT::hidden::Item
+module GTmodeProject::NationRoot::hidden::Item
 {
     function onFocusEnter(context, event)
     {

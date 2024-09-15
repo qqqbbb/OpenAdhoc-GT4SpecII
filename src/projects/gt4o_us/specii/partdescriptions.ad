@@ -1,0 +1,15 @@
+module PartDescriptions
+{
+    // Static matches car label, each item in array is category (e.g. stock, close, super close, full custom)
+    // Chevrolet
+    static gear_corvette_coupe_63 = ["", "muncie_m20", "tremec_tko", ""];
+
+    // Mercedes
+    static gear_clk55_00 = ["", "mercedes_sgs400_6spd", "mercedes_7g_tronic", ""];
+    static gear_e55_amg_02 = ["", "mercedes_sgs400_6spd", "mercedes_7g_tronic", ""];
+    static gear_sl500_02 = ["", "mercedes_sgs400_6spd", "mercedes_7g_tronic", ""];
+    static gear_sl55_amg_02 = ["", "mercedes_sgs400_6spd", "mercedes_7g_tronic", ""];
+    static gear_sl600_04 = ["", "mercedes_sgs400_6spd", "mercedes_7g_tronic", ""];
+    static gear_sl65_amg_04 = ["", "mercedes_sgs400_6spd", "mercedes_7g_tronic", ""];
+    static gear_slk230_komp_98 = ["", "mercedes_sgs400_6spd", "mercedes_7g_tronic", ""];
+}

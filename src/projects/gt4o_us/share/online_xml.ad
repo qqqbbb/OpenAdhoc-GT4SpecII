@@ -1,0 +1,16 @@
+static sEventName = [
+    "ArcadeEvent",
+    "MyCarEvent",
+    "TimeTrialEvent"
+];
+
+static sConfigName = [
+    "GameConfig",
+    "LobbyConfig",
+    "ChatConfig",
+    "FixedPhraseConfig",
+    "TAInfo"
+];
+
+static sDownloadEnable = false;
+main[]

@@ -9,7 +9,7 @@
 
 
 
-module PROJECT::ROOT
+module BootProject::LanguageRoot
 {
     function addActor(widget)
     {
@@ -19,7 +19,7 @@ module PROJECT::ROOT
 
     function onLoad(context)
     {
-        addActor(VBox::GB::bga);
+        addActor(VBox::US::bga);
         addActor(VBox::FR::bga);
         addActor(VBox::DE::bga);
         addActor(VBox::IT::bga);
@@ -28,17 +28,21 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
-        
+        // 20 years on from GT4 we're assuming 16:9 is more common than 4:3 now
+        // Important that it's done here as this screen is only seen on save creation
+        // Ensures it doesn't override the settings if someone actually does want 4:3
+        main::game.option.wide_mode = 1;
+        main::game.option.apply();
     }
 
     function onCancel(context, event, item)
     {
         main::sound.play("disabled");
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::VBox
+module BootProject::LanguageRoot::VBox
 {
     function onActivate(context, event)
     {
@@ -66,6 +70,6 @@ module PROJECT::ROOT::VBox
         main::menu::MSystem::SyncUnitWithLanguage();
         main::game.next_menu_arg = "CheckRoot";
         start_project(context, "boot");
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

@@ -10,7 +10,7 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::WheelMakerRoot
 {
     static current_dealer;
 
@@ -18,6 +18,55 @@ module PROJECT::ROOT
     {
         enterPage(context, ROOT, "WheelMakerTitle");
         Price.text = main::menu::MUtility::GetMoneyString(500);
+
+        var car = main::game.garage.riding_car;
+        var list = car.getTunerList();
+        var tuner = list[0];
+
+        // For tuner-built cars we want to override with their base manufacturer
+        switch (tuner)
+        {
+            case "fpv":
+                tuner = "ford";
+                break;
+
+            case "mines":
+                if (car.car_code == "mines_r34_00")
+                    tuner = "nissan";
+                else
+                    tuner = "mitsubishi";
+                break;
+            case "nismo":
+                tuner = "nissan";
+                break;
+        }
+
+        Pane::maker.defineStatic("tuner", tuner);
+        Pane::maker.label.text = context.translate(ROOT, "Maker Wheels").format(context.translate(ROOT, "TunerName", tuner));
+
+        // Check if data for this manufacturer's wheels exists, otherwise disable the button
+        module MakerWheelData { }
+        MakerWheelData.load("/projects/specii/makerwheelinfo");
+
+        if (MakerWheelData::MakerWheels.defined(tuner + "_carlist"))
+        {
+            Pane::maker.label.text_color = main::menu::MColorObject(0.784, 0.784, 0.784, 1.0);
+            Pane::maker.used_header.visible = true;
+            Pane::maker.used_header_disabled.visible = false;
+            Pane::maker.insensitive = false;
+            WheelShopRoot::current_list = MakerWheelData::MakerWheels[tuner + "_carlist"];
+        }
+        else
+        {
+            Pane::maker.label.text_color = main::menu::MColorObject(0.384, 0.384, 0.384, 1.0);
+            Pane::maker.used_header.visible = false;
+            Pane::maker.used_header_disabled.visible = true;
+            Pane::maker.insensitive = true;
+            WheelShopRoot::current_list = nil;
+        }
+
+        if (ROOT.defined("MakerWheelData"))
+            MakerWheelData.clearStatic();
 
         CarFace.car_garage = main::game.garage.riding_car;
         CarFace.action_type = "normal";
@@ -44,7 +93,18 @@ module PROJECT::ROOT
     function onActivate(context, event)
     {
         main::sound.play("ok");
-        WheelShopRoot::current_wheel_maker = event.widget.name;
+
+        if (event.widget.defined("tuner"))
+        {
+            WheelShopRoot::current_wheel_maker = event.widget.tuner;
+            WheelShopRoot::is_maker_wheels = true;
+        }
+        else
+        {
+            WheelShopRoot::current_wheel_maker = event.widget.name;
+            WheelShopRoot::is_maker_wheels = false
+        }
+
         start_page(context, WheelShopRoot);
         return EVENTRESULT_FILTER;
     }

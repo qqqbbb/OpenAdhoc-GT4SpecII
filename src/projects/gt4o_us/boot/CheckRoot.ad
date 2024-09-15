@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module BootProject::CheckRoot
 {
     static manager = nil;
     static watcher = nil;
@@ -22,8 +22,9 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+        print "CheckRoot start";
         if (DEMO)
-            ROOT.visible = false;
+            CheckRoot.visible = false;
 
         mode = 0;
 
@@ -34,6 +35,8 @@ module PROJECT::ROOT
 
         watcher.append();
         datasize = manager.getNewFile().size;
+
+        print "CheckRoot init done";
     }
 
     function onFinalize(context)
@@ -44,6 +47,7 @@ module PROJECT::ROOT
 
     function exitToCreateData(context)
     {
+        print "exitToCreateData";
         start_page(context, EntryRoot);
     }
 
@@ -55,7 +59,7 @@ module PROJECT::ROOT
     function onCancel(context, event, item)
     {
         main::sound.play("disabled");
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 
     static forceclosed = false;
@@ -88,7 +92,7 @@ module PROJECT::ROOT
     {
         if (manager == nil)
             return;
-            
+
         if (context.time_after_last_input > 60.0)
         {
             doTimeout = true;
@@ -149,19 +153,19 @@ module PROJECT::ROOT
             switch (mode)
             {
                 case 4:
-                    context.pushEvent(main::menu::MScriptEvent(context, ROOT, "autoload"));
+                    context.pushEvent(main::menu::MScriptEvent(context, CheckRoot, "autoload"));
                     break;
 
                 case 2:
-                    context.pushEvent(main::menu::MScriptEvent(context, ROOT, "nodata"));
+                    context.pushEvent(main::menu::MScriptEvent(context, CheckRoot, "nodata"));
                     break;
 
                 case 3:
-                    context.pushEvent(main::menu::MScriptEvent(context, ROOT, "nofree"));
+                    context.pushEvent(main::menu::MScriptEvent(context, CheckRoot, "nofree"));
                     break;
 
                 case 1:
-                    context.pushEvent(main::menu::MScriptEvent(context, ROOT, "notconnect"));
+                    context.pushEvent(main::menu::MScriptEvent(context, CheckRoot, "notconnect"));
                     break;
             }
         }
@@ -202,7 +206,7 @@ module PROJECT::ROOT
 
         if (r == "INVALID_FILE")
         {
-            if (openDialog(context, 3, context.translate(ROOT, "invalid_file_create?")))
+            if (openDialog(context, 3, context.translate(CheckRoot, "invalid_file_create?")))
             {
                 exitToCreateData(context);
                 return;
@@ -216,9 +220,9 @@ module PROJECT::ROOT
 
     function openCantPlayGT4Dialog(context)
     {
-        return openDialog(context, 3, context.translate(ROOT, "cant_play_gtmode_ok?"), nil,
-            context.translate(ROOT, "continue"),
-            context.translate(ROOT, "retry"));
+        return openDialog(context, 3, context.translate(CheckRoot, "cant_play_gtmode_ok?"), nil,
+            context.translate(CheckRoot, "continue"),
+            context.translate(CheckRoot, "retry"));
     }
 
     function nodata(context)
@@ -230,7 +234,7 @@ module PROJECT::ROOT
         }
 
         main::sound.play("ok");
-        if (openDialog(context, 1, context.translate(ROOT, "no_gt4_data_create_data_now?")))
+        if (openDialog(context, 1, context.translate(CheckRoot, "no_gt4_data_create_data_now?")))
         {
             exitToCreateData(context);
         }
@@ -253,7 +257,7 @@ module PROJECT::ROOT
         }
 
         main::sound.play("ok");
-        if (openDialog(context, 1, context.translate(ROOT, "no_free_space_need_n_byte_continue?").format(datasize)))
+        if (openDialog(context, 1, context.translate(CheckRoot, "no_free_space_need_n_byte_continue?").format(datasize)))
         {
             if (openCantPlayGT4Dialog(context))
             {
@@ -269,7 +273,7 @@ module PROJECT::ROOT
             if (forceclosed)
                 return;
 
-            openDialog(context, 0, context.translate(ROOT, "please_insert_n_byte_free_card").format(datasize));
+            openDialog(context, 0, context.translate(CheckRoot, "please_insert_n_byte_free_card").format(datasize));
         }
     }
 
@@ -282,7 +286,7 @@ module PROJECT::ROOT
         }
 
         main::sound.play("ok");
-        if (openDialog(context, 1, context.translate(ROOT, "no_card_need_n_byte_continue?").format(datasize)))
+        if (openDialog(context, 1, context.translate(CheckRoot, "no_card_need_n_byte_continue?").format(datasize)))
         {
             if (openCantPlayGT4Dialog(context))
                 exitNoSave(context);
@@ -292,7 +296,7 @@ module PROJECT::ROOT
             if (forceclosed)
                 return;
 
-            openDialog(context, 0, context.translate(ROOT, "please_insert_n_byte_free_card").format(datasize));
+            openDialog(context, 0, context.translate(CheckRoot, "please_insert_n_byte_free_card").format(datasize));
         }
     }
 }

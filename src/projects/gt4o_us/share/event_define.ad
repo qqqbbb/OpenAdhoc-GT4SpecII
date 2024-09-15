@@ -14,6 +14,7 @@
 #define EVENT_PREFIX_AMATEUR "am"
 #define EVENT_PREFIX_PROFESSIONAL "pr"
 #define EVENT_PREFIX_EXTREME "ex"
+#define EVENT_PREFIX_SPECIAL "sp"
 #define EVENT_PREFIX_RALLY_HALL "rh"
 #define EVENT_PREFIX_GERMAN "de"
 #define EVENT_PREFIX_ENGLISH "en"
@@ -59,7 +60,8 @@ module EventData
 		["tsukuba_wet", nil],
 		["nurburgring", nil],
 		["sarthe", nil],
-		["sarthe_old", nil]
+		["sarthe_old", nil],
+		//["tt_valencia", nil]
 	];
 	
 	static RoadTrackList = [
@@ -142,52 +144,60 @@ module EventData
 		EventInfo("am_mr_0000"),
 		EventInfo("am_kcar_0000"),
 		EventInfo("am_spider_0000"),
-		EventInfo("am_pickup_0000")
+		EventInfo("am_fourcyl_0000"),
+		EventInfo("am_pickup_0000"),
+		EventInfo("am_wagon_0000"),
+		EventInfo("am_sixcyl_0000"),
 	];
 	
 	static ProfessionalHallEvents = [
 		"ProfessionalHall",
 		EventInfo("pr_clubman_0000"),
-		EventInfo("pr_tuning_0500"),
+		EventInfo("pr_boxer_0000"),
 		EventInfo("pr_na_0000"),
 		EventInfo("pr_turbo_0000"),
-		EventInfo("pr_boxer_0000"),
-		EventInfo("pr_classic_0500"),
 		EventInfo("pr_compact_0500"),
+		EventInfo("pr_city_0000"),
+		EventInfo("pr_classic_0500"),
+		EventInfo("pr_tuning_0500"),
 		EventInfo("pr_supercar_0000"),
-		EventInfo("pr_gtworld_1000")
+		EventInfo("pr_clubman_race_0400"),
+		EventInfo("ex_premium_0000"),
+		EventInfo("pr_homologation_0000")		
 	];
 	
 	static ExtremeHallEvents = [
 		"ExtremeHall",
+		EventInfo("pr_gtworld_1000"),
 		EventInfo("ex_gtallstar_1000"),
-		EventInfo("ex_dream_1000"),
-		EventInfo("ex_polyphony_1000"),
-		EventInfo("ex_wind_0001"),
-		EventInfo("ex_formula_1500"),
 		EventInfo("ex_real_circuit_0000"),
-		EventInfo("ex_premium_0000")
-		
+		EventInfo("ex_eightcyl_0500"),
+		EventInfo("ex_dream_0800"),
+		EventInfo("ex_polyphony_0800"),
+		EventInfo("ex_wind_0000"),
+		EventInfo("ex_formula_1200"),	
 	];
 	
 	static EnduranceEvents = [
 		"EnduranceHall",
-		EventInfo("en_grandvalley300_0001"),
-		EventInfo("en_laguna200_0001"),
 		EventInfo("en_roadster4h_0001"),
-		EventInfo("en_r246_300_0001"),
-		EventInfo("en_ssw150_0001"),
-		EventInfo("en_nur24h_0001"),
-		EventInfo("en_nur4h_0001"),
-		EventInfo("en_suzuka1000_0001"),
+		EventInfo("en_capitan200_0001"),
 		EventInfo("en_motegi8h_0001"),
-		EventInfo("en_tsukuba9h_0001"),
+		EventInfo("en_newyork200_0001"),
+		EventInfo("en_nur4h_0001"),
+		EventInfo("en_trialmt_0001"),
+		EventInfo("en_grandvalley300_0001"),
+		EventInfo("en_midfield_0001"),
+		EventInfo("en_laguna200_0001"),
+		EventInfo("en_route5_0001"),
+		EventInfo("en_seattle_0001"),
+		EventInfo("en_r246_300_0001"),
 		EventInfo("en_sarthe24h_0001"),
-		EventInfo("en_sarthe_old24h_0001"),
 		EventInfo("en_fuji1000_0001"),
 		EventInfo("en_infinion_alms_0001"),
-		EventInfo("en_capitan200_0001"),
-		EventInfo("en_newyork200_0001")
+		EventInfo("en_nur24h_0001"),
+		EventInfo("en_ssw150_0001"),
+		EventInfo("en_suzuka1000_0001"),
 	];
 	
 	static RallyEvents = [
@@ -229,39 +239,47 @@ module EventData
 		EventInfo("rh_yosemite_dirt_h_0001"),
 		EventInfo("rh_yosemite_dirt_short_h_0001")
 	];
-	
+
+	static SpecialCarEvents = [
+		"SpecialCarHall",
+		//EventInfo("sp_roadgoing_0000"),
+		//EventInfo("sp_mazda_mx5nc_0000")
+	];
 	
 	static JapaneseRaceEvents = [
 		"RaceJapanese",
-		EventInfo("jprjapan_0500"),
-		EventInfo("jprjgtc_1000"),
+		EventInfo("jprjp_compact_0400"),
 		EventInfo("jprjp_70_0000"),
 		EventInfo("jprjp_80_0000"),
 		EventInfo("jprjp_90_0000"),
-		EventInfo("jprjp_compact_0500")
+		EventInfo("jprjapan_0500"),
+		//EventInfo("jprjgtc_0800"), // Now split into separate GT300 and GT500 champs
+		EventInfo("jp_jgtc300_0500"),
+		EventInfo("jp_jgtc500_0800")
 	];
 	
 	static AmericanRaceEvents = [
 		"RaceAmerican",
+		EventInfo("usrmuscle_old_0000"),
+		EventInfo("usrmuscle_0000"),
 		EventInfo("usrusa_0500"),
 		EventInfo("usrstar_0000"),
-		EventInfo("usrmuscle_0000"),
-		EventInfo("usrmuscle_old_0000")
+		
 	];
 	
 	static EuropeanRaceEvents = [
 		"RaceEuropean",
-		EventInfo("eureurope_0500"),
-		EventInfo("eurbritish_gt_0500"),
-		EventInfo("eurbritish_light_0000"),
-		EventInfo("eurdeu_touring_0500"),
-		EventInfo("euritaly_0000"),
-		EventInfo("eurfrench_0500"),
-		EventInfo("eureuro_classic_0500"),
-		EventInfo("eureuro_hatch_0500"),
 		EventInfo("eur1000mile_0400"),
+		EventInfo("eurbritish_light_0000"),
+		EventInfo("eurfrench_0500"),
 		EventInfo("eurschvartz_a_0000"),
-		EventInfo("eurschvartz_b_0000")
+		EventInfo("eurschvartz_b_0000"),
+		EventInfo("eureurope_0500"),
+		EventInfo("euritaly_0000"),
+		EventInfo("eureuro_classic_0500"),
+		EventInfo("eureuro_hatch_0400"),
+		EventInfo("eurbritish_gt_0500"),
+		EventInfo("eurdeu_touring_0500"),
 	];
 	
 	
@@ -281,8 +299,8 @@ module EventData
 	
 	static audiEvents = [
 		"Race_audi",
-		EventInfo("de_audi_tt_0300"),
-		EventInfo("de_audi_a3_0000")
+		EventInfo("de_audi_a3_0000"),
+		EventInfo("de_audi_tt_0300")
 	];
 	
 	static bmwEvents = [
@@ -293,8 +311,8 @@ module EventData
 	
 	static chevroletEvents = [
 		"Race_chevrolet",
-		EventInfo("us_chev_corvette_0000"),
-		EventInfo("us_chev_camaro_0000")
+		EventInfo("us_chev_camaro_0000"),
+		EventInfo("us_chev_corvette_0000")
 	];
 	
 	static chryslerEvents = [
@@ -304,19 +322,32 @@ module EventData
 	
 	static citroenEvents = [
 		"Race_citroen",
-		EventInfo("fr_citroen_2cv_0500")
+		EventInfo("fr_citroen_2cv_0000")
 	];
 	
 	static daihatsuEvents = [
 		"Race_daihatsu",
-		EventInfo("jp_daihatsu_copen_0000"),
-		EventInfo("jp_daihatsu_midget2_0000")
+		EventInfo("jp_daihatsu_midget2_0000"),
+		EventInfo("jp_daihatsu_copen_0000")
+		
 	];
+
+	static dodgeEvents = [
+		"Race_dodge",
+		EventInfo("us_dodge_viper_0000")
+	]
+
+	static fordEvents = [
+		"Race_ford",
+		EventInfo("us_ford_focus_0000"),
+		EventInfo("us_ford_mustang_0000")
+	]
 	
 	static hondaEvents = [
 		"Race_honda",
-		EventInfo("jp_honda_typer_0000"),
-		EventInfo("jp_honda_civic_0000")
+		EventInfo("jp_honda_beat_0000"),
+		EventInfo("jp_honda_civic_0000"),
+		EventInfo("jp_honda_typer_0000")
 	];
 	
 	static hyundaiEvents = [
@@ -328,18 +359,23 @@ module EventData
 		"Race_isuzu",
 		EventInfo("jp_isuzu_0000")
 	];
+
+	static jaguarEvents = [
+		"Race_jaguar",
+		EventInfo("uk_jaguar_0000")
+	]
 	
 	static lotusEvents = [
 		"Race_lotus",
-		EventInfo("uk_lotus_elise_0500"),
-		EventInfo("uk_lotus_classic_0500")
+		EventInfo("uk_lotus_classic_0000"),
+		EventInfo("uk_lotus_elise_0500")
 	];
 	
 	static mazdaEvents = [
 		"Race_mazda",
 		EventInfo("jp_mazda_rotary_0000"),
 		EventInfo("jp_mazda_roadster_0500"),
-		EventInfo("jp_mazda_rx8_0500")
+		EventInfo("jp_mazda_rx8_0000")
 	];
 	
 	static mercedesEvents = [
@@ -360,16 +396,16 @@ module EventData
 	
 	static mitsubishiEvents = [
 		"Race_mitsubishi",
-		EventInfo("jp_mitsubishi_evo_0000"),
-		EventInfo("jp_mitsubishi_mirage_0500")
+		EventInfo("jp_mitsubishi_mirage_0300"),
+		EventInfo("jp_mitsubishi_evo_0000")
 	];
 	
 	static nissanEvents = [
 		"Race_nissan",
-		EventInfo("jp_nissan_gtr_0000"),
 		EventInfo("jp_nissan_march_0000"),
 		EventInfo("jp_nissan_silvia_0000"),
-		EventInfo("jp_nissan_z_0000")
+		EventInfo("jp_nissan_z_0000"),
+		EventInfo("jp_nissan_gtr_0000")
 	];
 	
 	static opelEvents = [
@@ -389,13 +425,18 @@ module EventData
 	
 	static renaultEvents = [
 		"Race_renault",
-		EventInfo("fr_renault_clio_0500"),
-		EventInfo("fr_renault_megane_0500")
+		EventInfo("fr_renault_megane_0300"),
+		EventInfo("fr_renault_clio_0500")	
+	];
+
+	static rufEvents = [
+		"Race_ruf",
+		EventInfo("de_ruf_0000")
 	];
 	
 	static alpineEvents = [
 		"Race_alpine",
-		EventInfo("fr_renault_alpine_0500")
+		EventInfo("fr_renault_alpine_0300")
 	];
 	
 	static subaruEvents = [
@@ -428,9 +469,9 @@ module EventData
 	
 	static volkswagenEvents = [
 		"Race_volkswagen",
-		EventInfo("de_vw_beetle_0500"),
+		EventInfo("de_vw_gti_0001"),
 		EventInfo("de_vw_lupo_0500"),
-		EventInfo("de_vw_gti_0001")
+		EventInfo("de_vw_beetle_0500")
 	];
 	
 	static saleenEvents = [
@@ -454,6 +495,7 @@ module EventData
 		AmericanRaceEvents,
 		EuropeanRaceEvents,
 		RallyEvents,
+		//SpecialCarEvents,
 		EnduranceEvents,
 		alfaromeoEvents,
 		astonmartinEvents,
@@ -463,9 +505,12 @@ module EventData
 		chryslerEvents,
 		citroenEvents,
 		daihatsuEvents,
+		dodgeEvents,
+		fordEvents,
 		hondaEvents,
 		hyundaiEvents,
 		isuzuEvents,
+		jaguarEvents,
 		lotusEvents,
 		mazdaEvents,
 		mercedesEvents,
@@ -506,73 +551,74 @@ module EventData
 	
 	static CourseEvents = [
 		// Real
-		["fisco", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["fisco_old", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["infineon", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["infineon_nascar", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["laguna", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["motegi", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["motegi_east", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["motegi_west", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["new_fisco", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["new_fisco_gt", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["nurburgring", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["oval", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["suzuka", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["suzuka_east", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["suzuka_west", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["sarthe", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["sarthe_old", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["tsukuba", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["tsukuba_wet", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
+		["fisco", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["fisco_old", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["infineon", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["infineon_nascar", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["laguna", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["motegi", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["motegi_east", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["motegi_west", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["new_fisco", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["new_fisco_gt", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["nurburgring", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["oval", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["suzuka", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["suzuka_east", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["suzuka_west", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["sarthe", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["sarthe_old", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["tsukuba", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["tsukuba_wet", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		//["tt_valencia", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
 		
 		// Road
-		["apricot", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_apricot", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["autumn", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_autumn", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["deepforest", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_deepforest", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["grandvalley", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_grandvalley", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["grandvalley_east", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_grandvalley_east", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["highspeedring", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_highspeedring", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["midfield", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_midfield", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["mini", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_mini", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["trialmt", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_trialmt", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["yosemite", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_yosemite", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["apricot", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_apricot", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["autumn", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_autumn", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["deepforest", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_deepforest", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["grandvalley", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_grandvalley", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["grandvalley_east", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_grandvalley_east", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["highspeedring", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_highspeedring", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["midfield", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_midfield", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["mini", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_mini", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["trialmt", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_trialmt", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["yosemite", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_yosemite", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
 		
 		
 		// City
-		["akasaka", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_akasaka", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["assisi", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_assisi", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["capri", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_capri", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["hongkong", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_hongkong", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["montecarlo", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["newyork", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_newyork", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["paris_rally", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_paris_rally", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["paris_tarmac", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_paris_tarmac", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["route5", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_route5", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["route5_club", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_route5_club", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["seattle", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_seattle", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["seoul", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
-		["r_seoul", EventInfo("freerun", 5), EventInfo("family", 0), nil, EventInfo("photo_drive", 3)],
+		["akasaka", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_akasaka", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["assisi", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_assisi", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["capri", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_capri", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["hongkong", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_hongkong", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["montecarlo", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["newyork", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_newyork", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["paris_rally", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_paris_rally", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["paris_tarmac", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_paris_tarmac", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["route5", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_route5", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["route5_club", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_route5_club", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["seattle", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_seattle", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["seoul", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_seoul", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
 		
 		
 		// Dirt and Snow
@@ -592,10 +638,10 @@ module EventData
 		["r_yosemite_dirt_short", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
 		
 		// Driving Park
-		["kashiwa", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_kashiwa", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["20r60r", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
-		["r_20r60r", EventInfo("freerun", 5), EventInfo("family", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["kashiwa", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_kashiwa", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["20r60r", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
+		["r_20r60r", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
 		["testcourse", EventInfo("freerun", 5), nil, EventInfo("practice", 5), EventInfo("photo_drive", 3)],
 		["gymkhana_free", EventInfo("freerun", 5), nil, nil, nil]
 	];
@@ -615,7 +661,7 @@ function getEventTitle(key)
 {
 	if (!EventData.defined(key))
 		return nil;
-	
+
 	return EventData[key][0];
 }
 
@@ -623,7 +669,7 @@ function getEventInfo(key, idx)
 {
 	if (!EventData.defined(key))
 		return nil;
-	
+
 	return EventData[key][idx.toInt() + 1];
 }
 
@@ -631,7 +677,7 @@ function getEventInfoNum(key)
 {
 	if (!EventData.defined(key))
 		return nil;
-	
+
 	return EventData[key].size - 1;
 }
 
@@ -728,7 +774,7 @@ function getRaceEventRecordStatistics()
 	var win = 0;
 	var total = 0;
 	var race_score = 0;
-	
+
 	var array = EventData::AllEvents;
 	
 	for (var i = 0; i < array.size; i++)
@@ -778,20 +824,20 @@ function getRaceEventRecordStatistics()
 		mission_score += unit.best_score;	
 	}
 
-	var family_score = 0;
+	var eventgen_0000_score = 0;
 	
-	var unit = main::game.race_record.getUnit("family");
+	var unit = main::game.race_record.getUnit("eventgen_0000");
 	if (unit != nil)
 	{
-		family_score = unit.best_score;
+		eventgen_0000_score = unit.best_score;
 	}
 	else 
 	{
-		print "race code 'family' not found!?";
+		print "race code 'eventgen_0000' not found!?";
 	}
 	
 	cached_achievement = win * 1000 / total;
-	cached_aspec_score = race_score + mission_score + family_score;
+	cached_aspec_score = race_score + mission_score + eventgen_0000_score;
 	
 	return [cached_achievement, cached_aspec_score];
 }

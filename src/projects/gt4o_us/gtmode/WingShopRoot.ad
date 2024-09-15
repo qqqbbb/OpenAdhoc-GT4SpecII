@@ -12,7 +12,7 @@
 #define WING_COUNT 21
 #define WING_PRICE_DEFAULT 1200
 
-module PROJECT::ROOT
+module GTmodeProject::WingShopRoot
 {
     // Array of wing prices, [0] is revert to original so 500 Cr.
     // Default will be 1200 - to set custom prices, this array needs to be appended to.
@@ -92,11 +92,13 @@ module PROJECT::ROOT
 
     function onKeyPress(context, event)
     {
-        switch (event.keysym) 
+        switch (event.keysym)
         {
-
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
         }
-
         return EVENTRESULT_CONTINUE;
     }
 
@@ -167,12 +169,12 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::ScrollBox::SelectBox
+module GTmodeProject::WingShopRoot::ScrollBox::SelectBox
 {
     function onValueChanged(context, index) { }
 }
 
-module PROJECT::ROOT::hidden::Item
+module GTmodeProject::WingShopRoot::hidden::Item
 {
     function onFocusEnter(context, event)
     {

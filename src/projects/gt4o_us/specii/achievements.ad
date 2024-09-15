@@ -1,0 +1,6 @@
+module AchievementData 
+{
+    static achievements = [
+        ["Aspiring Rookie", "Earn 1000 A Spec points."]
+    ];
+}

@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::RaceRoot
 {
     function open(context)
     {
@@ -28,9 +28,15 @@ module PROJECT::ROOT
     {
         var option = main::game.option;
         Pane::Transmission::OptionMenu.setIndex(context, 1 - option.automatic_gear);
-        Pane::DisplayType::OptionMenu.setIndex(context, option.race_display_config);
+        Pane::Config::OptionMenu.setIndex(context, option.race_display_config);
+        Pane::Meter::OptionMenu.setIndex(context, 1 - option.race_display_meter);
+        Pane::GMeter::OptionMenu.setIndex(context, 1 - option.race_display_g_meter);
+        Pane::Lap::OptionMenu.setIndex(context, 1 - option.race_display_lap);
+        Pane::SuggestedGear::OptionMenu.setIndex(context, 1 - option.race_display_suggested_gear);
         Pane::Map::OptionMenu.setIndex(context, 1 - option.race_display_map);
         Pane::Steering::OptionMenu.setIndex(context, 1 - option.race_display_steering);
+
+        toggleSubOptions(context)
     }
 
     function apply()
@@ -39,28 +45,14 @@ module PROJECT::ROOT
         var option = main::game.option;
 
         option.automatic_gear = 1 - Pane::Transmission::OptionMenu.index;
-        if (!Pane::DisplayType::OptionMenu.index)
-        {
-            option.race_display_config = false;
-            option.race_display_meter = true;
-            option.race_display_time = true;
-            option.race_display_lap = true;
-            option.race_display_position = true;
-            option.race_display_car_name = true;
-            option.race_display_suggested_gear = true;
-            option.race_display_g_meter = true;
-        }
-        else
-        {
-            option.race_display_config = true;
-            option.race_display_meter = true;
-            option.race_display_time = true;
-            option.race_display_lap = false;
-            option.race_display_position = true;
-            option.race_display_car_name = false;
-            option.race_display_suggested_gear = false;
-            option.race_display_g_meter = false;
-        }
+        // We're storing automatic_gear twice, this time in an option variable that appears to be unused
+        // Means we can revert if a CVT or auto-only car has fiddled with the automatic setting
+        option.race_display_car_name = option.automatic_gear;
+        option.race_display_config = Pane::Config::OptionMenu.index;
+        option.race_display_meter = 1 - Pane::Meter::OptionMenu.index;
+        option.race_display_g_meter = 1 - Pane::GMeter::OptionMenu.index;
+        option.race_display_lap = 1 - Pane::Lap::OptionMenu.index;
+        option.race_display_suggested_gear = 1 - Pane::SuggestedGear::OptionMenu.index;
 
         option.race_display_map = 1 - Pane::Map::OptionMenu.index;
         option.race_display_steering = 1 - Pane::Steering::OptionMenu.index;
@@ -72,7 +64,7 @@ module PROJECT::ROOT
         reflect(context);
     }
 
-    function onFinalize(context)
+    function onFinalize()
     {
 
     }
@@ -81,27 +73,51 @@ module PROJECT::ROOT
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
+    }
+
+    function toggleSubOptions(context)
+    {
+        if (Pane::Meter::OptionMenu.index == 1)
+        {
+            Pane::GMeter::OptionMenu.setIndex(context, 1);
+            Pane::GMeter::OptionMenu.insensitive = true;
+            Pane::SuggestedGear::OptionMenu.setIndex(context, 1);
+            Pane::SuggestedGear::OptionMenu.insensitive = true;
+        }
+        else
+        {
+            Pane::GMeter::OptionMenu.insensitive = false;
+            Pane::SuggestedGear::OptionMenu.insensitive = false;
+        }
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::RaceRoot::Pane::Meter::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        toggleSubOptions(context);
+    }
+}
+
+module OptionProject::RaceRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::RaceRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply();
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

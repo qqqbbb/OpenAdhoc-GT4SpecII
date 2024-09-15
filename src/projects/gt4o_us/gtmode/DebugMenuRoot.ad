@@ -1,0 +1,933 @@
+module GTmodeProject::DebugMenuRoot
+{
+    #include "../share/parts_shop_name.ad"
+
+    class DebugOption
+    {
+        attribute label;
+        attribute func;
+        attribute params;
+
+        method __init__(lb, fc, pr)
+        {
+            label = lb;
+            func = fc;
+            params = pr;
+        }
+    }
+
+    function clearGarage(context)
+    {
+        //logInfo(params);
+        //main::sound.play("ok");
+        if (openConfirmDialog(context, 1, "Clear garage? Current car will remain"))
+            if (openConfirmDialog(context, 1, "Are you sure?"))
+            {
+                main::game.garage.delAllCarExceptRidingCar();
+                refreshOwnedCars();
+            }
+    }
+
+    function adjustCredits(context, params)
+    {
+        var [amount, set] = params;
+
+        if (set == nil)
+            set = false;
+
+        //openConfirmDialog(context, 0, "Current credits: %{main::game.money}");
+
+        if (set)
+            main::game.money = amount;
+        else
+            main::game.incMoney(amount);
+
+        logInfo("New credits: %{main::game.money}");
+    }
+
+    function goToPaintCar(context)
+    {
+        context.unloadGpb("PresentRoot");
+        CarPaintRoot::from_debug = true;
+        start_page(context, CarPaintRoot);
+    }
+
+    function getCurrentWheel(context)
+    {
+        openConfirmDialog(context, 0, main::game.garage.riding_car.getCurrentWheel());
+    }
+
+    function getCurrentWing(context)
+    {
+        openConfirmDialog(context, 0, main::game.garage.riding_car.getCurrentWing());
+    }
+
+    function addCarToGarage(context, car_label)
+    {
+        if (openConfirmDialog(context, 0, "Add %{car_label} to garage?"))
+            main::game.garage.addNewCar(car_label, 0);
+    }
+
+    function viewCarDesc(context, car_label)
+    {
+        var current_car_desc = "";
+        var did = main::menu::MCarData::GetDescriptionID(car_label);
+
+        if (did > 0 || (did == 0 && car_label == "xb_15z_x_2wd_03"))
+        {
+            current_car_desc = context.getUpdateContext().loadFile("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+            logInfo("H:/GT Extract/GT4/GT4OLUS/VOL_extract/textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+            DescriptionPopup::open(context, current_car_desc);
+        }
+        else
+        {
+            openConfirmDialog(context, 2, "Car description ID is 0");
+        }
+    }
+
+    function viewEventInfo(context, race_code)
+    {
+        var prize;
+        var prizeEvents = PresentData::detail_carlist;
+        for (var i = 0; i < prizeEvents.size; i++)
+        {
+            if (prizeEvents[i] == race_code)
+            {
+                prize = PresentData::content_carlist[i];
+                break;
+            }
+        }
+
+        if (prize == nil || prize == "")
+            return;
+
+        openConfirmDialog(context, 0, "%{race_code} awards %{prize}");
+    }
+
+    function viewPrizeInfo(context, params)
+    {
+        openConfirmDialog(context, 0, "%{main::menu::MCarData::GetCarName(params[0])} is awarded from %{getEventNameByRaceCode(context, ROOT, params[1])}");
+    }
+
+    function openCarsMenu(context, onActivateFunc)
+    {
+        SubMenu.clearChildren(context);
+        for (var i = 0; i < PresentData::allcars_carlist.size; i++)
+        {
+            var item = MenuItem.doCopy();
+            item.defineStatic("label", PresentData::allcars_carlist[i]);
+            item.defineStatic("func", onActivateFunc);
+            item.defineStatic("params", PresentData::allcars_carlist[i]);
+
+            item.Label.text = item["label"];
+
+            item.visible = true;
+            SubMenu.appendChild(context, item);
+        }
+        SubMenu.visible = true;
+        SubMenu.index = 0;
+        SubMenu.callFocus(ROOT);
+    }
+
+    function openCategoriesMenu(context, onActivateFunc)
+    {
+        module CarCategoryModule { }
+        CarCategoryModule.load("/projects/specii/carcategories");
+
+        SubMenu.clearChildren(context);
+        var categories = CarCategoryModule::CarCategories["categories"];
+        for (var i = 0; i < categories.size; i++)
+        {
+            var item = MenuItem.doCopy();
+            item.defineStatic("label", categories[i]);
+            item.defineStatic("func", onActivateFunc);
+            item.defineStatic("params", categories[i]);
+
+            item.Label.text = item["label"];
+
+            item.visible = true;
+            SubMenu.appendChild(context, item);
+        }
+        SubMenu.visible = true;
+        SubMenu.index = 0;
+        SubMenu.callFocus(ROOT);
+    }
+
+    function checkCategory(context, car)
+    {
+        openConfirmDialog(context, 0, getCarCategory(car.car_code));
+        print isCarInCategory(car.car_code, "rally");
+    }
+
+    function openHallsMenu(context, onActivateFunc)
+    {
+        SubMenu.clearChildren(context);
+        var halls = [
+            "BeginnerHallEvents",
+		    "ProfessionalHallEvents",
+		    "ExtremeHallEvents",
+		    "JapaneseRaceEvents",
+		    "AmericanRaceEvents",
+		    "EuropeanRaceEvents",
+		    "RallyEvents",
+		    "EnduranceEvents",
+        ];
+
+        for (var i = 0; i < halls.size; i++)
+        {
+            var item = MenuItem.doCopy();
+            item.defineStatic("label", halls[i]);
+            item.defineStatic("func", onActivateFunc);
+            item.defineStatic("params", halls[i]);
+
+            item.Label.text = item["label"];
+
+            item.visible = true;
+            SubMenu.appendChild(context, item);
+        }
+
+        SubMenu.visible = true;
+        SubMenu.index = 0;
+        SubMenu.callFocus(ROOT);
+    }
+
+    function checkHallComplete(context, hall)
+    {
+        return isHallComplete(hall);
+    }
+
+    function openEventsMenu(context, onActivateFunc)
+    {
+        SubMenu.clearChildren(context);
+        var events = EventData::AllEvents;
+        for (var i = 0; i < events.size; i++)
+        {
+            var event = events[i]
+            for (var j = 1; j < event.size; j++)
+            {
+                var item = MenuItem.doCopy();
+                item.defineStatic("label", event[j].race_code);
+                item.defineStatic("func", onActivateFunc);
+                item.defineStatic("params", event[j].race_code);
+
+                item.Label.text = item["label"];
+
+                item.visible = true;
+                SubMenu.appendChild(context, item);
+            }       
+        }
+        SubMenu.visible = true;
+        SubMenu.index = 0;
+        SubMenu.callFocus(ROOT);
+    }
+
+    function openEventPrizesMenu(context, onActivateFunc)
+    {
+        SubMenu.clearChildren(context);
+        var prizes = PresentData::content_carlist;
+        for (var i = 0; i < prizes.size; i++)
+        {
+            var event = PresentData::detail_carlist[i];
+            var item = MenuItem.doCopy();
+            item.w *= 1.5;
+            item.defineStatic("label", prizes[i]);
+            item.defineStatic("func", onActivateFunc);
+            item.defineStatic("params", [prizes[i], event]);
+
+            item.Label.text = item["label"];
+            item.Value.text = event;
+
+            item.visible = true;
+            SubMenu.appendChild(context, item);
+        }
+        SubMenu.visible = true;
+        SubMenu.index = 0;
+        SubMenu.callFocus(ROOT);
+    }
+
+    function checkDuplicatePrizes(context, onActivateFunc)
+    {
+        var cars = PresentData::content_carlist;
+        var list = "";
+        var alreadyChecked = [];
+
+        for (var i = 0; i < cars.size; i++)
+        {
+            var car = cars[i];
+            var count = 0;
+            var skip = false;
+
+            for (var j = 0; j < alreadyChecked.size; j++)
+            {
+                if (alreadyChecked[j] == car)
+                {
+                    skip = true;
+                    break;
+                }
+            }
+
+            if (skip)
+                continue;
+
+
+            for (var k = 0; k < cars.size; k++)
+            {
+                if (cars[k] == car)
+                    count++;
+            }
+
+            alreadyChecked.push(car);
+
+            if (count > 1)
+            {
+                var item = MenuItem.doCopy();
+                item.w *= 1.5;
+                item.defineStatic("label", "%{car} (%{count} occurrences)");
+                item.defineStatic("func", onActivateFunc);
+                item.defineStatic("params", car);
+
+                item.Label.text = item["label"];
+
+                item.visible = true;
+                SubMenu.appendChild(context, item);
+            }
+        }
+
+        SubMenu.visible = true;
+        SubMenu.index = 0;
+        SubMenu.callFocus(ROOT);
+    }
+
+    function viewDuplicateOccurrences(context, car)
+    {
+        var cars = PresentData::content_carlist;
+        var events = PresentData::detail_carlist;
+        var conditions = PresentData::condition_carlist;
+
+        var carName = main::menu::MCarData::GetCarName(car)
+        var msg = "%{carName} is awarded from:\n";
+        var idxs = [];
+
+        for (var i = 0; i < cars.size; i++)
+        {
+            if (cars[i] == car)
+                idxs.push(i);
+        }
+
+        for (var i = 0; i < idxs.size; i++)
+        {
+            msg += "  - %{conditions[idxs[i]]} %{events[idxs[i]]}\n";
+        }
+
+        openConfirmDialog(context, 0, msg);
+    }
+
+    function comparePrizeLists(context)
+    {
+        var detail_carlist_orig = [
+            "am_sunday_0000",
+            "am_ff_0000",
+            "am_fr_0000",
+            "am_4wd_0000",
+            "am_mr_0000",
+            "am_kcar_0000",
+            "am_spider_0000",
+            "am_pickup_0000",
+            "pr_clubman_0000",
+            "pr_tuning_0500",
+            "pr_na_0000",
+            "pr_turbo_0000",
+            "pr_boxer_0000",
+            "pr_classic_0500",
+            "pr_compact_0500",
+            "pr_supercar_0000",
+            "pr_gtworld_1000",
+            "ex_gtallstar_1000",
+            "ex_dream_1000",
+            "ex_polyphony_1000",
+            "ex_wind_0000",
+            "ex_formula_1500",
+            "ex_real_circuit_0000",
+            "ex_premium_0000",
+            "ex_roadgoing_0000",
+            "en_grandvalley300_0000",
+            "en_laguna200_0000",
+            "en_roadster4h_0000",
+            "en_r246_300_0000",
+            "en_ssw150_0000",
+            "en_nur24h_0000",
+            "en_nur4h_0000",
+            "en_suzuka1000_0000",
+            "en_motegi8h_0000",
+            "en_tsukuba9h_0000",
+            "en_sarthe24h_0000",
+            "en_sarthe_old24h_0000",
+            "en_fuji1000_0000",
+            "en_infinion_alms_0000",
+            "en_capitan200_0000",
+            "en_newyork200_0000",
+            "eureurope_0500",
+            "eurbritish_gt_0500",
+            "eurbritish_light_0000",
+            "eurdeu_touring_0500",
+            "euritaly_0000",
+            "eurfrench_0500",
+            "eureuro_classic_0500",
+            "eureuro_hatch_0500",
+            "eur1000mile_0400",
+            "eurschvartz_a_0000",
+            "eurschvartz_b_0000",
+            "usrusa_0500",
+            "usrstar_0000",
+            "usrmuscle_0000",
+            "usrmuscle_old_0000",
+            "jprjapan_0500",
+            "jprjgtc_1000",
+            "jprjp_70_0000",
+            "jprjp_80_0000",
+            "jprjp_90_0000",
+            "jprjp_compact_0500",
+            "it_alfa_gta_0000",
+            "uk_aston_0000",
+            "uk_lotus_elise_0500",
+            "uk_lotus_classic_0500",
+            "uk_mg_0000",
+            "uk_triumph_spitfire_0000",
+            "uk_tvr_0000",
+            "de_audi_tt_0300",
+            "de_audi_a3_0000",
+            "de_bmw1_0000",
+            "de_bmw_m_0500",
+            "de_mercedes_arrow_0000",
+            "de_mercedes_sl_0000",
+            "de_mini_0000",
+            "de_opel_speed_0000",
+            "de_vw_beetle_0500",
+            "de_vw_lupo_0500",
+            "de_vw_gti_0000",
+            "us_chev_corvette_0000",
+            "us_chev_camaro_0000",
+            "us_chry_crossfire_0000",
+            "us_saleen_s7_0000",
+            "us_shelby_cobra_0000",
+            "fr_citroen_2cv_0500",
+            "fr_peugeot_206_0000",
+            "fr_renault_clio_0500",
+            "fr_renault_megane_0500",
+            "fr_renault_alpine_0500",
+            "jp_daihatsu_copen_0000",
+            "jp_daihatsu_midget2_0000",
+            "jp_honda_typer_0000",
+            "jp_honda_civic_0000",
+            "jp_isuzu_0000",
+            "jp_mazda_rotary_0000",
+            "jp_mazda_roadster_0500",
+            "jp_mazda_rx8_0500",
+            "jp_mitsubishi_mirage_0500",
+            "jp_mitsubishi_evo_0000",
+            "jp_nissan_gtr_0000",
+            "jp_nissan_march_0000",
+            "jp_nissan_silvia_0000",
+            "jp_nissan_z_0000",
+            "jp_subaru_360_0000",
+            "jp_subaru_4wd_0500",
+            "jp_suzuki_k_0000",
+            "jp_suzuki_concept_0000",
+            "jp_toyota_altezza_0000",
+            "jp_toyota_vitz_0000",
+            "kr_hyundai_sport_0000",
+            "l0b",
+            "l0a",
+            "lib",
+            "lia",
+            "l0s",
+            "l0b",
+            "l0a",
+            "lib",
+            "lia",
+            "l0s",
+            "l0b",
+            "l0a",
+            "lib",
+            "lia",
+            "l0s",
+            "l0b",
+            "l0a",
+            "lib",
+            "lia",
+            "l0s",
+            "rh_assisi_e_0000",
+            "rh_assisi_n_0000",
+            "rh_assisi_h_0000",
+            "rh_capri_e_0000",
+            "rh_capri_n_0000",
+            "rh_capri_h_0000",
+            "rh_grandcanyon_e_0000",
+            "rh_grandcanyon_n_0000",
+            "rh_grandcanyon_h_0000",
+            "rh_icerace_e_0000",
+            "rh_icerace_n_0000",
+            "rh_icerace_h_0000",
+            "rh_nursnow_e_0000",
+            "rh_nursnow_n_0000",
+            "rh_nursnow_h_0000",
+            "rh_paris_rally_e_0000",
+            "rh_paris_rally_n_0000",
+            "rh_paris_rally_h_0000",
+            "rh_smtsouth_e_0000",
+            "rh_smtsouth_n_0000",
+            "rh_smtsouth_h_0000",
+            "rh_tahiti_maze_e_0000",
+            "rh_tahiti_maze_n_0000",
+            "rh_tahiti_maze_h_0000",
+            "rh_tsukuba_wet_e_0000",
+            "rh_tsukuba_wet_n_0000",
+            "rh_tsukuba_wet_h_0000",
+            "rh_yosemite_dirt_e_0000",
+            "rh_yosemite_dirt_n_0000",
+            "rh_yosemite_dirt_h_0000",
+            "rh_yosemite_dirt_short_e_0000",
+            "rh_yosemite_dirt_short_n_0000",
+            "rh_yosemite_dirt_short_h_0000",
+            "1,10",
+            "11,20",
+            "21,24",
+            "25,29",
+            "30,34",
+            "25",
+            "50",
+            "100"
+        ];
+
+        var content_carlist_orig = [
+            "a112_abarth_79",
+            "mazda6_tmv_01",
+            "skyline_2000gtb_67",
+            "mtr_gmv_04",
+            "esprit_turbo_hc_87",
+            "ginetta_g4_64",
+            "prowler_02",
+            "silverado_sst_02",
+            "mazdaspeed_6_05",
+            "stream_z_04",
+            "nsx_r_01",
+            "murao_rx7_03",
+            "ctr_87",
+            "motor_carriage_886",
+            "s800_rsc_68",
+            "cizeta_v16t_94",
+            "ford_gt_lm_sp2_04",
+            "mclaren_f1_gtr_long_97",
+            "gtr_concept_lm_01",
+            "opera_s2000_04",
+            "w12_tmv_01",
+            "sauber_mercedes_c9_89",
+            "r34_gtr_v_gtcolor_pc_01",
+            "ford_gt_no_stripe_05",
+            "caterham_7_fb_02",
+            "autounion_v16_typec_sl_37",
+            "gt40_race_69",
+            "rx7_lm_race_00",
+            "fto_lm_race_00",
+            "nsx_r_proto_lm_01",
+            "formula_gran_turismo_04",
+            "chaparral_2d_race_67",
+            "storm_v12_race_99",
+            "nsx_r_proto_lm_road_01",
+            "calsonic_skyline_gtr_gpa_93",
+            "r8_race_01",
+            "exp_speed8_03",
+            "r92cp_92",
+            "ford_gt_concept_gulf_02",
+            "minolta_toyota_88cv_89",
+            "charger_superbee_426_hemi_71",
+            "xj220_gt_race_92",
+            "e_type_coupe_61",
+            "europa_special_71",
+            "clk_gtr_race_98",
+            "_155_v6ti_dtm_93",
+            "_2cv_typea_54",
+            "patent_motor_wagen_886",
+            "_240_glt_estate_88",
+            "giulia_sprint_s_63",
+            "m3_gtr_alms_01",
+            "_190e_evo2_dtm_92",
+            "corvette_convertible_54",
+            "camaro_race_00",
+            "chevelle_ss_454_ls6_70",
+            "roadrunner_superbird_70",
+            "_350z_lm_us_02",
+            "motul_pitwork_z_04",
+            "kpgc10_skyline_gtr_70",
+            "hsr2_concept_89",
+            "nismo400r_96",
+            "life_step_van_72",
+            "giulia_sprint_gta_65",
+            "db9_03",
+            "elise_type72_01",
+            "elan_s1_62",
+            "mgf_vvc_97",
+            "spitfire_1500_74",
+            "cerbera_speed12_00",
+            "lemans_quattro_03",
+            "pikespeak_quattro_03",
+            "_2002_turbo_73",
+            "m3_gtr_str_03",
+            "clk_race_00",
+            "_300sl_coupe_54",
+            "mini_marcos_gt_70",
+            "opel_calibra_race_94",
+            "_1100_standard_type11_49",
+            "karmann_ghia_type1_1500_68",
+            "golf_gti_76",
+            "corvette_z06_race_63",
+            "camaro_irocz_88",
+            "viper_gtsr_00",
+            "nike_one_04",
+            "gt350_r_65",
+            "_2cv_typea_54",
+            "_205_t16_rally_85",
+            "clio_sport_race_00",
+            "avantime_30_v6_bvm6_02",
+            "alpine_a110_16s_73",
+            "storia_x4_98",
+            "midget_mp5_63",
+            "acura_hsc_04",
+            "mugen_motul_civic_87",
+            "_117_coupe_68",
+            "_110s_67",
+            "mazda_suv_concept_05",
+            "rx8_lm_01",
+            "i_concept_03",
+            "lancer_1600gsr_rally_74",
+            "nismo_gtr_lm_95",
+            "mm_r_tmv_01",
+            "sileighty_xx",
+            "_240zg_71",
+            "_360_58",
+            "impreza_lm_race_00",
+            "concept_s2_03",
+            "gsx_r_4_tmv_01",
+            "altezza_lm_race_00",
+            "vitz_rs_turbo_02",
+            "clix_concept_01",
+            "-",
+            "-",
+            "-",
+            "-",
+            "-",
+            "lupo_14_02",
+            "sunfire_gxp_02",
+            "nike_one_04",
+            "nismo270r_94",
+            "cougar_xr7_67",
+            "kusabi_concept_03",
+            "acura_dnx_02",
+            "rx8_tmv_01",
+            "gtr_concept_tmv_01",
+            "solstice_dmv_02",
+            "s500_63",
+            "r34_gtr_v_gtcolor_01",
+            "interceptor_mk3_74",
+            "dome_zero_78",
+            "model_t_tourer_15",
+            "cien_dmv_02",
+            "delta_hf_integrale_wrc_92",
+            "delta_s4_wrc_85",
+            "rsc_tmv_lm_01",
+            "impreza_wrc_prot_01",
+            "rs200_rally_85",
+            "rs200_84",
+            "cz3_tar_wrc_01",
+            "starion_4wd_gpb_84",
+            "rsc_tmv_01",
+            "lancer_evo4_wrc_97",
+            "bluebird_1600sss_rally_69",
+            "infiniti_fx45_dmv_02",
+            "impreza_wrc_01",
+            "stratos_wrc_77",
+            "a310_1600ve_73",
+            "_5_maxi_turbo_rally_85",
+            "_205_t16_wrc_ev2_86",
+            "cz3_tar_tmv_01",
+            "celica_wrc_95",
+            "_240rs_gpb_rally_85",
+            "_5_turbo_80",
+            "escort_wrc_98",
+            "pajero_parisdakar_rally_85",
+            "rx8_concept_01",
+            "mazda6_tmv_n1_01",
+            "ford_gt_concept_dmv_02",
+            "land_range_stormer_04",
+            "impreza_wrc_99",
+            "escudo_pikespeak_98",
+            "hcd6_concept_01",
+            "celica_st185_wrc_95",
+            "pajero_evo_sp_03",
+            "dmc12_stage2_04",
+            "tank_car_03",
+            "zonda_race_00",
+            "toyota7_70",
+            "r89c_89",
+            "nuvolari_quattro_03",
+            "xjr9_race_88",
+            "formula_gran_turismo_04",
+        ];
+
+        var cars = PresentData::content_carlist;
+        var events = PresentData::detail_carlist;
+        var found = false;
+        var prize_idx = 0;
+
+        for (var i = 0; i < events.size; i++)
+        {
+            found = false;
+            prize_idx = 0;
+
+            for (var j = 0; j < detail_carlist_orig.size; j++)
+            {
+                //print "%{events[i]} -> %{detail_carlist_orig[j]}";
+                if (events[i] == detail_carlist_orig[j])
+                {
+                    //print "Match: %{events[i]} -> %{detail_carlist_orig[j]}";
+                    found = true;
+                    prize_idx = j;
+                    break;
+                }
+            }
+
+            if (!found)
+                print "%{events[i]} not found in original list";
+            else
+            {
+                //print "%{events[i]} current prize = %{cars[i]}, original prize = %{content_carlist_orig[prize_idx]}";
+                if (cars[i] == content_carlist_orig[prize_idx])
+                    print "%{events[i]} prize unchanged (%{cars[i]})";
+            }
+        }
+    }
+
+    function fillCar(context)
+    {
+        var garage = main::game.garage;
+        for (var i = 0; i < PresentData::allcars_carlist.size; i++)
+        {
+            var car = PresentData::allcars_carlist[i];
+            var col = 0;
+            garage.addNewCar(car, col);
+            main::game.setCarAvailable(car);
+        }
+    }
+
+    function changeScreenMode(context, mode)
+    {
+        main::game.option.race_display_mode = mode;
+        main::game.option.applyRaceDisplayMode();
+    }
+
+    static buttons = [
+        DebugOption("Clear garage", clearGarage, ["test"]),
+        DebugOption("Set credits to 0", adjustCredits, [0, true]),
+        DebugOption("Increase credits by 100,000", adjustCredits, [100000, false]),
+        DebugOption("Increase credits by 1,000,000", adjustCredits, [1000000, false]),
+        DebugOption("Check unobtainable cars", checkPrizeCars),
+        DebugOption("Reload carlist script file", reloadCarList),
+        DebugOption("Add all cars to garage", fillCar),
+        DebugOption("View prizes by event >>", openEventsMenu, viewEventInfo),
+        DebugOption("View events by prize >>", openEventPrizesMenu, viewPrizeInfo),
+        DebugOption("Add car to garage >>", openCarsMenu, addCarToGarage),
+        DebugOption("View car descriptions >>", openCarsMenu, viewCarDesc),
+        DebugOption("Car category info >>", openCategoriesMenu),
+        DebugOption("Get current car category", checkCategory, main::game.garage.riding_car),
+        DebugOption("Compare prize lists", comparePrizeLists),
+        DebugOption("Check duplicate prizes >>", checkDuplicatePrizes, viewDuplicateOccurrences),
+        DebugOption("Check Event Hall completion >>", openHallsMenu, checkHallComplete),
+        //DebugOption("Copy garage car test", copyGarageCar),
+        //DebugOption("Show current wheel info", getCurrentWheel),
+        //DebugOption("Show current wing info", getCurrentWing),
+        //DebugOption("CarPaintRoot", goToPaintCar),
+        //DebugOption("Force interlaced", changeScreenMode, ["normal"]),
+        //DebugOption("Force 480p", changeScreenMode, ["480p"]),
+        //DebugOption("Force 1080i", changeScreenMode, ["1080i"])
+    ];
+
+    function setCarFace(cg)
+    {
+        //CarFace.car_garage = cg;
+        //logInfo("CarFace new car: %{cg.car_code}");
+        CarFace.car_model.ry = 150.0;
+
+        CarFace.action_type = "normal";
+        CarFace.quality_level = 0;
+        //CarFace.mirror = false;
+        //CarFace.loadModelSet("image/gtmode/home/garageShadow.mdl");
+
+        var carface = CarFace;
+        carface.car_model.independent = true;
+
+        CarFace::move_car(0, 0);
+    }
+
+    function onInitialize(context)
+    {
+        Menu.clearChildren(context);
+        main::sound.keepMusic("MAP");
+        
+        setCarFace(main::game.garage.riding_car);
+
+        for (var i = 0; i < buttons.size; i++)
+        {
+            var item = MenuItem.doCopy();
+            item.defineStatic("label", buttons[i].label);
+            item.defineStatic("func", buttons[i].func);
+            item.defineStatic("params", buttons[i].params);
+
+            item.Label.text = item["label"];
+
+            item.visible = true;
+            Menu.appendChild(context, item);
+        }
+    }
+
+    function onCancel(context, event)
+    {
+        main::sound.play("cancel");
+
+        if (SubMenu.visible)
+        {
+            SubMenu.clearChildren(context);
+            SubMenu.visible = false;
+            Menu.callFocus(ROOT);
+            return EVENTRESULT_FILTER;
+        }
+
+        start_page(context, TopRoot);
+
+        return EVENTRESULT_FILTER
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_L1:
+                main::sound.play("ok");
+                var cars = PresentData::content_carlist;
+                var events = PresentData::detail_carlist;
+                for (var i = 0; i < cars.size; i++)
+                    print "\n\"%{cars[i]}\",    // %{context.translate(ROOT, "EventName", events[i].substr(0, events[i].size - 5))}\n";
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }
+}
+
+module GTmodeProject::DebugMenuRoot::CarFace
+{
+    function move_car(phase, warp)
+    {
+        if (CarFace.car_model != nil)
+        {
+            if (phase == false)
+            {
+                CarFace.car_model.motion = 1;
+                if (warp == true)
+                {
+                    CarFace.car_model.tz = 8.5;
+                    CarFace.car_model.ry = 180.0;
+                    CarFace.car_model.warp();
+                }
+
+                CarFace.car_model.tx = 0.0;
+                CarFace.car_model.tz = 0.0;
+                CarFace.car_model.posInterpolateSpeed = 0.025;
+            }
+            else
+            {
+                CarFace.car_model.motion = 2;
+                CarFace.car_model.tx = -0.9;
+                CarFace.car_model.tz = 1.6;
+                CarFace.car_model.ry = 185.5;
+                CarFace.car_model.posInterpolateSpeed = 0.1;
+
+                if (warp == true)
+                    CarFace.car_model.warp();
+            }
+        }
+    }
+}
+
+module GTmodeProject::DebugMenuRoot::Menu
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        var w = ROOT.getFocusedWidget();
+
+        if (w != nil)
+        {
+            if (w.defined("func"))
+            {
+                var func = w["func"];
+                var params = w["params"];
+
+                if (func != nil)
+                    func(context, params);
+            }
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }
+}
+
+module GTmodeProject::DebugMenuRoot::SubMenu
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        var w = ROOT.getFocusedWidget();
+
+        if (w != nil)
+        {
+            if (w.defined("func"))
+            {
+                var func = w["func"];
+                var params = w["params"];
+
+                if (func != nil)
+                    func(context, params);
+            }
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_L3_LEFT:
+                SubMenu.index -= 10;
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_L3_RIGHT:
+                SubMenu.index += 10;
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }
+}
+
+module GTmodeProject::DebugMenuRoot::MenuItem
+{
+    function onFocusEnter(context)
+    {
+        main::sound.play("cursor");
+
+        return EVENTRESULT_CONTINUE;
+    }
+}

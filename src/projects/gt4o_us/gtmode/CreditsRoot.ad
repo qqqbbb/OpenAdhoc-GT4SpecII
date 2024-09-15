@@ -1,0 +1,18 @@
+module GTmodeProject::CreditsRoot
+{
+    function onCancel(context)
+    {
+        main::sound.play("cancel");
+        context.cursor_visible = true;
+        HomeRoot::open(context);
+        return EVENTRESULT_FILTER;
+    }
+
+    function onInitialize(context)
+    {
+        context.cursor_visible = false;
+        var description = main::menu::MGpb("description/US/US_description.gpb");
+        var desc = description.get("%08d".format(120 / 2));
+        Credits.text = desc;
+    }
+}

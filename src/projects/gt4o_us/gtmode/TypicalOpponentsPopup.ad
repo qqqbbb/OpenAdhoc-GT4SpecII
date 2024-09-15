@@ -1,0 +1,112 @@
+
+
+
+
+
+
+
+
+
+
+
+
+module GTmodeProject::TypicalOpponentsPopup
+{
+    function setMoveActor(widget)
+    {
+        var actor = main::menu::MMoveActor(widget, widget.x, 480.0);
+        widget.actor = actor;
+        widget.actor.ratio = 0.2;
+    }
+
+    function setFadeActorRoot()
+    {
+        var actor = main::menu::MFadeActor(ROOT, 1.0);
+        actor.repeat = false;
+        actor.period = 0.5;
+        ROOT.actor = actor;
+    }
+
+    setMoveActor(Pane);
+    setFadeActorRoot();
+
+    static orig_x = Pane["Description"]["col1"].scale_x;
+    static orig_y = Pane["Description"]["col1"].scale_y;
+
+    function open(context, col1text, col2text, title)
+    {
+        if (title != nil)
+            Pane["Title"]["label"].text = title;
+        
+        Pane["Description"]["col1"].text = col1text;
+        Pane["Description"]["col2"].text = col2text;
+
+        if (main::game.option.wide_mode == 0)
+        {
+            // Only if it hasn't already been scaled
+            if (Pane["Description"]["col1"].scale_x == orig_x)
+            {
+                Pane["Description"]["col1"].scale_x = orig_x * 0.8;
+                Pane["Description"]["col1"].scale_y = orig_y * 0.8;
+                Pane["Description"]["col2"].scale_x = orig_x * 0.8;
+                Pane["Description"]["col2"].scale_y = orig_y * 0.8;
+            }
+        }
+        else 
+        {
+            Pane["Description"]["col1"].scale_x = orig_x;
+            Pane["Description"]["col1"].scale_x = orig_y;
+            Pane["Description"]["col2"].scale_x = orig_x;
+            Pane["Description"]["col2"].scale_x = orig_y;
+        }
+
+        ROOT.setFocus(nil);
+        Pane.actor.destinationY = 480.0;
+        Pane.actor.out = true;
+        Pane.actor.warp();
+
+        ROOT.actor.out = true;
+        ROOT.actor.warp();
+
+        context.pushPage(ROOT);
+        Pane.actor.out = false;
+        ROOT.actor.out = false;
+        ROOT.setFocus(Pane::Button::Close);
+    }
+
+    function close(context)
+    {
+        ROOT.setFocus(nil);
+        Pane.actor.destinationY = 480.0;
+        Pane.actor.out = true;
+        TypicalOpponentsPopup.actor.out = true;
+        context.sync(0.25);
+
+        context.closePage(ROOT);
+    }
+
+    function onInitialize(context)
+    {
+        Pane.minimum_height = false;
+    }
+
+    function onFinalize(context) { }
+
+    function onCancel(context, event, item)
+    {
+        main::sound.play("cancel");
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::TypicalOpponentsPopup::Pane::Button::Close
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+        ROOT.close(context);
+
+        return EVENTRESULT_FILTER;
+    }
+}

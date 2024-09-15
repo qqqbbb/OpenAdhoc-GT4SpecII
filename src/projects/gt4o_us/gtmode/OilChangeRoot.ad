@@ -10,7 +10,7 @@
 
 #define OIL_CHANGE_PRICE 50
 
-module PROJECT::ROOT
+module GTmodeProject::OilChangeRoot
 {
     static col_clear = main::menu::MColorObject(240.0 / 255.0, 195.0 / 255.0, 85.0 / 255.0);
     static col_dirty = main::menu::MColorObject(100.0 / 255.0, 90.0 / 255.0, 30.0 / 255.0);
@@ -101,7 +101,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Change
+module GTmodeProject::OilChangeRoot::Change
 {
     function onActivate(context)
     {
@@ -186,7 +186,7 @@ module PROJECT::ROOT::Change
     }
 }
 
-module PROJECT::ROOT::Exit
+module GTmodeProject::OilChangeRoot::Exit
 {
     function onActivate(context)
     {

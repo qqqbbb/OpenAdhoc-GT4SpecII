@@ -10,15 +10,19 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::BuyCarDialog
 {
     static result;
+    static debug_free = false;
     static current_car;
     static current_gcar;
     static original_y = Pane.y;
     static catalog;
     static sell;
     static showroom;
+    static discounted_price;
+
+    static current_car_available = true;
 
     function setMoveActor(widget)
     {
@@ -38,13 +42,27 @@ module PROJECT::ROOT
     setMoveActor(Pane);
     setFadeActorRoot();
 
+    module CarEngineInfo {}
+
     function onInitialize(context)
     {
         var cg = catalog ? main::menu::MCarGarage(current_car) : current_gcar;
+        var engineName = "";
+        var engineLabel = cg.getCarLabel() + "_eng";
+
+        CarEngineInfo.load("/projects/specii/engineinfo");
+
+        logInfo(engineLabel);
+
+        if (CarEngineInfo::CarEngineNames.defined(engineLabel))
+            engineName = CarEngineInfo::CarEngineNames[engineLabel];
+
         Pane::VBox::Title::label.text = cg.short_name;
         Pane::VBox::Line0::th.text = context.translate(ROOT, "Engine");
+        Pane::VBox::Line0::td.text = engineName;
+        Pane::VBox::Line0::td.adjustScale();
         Pane::VBox::Line1::th.text = context.translate(ROOT, "Type");
-        Pane::VBox::Line1::td.text = cg.getCatEngineType() + ":" + cg.getCatEngineCam();
+        Pane::VBox::Line1::td.text = cg.getCatEngineType() + ": " + cg.getCatEngineCam();
         Pane::VBox::Line2::th.text = context.translate(ROOT, "Displacement");
         Pane::VBox::Line2::td.text = cg.getCatDisplacement();
         Pane::VBox::Line3::th.text = context.translate(ROOT, "Power");
@@ -79,6 +97,9 @@ module PROJECT::ROOT
             Pane::VBox::Money::th.text = context.translate(ROOT, "Value");
             price = cg.getUsedSellPrice();
             Pane::VBox::Money::td.text = "Cr. " + main::menu::MUtility::GetMoneyString(price); 
+            main::game.incMoney(price);
+            Pane::VBox::Money::td2.text = "Cr. " + main::game.money;
+            main::game.incMoney(-price); 
         }
         else
         {
@@ -92,10 +113,21 @@ module PROJECT::ROOT
             else
                 price = cg.getUsedPrice();
 
-            if (showroom && main::menu::MCarData::NotForSell(cg.getCarLabel()))
+            if (discounted_price != nil)
+                price = discounted_price;
+
+            if (showroom && main::menu::MCarData::NotForSell(cg.getCarLabel()) && !current_car_available)
+            {
                 Pane::VBox::Option::Price::td.text = context.translate(ROOT, "not for sell");
+                Pane::VBox::Money::td2.text = "--"; 
+            }
             else
+            {
                 Pane::VBox::Option::Price::td.text = "Cr. " + main::menu::MUtility::GetMoneyString(price);
+                main::game.incMoney(-price);
+                Pane::VBox::Money::td2.text = "Cr. " + main::game.money;
+                main::game.incMoney(price);    
+            }
 
             Pane::VBox::Option::Price::td.adjustScale();
             Pane::VBox::Money::th.text = context.translate(ROOT, "YourMoney");
@@ -117,9 +149,19 @@ module PROJECT::ROOT
         if (!sell)
         {
             var enough = main::game.isEnoughMoney(price);
-            var can_buy = enough && !(showroom && main::menu::MCarData::NotForSell(cg.getCarLabel()));
+            var can_buy = false;
+            if (!showroom && enough) // In UCD and can afford
+                can_buy = true;
+            if (showroom && enough && (!main::menu::MCarData::NotForSell(cg.getCarLabel()) || current_car_available))
+                can_buy = true;
+            //var can_buy = enough && showroom && !main::menu::MCarData::NotForSell(cg.getCarLabel());
+
+            if (!can_buy)
+                Pane::VBox::Money::td2.text = "--"; 
+
             Pane::VBox::Money.active = !enough;
             Pane::VBox::Buttons::Buy.insensitive = !can_buy;
+            logInfo("can_buy == %{can_buy}");
         }
         else
         {
@@ -130,7 +172,7 @@ module PROJECT::ROOT
         ROOT.setFocus(Pane::VBox::Buttons::Cancel);
     }
 
-    function open(context, car, sellmode, catalogmode, showroommode)
+    function open(context, car, sellmode, catalogmode, showroommode, available, discount_price)
     {
         if (sellmode == nil)
             sellmode = false;
@@ -141,10 +183,23 @@ module PROJECT::ROOT
         if (showroommode == nil)
             showroommode = false;
 
+        discounted_price = discount_price == nil ? nil : discount_price;
+
         sell = sellmode;
         catalog = catalogmode;
         showroom = showroommode;
-        
+
+        //openConfirmDialog(context, 1, "Available: %{available}\nShowroom: %{showroom}");
+
+        if (available != nil)
+        {
+            // If in the new car dealer *and* the car has been unlocked by event completion
+            if (!showroom || (showroom && available))
+                current_car_available = true;
+            else
+                current_car_available = false;
+        }
+
         context.cursor_visible = false;
 
         if (catalogmode)
@@ -195,6 +250,7 @@ module PROJECT::ROOT
 
         context.getUpdateContext().leaveEventLoop();
         context.cursor_visible = true;
+        CarEngineInfo.clearStatic();
     }
 
     function onCancel(context)
@@ -204,9 +260,14 @@ module PROJECT::ROOT
         close(context);
         return EVENTRESULT_FILTER;
     }
+
+    function onKeyPress(context, event)
+    {
+        return EVENTRESULT_CONTINUE;
+    }
 }
 
-module PROJECT::ROOT::Pane::VBox::Buttons::Cancel
+module GTmodeProject::BuyCarDialog::Pane::VBox::Buttons::Cancel
 {
     function onActivate(context)
     {
@@ -217,7 +278,7 @@ module PROJECT::ROOT::Pane::VBox::Buttons::Cancel
     }
 }
 
-module PROJECT::ROOT::Pane::VBox::Buttons::Buy
+module GTmodeProject::BuyCarDialog::Pane::VBox::Buttons::Buy
 {
     function onActivate(context)
     {

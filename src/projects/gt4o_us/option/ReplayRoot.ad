@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::ReplayRoot
 {
     module ReplayMode
     {
@@ -37,7 +37,7 @@ module PROJECT::ROOT
         var option = main::game.option;
         Pane::Mode::OptionMenu.setIndex(context,ReplayMode[option.replay_mode]);
         Pane::Info::OptionMenu.setIndex(context, 1 - option.replay_display_enable);
-        Pane::McSlot::OptionMenu.setIndex(context, option.replay_memory_card_slot);
+        Pane::McSlot::OptionMenu.setIndex(context, 1 - option.replay_memory_card_slot);
     }
 
     function apply()
@@ -47,7 +47,7 @@ module PROJECT::ROOT
 
         option.replay_mode = ReplayModeString[Pane::Mode::OptionMenu.index];
         option.replay_display_enable = 1 - Pane::Info::OptionMenu.index;
-        option.replay_memory_card_slot = Pane::McSlot::OptionMenu.index;
+        option.replay_memory_card_slot = 1 - Pane::McSlot::OptionMenu.index;
     }
 
     function onInitialize(context)
@@ -58,7 +58,7 @@ module PROJECT::ROOT
         reflect(context);
     }
 
-    function onFinalize(context)
+    function onFinalize()
     {
 
     }
@@ -67,27 +67,27 @@ module PROJECT::ROOT
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::ReplayRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::ReplayRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply();
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

@@ -1,0 +1,20 @@
+module SettingProject
+{
+    openConfirmDialog(context, 1, "Hooked :solissmile:");
+    function onKeyPress(context, event)
+    {
+        openConfirmDialog(context, 1, "Hooked :solissmile:");
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("next");
+                return STATE_YIELD; 
+
+            case PS2_PAD_CTRL_START:
+                if (Graph.visible)
+                    Graph::onActivate(context);
+        }
+
+        return STATE_EXIT;
+    }
+}

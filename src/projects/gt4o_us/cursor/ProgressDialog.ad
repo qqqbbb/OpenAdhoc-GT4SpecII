@@ -7,7 +7,7 @@
 
 
 
-module PROJECT::ROOT
+module CursorProject::ProgressDialog
 {
     static opened = nil;
     static close_callback = nil;
@@ -23,7 +23,7 @@ module PROJECT::ROOT
 
         if (opened == nil)
         {
-            context.pushPage(ROOT);
+            context.pushPage(ProgressDialog);
             opened = true;
         }
         
@@ -33,7 +33,7 @@ module PROJECT::ROOT
     function close(context)
     {
         opened = nil;
-        context.closePage(ROOT);
+        context.closePage(ProgressDialog);
     }
 
     function setProgress(p)
@@ -48,11 +48,11 @@ module PROJECT::ROOT
 
     function setVisible(f)
     {
-        ROOT.visible = f;
+        ProgressDialog.visible = f;
     }
 }
 
-module PROJECT::ROOT::Dialog::Button::OK
+module CursorProject::ProgressDialog::Dialog::Button::OK
 {
     function onActivate(context, event, item)
     {
@@ -61,6 +61,6 @@ module PROJECT::ROOT::Dialog::Button::OK
         close_callback(context);
         close_callback = nil;
 
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

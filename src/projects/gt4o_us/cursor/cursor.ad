@@ -10,7 +10,7 @@
 
 
 
-module PROJECT
+module CursorProject
 {
     function setFadeActor(widget)
     {

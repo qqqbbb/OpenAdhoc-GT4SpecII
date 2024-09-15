@@ -10,7 +10,7 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::TuningRoot
 {
     Pane::Muffler.defineStatic("group", "muffler");
     Pane::Brake.defineStatic("group", "brake");
@@ -82,6 +82,18 @@ module PROJECT::ROOT
         return EVENTRESULT_FILTER;
     }
 
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
+    }
+
     function onActivate(context, event)
     {
         var widget = event.widget;
@@ -102,12 +114,12 @@ module PROJECT::ROOT
             main::sound.play("disable");
             var message = nil;
 
-            if (main::menu::MCarData::GetTuner(current_car.car_code) == "polyphony")
+            /*if (main::menu::MCarData::GetTuner(current_car.car_code) == "polyphony")
             {
                 message = context.translate(ROOT, "this car has no tuningshop").format(current_car.name) + "\n";
             }
             else
-            {
+            {*/
                 message = context.translate(ROOT, "this car cannot not be handled").format(current_car.name) + "\n";
                 var list = current_car.getTunerList();
 
@@ -119,7 +131,7 @@ module PROJECT::ROOT
                     if (i < list.size - 1)
                         message += "\n";
                 }
-            }
+            //}
 
             openConfirmDialog(context, 2, message);
         }
@@ -167,7 +179,7 @@ module PROJECT::ROOT
 
 #define PARTS_TYPE_TUNE_MAX 32
 
-module PROJECT::ROOT::Pane
+module GTmodeProject::TuningRoot::Pane
 {
     function onLoad(context)
     {
@@ -300,7 +312,7 @@ module PROJECT::ROOT::Pane
     }
 }
 
-module PROJECT::ROOT::Pane::CompleteCar
+module GTmodeProject::TuningRoot::Pane::CompleteCar
 {
     function onActivate(context, event)
     {

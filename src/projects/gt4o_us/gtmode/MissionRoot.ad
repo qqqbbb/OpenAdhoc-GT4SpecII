@@ -10,19 +10,18 @@
 // module
 //---------------------------------------------------------------------------------------
 
-#define MISSION_COUNT 34
+#define MISSION_COUNT 40
 
-#ifndef LICENSE_B
-    #define LICENSE_B "l0b"
-    #define LICENSE_A "l0a"
-    #define LICENSE_IB "lib"
-    #define LICENSE_IA "lia"
-    #define LICENSE_S "l0s"
-#endif
+#define LICENSE_B "l0b"
+#define LICENSE_A "l0a"
+#define LICENSE_IB "lib"
+#define LICENSE_IA "lia"
+#define LICENSE_S "l0s"
 
-module PROJECT::ROOT
+module GTmodeProject::MissionRoot
 {
     static license_tbl = ["", LICENSE_B, LICENSE_A, LICENSE_IB, LICENSE_IA, LICENSE_S];
+    static current_hovered_event;
 
     function get_license(idx)
     {
@@ -32,7 +31,7 @@ module PROJECT::ROOT
 
         if (need_license < 0 || license_tbl.size <= need_license)
             return "";
-            
+        
         return license_tbl[need_license];
     }
 
@@ -64,6 +63,25 @@ module PROJECT::ROOT
             item["bg"].image_path = "image/gtmode/mission/mission%02d.png".format(i + 1);
             item["over"].image_path = "image/gtmode/mission/car%02d.png".format(i + 1);
 
+            if (main::game.option.wide_mode == 1)
+            {
+                //padding_x = 0;
+
+                // Keep the margin on the first two the same so they don't move to the edge of the screen
+                //if (i > 1)
+                    padding_x = -45;
+
+                item["bg"].x += 25;
+                item["over"].x += 25;
+
+                item["bg"].w *= 0.75;
+                item["over"].w *= 0.75;
+                item["title"].w *= 0.75;
+                item["doc"].w *= 0.75;
+                item["crs"].w *= 0.71;
+                item["Clear"].w *= 0.75;
+            }
+
             setFadeActor(item["over"]);
 
             var license = get_license(i);
@@ -77,6 +95,7 @@ module PROJECT::ROOT
             item["title"].text = context.translate(ROOT, "MissionName", "TITLE_%02d".format(i + 1));
             item["title"].adjustScale();
             item["doc"].text = context.translate(ROOT, "MissionName", "DOCUMENT_%02d".format(i + 1));
+            //item["doc"].adjustScale();
             item["crs"].text = context.translate(ROOT, "MissionName", "COURSE_%02d".format(i + 1));
             item["crs"].adjustScale();
             item.defineStatic("idx", i + 1);
@@ -115,32 +134,51 @@ module PROJECT::ROOT
         leavePage(context, ROOT);
     }
 
-    // 10.000.000 Cr (Passing mission not implemented correctly) 
-    // Select, R2, Select, R2, L1, L2, L2, Select, L1, R1, Select, R1, Select
+    // Pass mission
+    // R1, R2, R1, R2, L1, L2, L2, R1, L1, R1, R1, R1, R2
     static craft_command = [
-        PS2_PAD_CTRL_SELECT,
+        PS2_PAD_CTRL_R1,
         PS2_PAD_CTRL_R2,
-        PS2_PAD_CTRL_SELECT,
+        PS2_PAD_CTRL_R1,
         PS2_PAD_CTRL_R2,
         PS2_PAD_CTRL_L1,
         PS2_PAD_CTRL_L2,
         PS2_PAD_CTRL_L2,
-        PS2_PAD_CTRL_SELECT,
+        PS2_PAD_CTRL_R1,
         PS2_PAD_CTRL_L1,
         PS2_PAD_CTRL_R1,
-        PS2_PAD_CTRL_SELECT,
         PS2_PAD_CTRL_R1,
-        PS2_PAD_CTRL_SELECT,
+        PS2_PAD_CTRL_R1,
+        PS2_PAD_CTRL_R2,
     ];
+
+    if (is_debug)
+    {
+        craft_command = [
+            PS2_PAD_CTRL_R1
+        ];
+    }
 
     function doCraft(context)
     {
-        main::game.incMoney(10000000);
-        refreshMoney(ROOT);
+        // This was pretty easy to figure out so not sure why PD left in a broken cheat
+        var e = "l0m%04d".format(current_hovered_event["idx"]);
+		var unit = main::game.race_record.getUnit(e);
+        unit.update("mission", "1");
+        main::game.calendar.putRunRaceEvent(e, unit.result, nil, 10000);	
+        current_hovered_event["Clear"].visible = true;        
     }
 
     function onKeyPress(context, event)
     {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+
         if (craft(context, event, craft_command, doCraft))
             return EVENTRESULT_FILTER;
 
@@ -178,11 +216,12 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::hidden::Item
+module GTmodeProject::MissionRoot::hidden::Item
 {
     function onFocusEnter(context, event)
     {
         var over = event.widget["over"];
+        current_hovered_event = event.widget;//"l0m%04d".format(event.widget["idx"]);
         over.actor.out = true;
         return EVENTRESULT_FILTER;
     }

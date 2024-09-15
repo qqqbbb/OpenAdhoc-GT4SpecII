@@ -10,14 +10,17 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::EventInfoDialog
 {
     static event;
     static result;
     static original_y = Pane.y;
     static violated;
+    static custom_reg_violated;
     static license_violated;
     static can_bspec;
+    static list_expanded = false;
+    static cars_allowed_row;
 
     function setMoveActor(widget)
     {
@@ -30,7 +33,7 @@ module PROJECT::ROOT
     {
         var actor = main::menu::MFadeActor(ROOT, 1.0);
         actor.repeat = false;
-        actor.period = 0.5;
+        actor.period = 0.25;
         ROOT.actor = actor;
     }
 
@@ -48,6 +51,8 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+        list_expanded = false;
+        cars_allowed_row = nil;
         Pane::Title::label.text = getEventNameByRaceCode(context, ROOT, event.race_code);
         Pane::VBox::RegulationHeader::label.adjustScale();
 
@@ -69,6 +74,8 @@ module PROJECT::ROOT
         box.actor.out = true;
         box.actor.warp();
 
+        EventHallRoot["Common"]["ToolTip"]["tip"].value = "";
+
         switch (getRacePrefix(code[0]))
         {
             case EVENT_PREFIX_RALLY_HALL:
@@ -83,6 +90,7 @@ module PROJECT::ROOT
         var regulation = getViolatedRegulation(main::game.garage.riding_car, code[0]);
         violated = regulation.violated;
         license_violated = false;
+        custom_reg_violated = false;
 
         if (race.getNeedLicense() > 0)
             license_violated = !main::game.race_record.isLicensePassed(license_name_table[race.getNeedLicense()]);
@@ -90,38 +98,186 @@ module PROJECT::ROOT
         var gc_prize = main::menu::MUtility::GetMoneyString(race.getPrizeGC());
         add_regulation_row(context, box, "GameMode", context.translate(ROOT, series == 0 ? "SingleRace" : "ChampionshipRace").format(gc_prize));
 
-        if (race.getNeedCarType() != 0)
+        var event_code = code[0].substr(0, code[0].size - 5)
+        var custom_regs_data = context.getUpdateContext().loadFile("textdata/raw/CustomRegulations/%{event_code}");
+        var custom_category_event = false;
+
+        // Messy custom regulation reading code follows
+        if (custom_regs_data != nil && custom_regs_data != "" && !is_kaizo)
+        {
+            var regs = custom_regs_data.split("#");
+            var riding_car = main::game.garage.riding_car;
+            riding_car.updateCurrentStatus(); // Have to refresh the car before stats display
+
+            for (var i = 0; i < regs.size; i++)
+            {
+                var [reg_category, reg_direction, reg_value] = regs[i].split(";");
+                var reg_value_int = -1;
+                var comparison; // Comparison is violation, so the opposite of the check
+
+
+                if (reg_value != "")
+                        reg_value_int = reg_value.toInt();
+                    else 
+                        continue;
+
+                var stat_to_compare = nil;
+                var [text, val] = nil;
+
+                // Expanding the CarType restriction to allow events that require rally or tuner cars
+                if (reg_category == "CarType")
+                {
+                    custom_category_event = true;
+                    stat_to_compare = main::menu::MCarData::GetCategory(riding_car.car_code);
+                    [text, val] = ["CarTypeSpec", context.translate(ROOT, "CarTypeSpec_4")];
+                }
+
+                if (reg_category == "Price")
+                {
+                    stat_to_compare = main::menu::MCarData::GetPrice(riding_car.car_code);
+
+                    var money = main::menu::MUtility::GetMoneyString(reg_value);
+                    [text, val] = reg_direction == "Above" ? ["Minimum\nBase Price", money + " Cr."] : ["Maximum\nBase Price", money + " Cr."];
+                }
+
+                if (reg_category == "Weight")
+                {
+                    stat_to_compare = riding_car.getCurrentMs("%d%s");
+                    if (stat_to_compare.endWith("kg")) 
+                        stat_to_compare = stat_to_compare.substr(0, stat_to_compare.size - 2).toInt();
+
+                    [text, val] = reg_direction == "Above" ? ["Minimum\nWeight", reg_value + "kg"] : ["Maximum\nWeight", reg_value + "kg"];
+                }
+
+                if (reg_category == "Power")
+                {
+                    stat_to_compare = riding_car.getCurrentPowerUnitPS();
+
+                    var ps_string = "%d %s".format(main::menu::MUnit::GetPowerForDisplay(reg_value).toInt(), main::menu::MUnit::GetUnitOfPower());
+
+                    [text, val] = reg_direction == "Above" ? ["Minimum\nPower", ps_string] : ["Maximum\nPower", ps_string];
+                }
+
+                if (reg_category == "Displacement")
+                {
+                    stat_to_compare = riding_car.getCatDisplacement();
+
+                    // Hi I'm a rotary engine and I'm here to complicate your displacement strings
+                    if (riding_car.getCatEngineType().beginWith("Rot"))
+                    {
+                        stat_to_compare = stat_to_compare.substr(0, stat_to_compare.size - 2); // Remove cc
+                        var [cc, mult] = stat_to_compare.split("x"); // e.g. 654x2 should become 654 * 2
+                        stat_to_compare = cc.toInt() * mult.toInt();
+                    }
+                    else 
+                    {
+                        if (stat_to_compare.endWith("cc")) 
+                            stat_to_compare = stat_to_compare.substr(0, stat_to_compare.size - 2).toInt();
+                    }
+
+                    [text, val] = reg_direction == "Above" ? [context.translate(ROOT, "MinDisp"), reg_value + "cc"] : [context.translate(ROOT, "MaxDisp"), reg_value + "cc"];
+                }
+
+                if (reg_category == "EngineType")
+                {
+                    stat_to_compare = riding_car.getCatEngineType();
+                    
+                    var allowed_configs = reg_value.split(",");
+                    comparison = true;
+
+                    for (var j = 0; j < allowed_configs.size; j++)
+                    {
+                        var engType = allowed_configs[j];
+                        
+                        if (stat_to_compare == engType)
+                        {
+                            comparison = false;
+                            break;
+                        }
+                    }
+
+                    // Neaten up for display
+                    var disp_text = "";
+                    for (var j = 0; j < allowed_configs.size; j++)
+                    {
+                        disp_text += "%{allowed_configs[j]}, ";
+                    }
+
+                    if (disp_text.endWith(", "))
+                        disp_text = disp_text.substr(0, disp_text.size - 2);
+
+                    disp_text += "\n(Your engine: %{riding_car.getCatEngineType()})";
+
+                    [text, val] = ["Engine Type", disp_text];
+                }
+
+                switch (reg_direction.downcase())
+                {
+                    case "above":
+                    case "over":
+                        comparison = stat_to_compare < reg_value_int;
+                        break;
+
+                    case "below":
+                    case "under":
+                        comparison = stat_to_compare >= reg_value_int;
+                        break;
+
+                    case "equalstext":
+                        comparison = stat_to_compare != reg_value;
+                        break;
+
+                    case "equals":
+                        comparison = stat_to_compare != reg_value_int;
+                        break;
+                }
+
+                // Rally doesn't have an internal category type like production/race/tuner, so we'll use the new extended function to check that
+                if (reg_value.downcase() == "rally")
+                {
+                    comparison = !isCarInCategory(riding_car.car_code, reg_value.downcase());
+                    [text, val] = ["CarTypeSpec", context.translate(ROOT, "CarTypeSpec_5")];
+                }
+                
+                add_regulation_row(context, box, text, val, comparison);
+                custom_reg_violated = comparison;
+            }
+        }
+        else
+            custom_reg_violated = false;
+
+        if (race.getNeedCarType() != 0 && !is_kaizo)
             add_regulation_row(context, box, "CarTypeSpec", context.translate(ROOT, "CarTypeSpec_" + race.getNeedCarType()), regulation.cartype != nil);
 
-        if (race.getNeedDrivetrain() != 0)
+        if (race.getNeedDrivetrain() != 0 && !is_kaizo)
             add_regulation_row(context, box, "DrivetrainSpec", context.translate(ROOT, "DrivetrainSpec_" + race.getNeedDrivetrain()), regulation.drivetrain != nil);
 
-        if (race.getNeedAspiration() != 0)
+        if (race.getNeedAspiration() != 0 && !is_kaizo)
             add_regulation_row(context, box, "AspirationSpec", context.translate(ROOT, "AspirationSpec_" + race.getNeedAspiration()), regulation.aspiration != nil);
 
         add_regulation_row(context, box, "TireRequired", context.translate(ROOT, "TireRequired_" + race.getNeedTire()), regulation.tiretype != nil);
 
-        if (race.getNeedPs() != 0)
+        if (race.getNeedPs() != 0 && !is_kaizo)
         {
             var ps_string = "%d %s".format(main::menu::MUnit::GetPowerForDisplay(race.getNeedPs()).toInt(), main::menu::MUnit::GetUnitOfPower());
             var doc = context.translate(ROOT, "NeedPowerDoc").format(ps_string);
             add_regulation_row(context, box, "NeedPower", doc, regulation.need_ps != nil);
         }
 
-        if (race.getNeedPrice() != 0)
+        if (race.getNeedPrice() != 0 && !is_kaizo)
             add_regulation_row(context, box, "NeedPrice", context.translate(ROOT, "NeedPriceDoc").format(race.getNeedPrice()), regulation.need_price != nil);
 
-        if (race.getLimitedWeight() != 0)
+        if (race.getLimitedWeight() != 0 && !is_kaizo)
             add_regulation_row(context, box, "LimitedWeight", context.translate(ROOT, "LimitedWeightDoc").format(race.getLimitedWeight()), regulation.limit_weight != nil);
 
-        if (race.getLimitedLength() != 0)
+        if (race.getLimitedLength() != 0 && !is_kaizo)
             add_regulation_row(context, box, "LimitedLength", context.translate(ROOT, "LimitedLengthDoc").format(race.getLimitedLength()), regulation.length != nil);
 
-        if (race.getNeedCountryID() != 0)
+        if (race.getNeedCountryID() != 0 && !is_kaizo)
             add_regulation_row(context, box, "NeedNation", context.translate(ROOT, "NeedNation_" + race.getNeedCountryID()), regulation.country != nil);
 
         var [min, max] = race.getNeedYearRange();
-        if (min > 0 || max > 0)
+        if ((min > 0 || max > 0) && !is_kaizo)
         {
             var doc = min > 0 ? context.translate(ROOT, "NeedYearDoc").format(min, max)
                               : context.translate(ROOT, "NeedYearDocMax").format(max);
@@ -134,7 +290,7 @@ module PROJECT::ROOT
 
         if (carlist != nil && carlist.size > 0)
         {
-            cars_allowed = "\n";
+            cars_allowed = "";
             var num = carlist.size <= 5 ? carlist.size : 5;
             for (var i = 0; i < num; i++)
             {
@@ -152,7 +308,8 @@ module PROJECT::ROOT
                 cars_allowed += "\n" + context.translate(ROOT, "and the others");
         }
 
-        add_regulation_row(context, box, "CarsAllowed", cars_allowed, regulation.carlist != nil);
+        if (!custom_category_event && !is_kaizo)
+            add_regulation_row(context, box, "CarsAllowed", cars_allowed, regulation.carlist != nil);
 
         if (can_bspec)
             add_license_row(context, box, "LicenseRequired", context.translate(ROOT, "NeedLicense_" + race.getNeedLicense()), license_violated);
@@ -170,6 +327,7 @@ module PROJECT::ROOT
         event = nil;
         violated = nil;
         license_violated = nil;
+        custom_reg_violated = false;
         can_bspec = nil;
     }
 
@@ -201,6 +359,9 @@ module PROJECT::ROOT
         target.appendChild(context, header);
         target.appendChild(context, desc);
 
+        if (header_key == "CarsAllowed")
+            cars_allowed_row = desc;
+        //print "%{header_key} -> %{desc}";
         return desc;
     }
 
@@ -230,6 +391,7 @@ module PROJECT::ROOT
         return desc;
     }
 
+
     function open(context, eventinfo)
     {
         event = eventinfo;
@@ -247,7 +409,7 @@ module PROJECT::ROOT
         Pane.actor.out = false;
         ROOT.actor.out = false;
 
-        context.sync(0.5);
+        context.sync(0.15);
         context.cursor_visible = true;
         context.getUpdateContext().enterEventLoop();
         return result;
@@ -265,7 +427,7 @@ module PROJECT::ROOT
 
         Pane.actor.out = true;
         ROOT.actor.out = true;
-        context.sync(0.2);
+        context.sync(0.1);
         context.closePage(ROOT);
         context.getUpdateContext().leaveEventLoop();
     }
@@ -278,14 +440,14 @@ module PROJECT::ROOT
         return EVENTRESULT_FILTER;
     }
 
-    function onKeyPress(context, event)
+    function onKeyPress(context, e)
     {
         var box = Pane::VBox::Regulation::clip::space;
         var range = box.h - Pane::VBox::Regulation::clip.h;
         var y = box.actor.destinationY;
         var step = 40.0;
 
-        switch (event.keysym)
+        switch (e.keysym)
         {
             case PS2_PAD_CTRL_L3_UP:
                 y += step;
@@ -314,13 +476,94 @@ module PROJECT::ROOT
                 }
 
                 return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_SELECT:
+                list_expanded = !list_expanded;
+                refreshCarList(context);
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_R1:
+                
+                var [achieve, score] = getRaceEventRecordStatistics();
+
+                // This allows you to use illegal cars in races IF you have completed the event already and are over 25% completion
+                // Does not allow you to skip tire regs as entering dirt/snow tracks with road tires is unknown behaviour
+                // TODO: Uncomment for release
+                //if (wonRace(event.race_code) && achieve > 250.0)
+                //{
+                    var code = extractSubRaceCode(event.race_code);
+                    var regulation = getViolatedRegulation(main::game.garage.riding_car, code[0]);
+
+                    //logInfo(regulation.tiretype);
+
+                    if (regulation.tiretype != nil)
+                        return EVENTRESULT_FILTER;
+
+                    main::sound.play("ok");
+                    result = true;
+                    close(context);
+                    return EVENTRESULT_FILTER;
+                //}
+                //else 
+                //    logInfo("Cannot skip event requirements. wonRace(%{event.race_code}) == %{wonRace(event.race_code)}, achieve = %{achieve}");
         }
 
         return EVENTRESULT_CONTINUE;
     }
+
+    function refreshCarList(context)
+    {
+        // Directly affect the row's text
+        var code = extractSubRaceCode(event.race_code);
+        var series = getSeriesRaceCount(event.race_code);
+        var race = main::menu::MRaceData(code[0]);
+
+        var carlist = race.getAllowedCarList();
+        print carlist;
+
+        var max_num = list_expanded ? 64 : 5;
+        var cars_allowed;
+
+        if (carlist != nil && carlist.size > 0)
+        {
+            cars_allowed = "";
+            var num = carlist.size <= max_num ? carlist.size : max_num;
+            for (var i = 0; i < num; i++)
+            {
+                var cg = main::menu::MCarGarage(carlist[i]);
+                var name = cg.short_name_no_year;
+                if (name == nil || name == "")
+                    name = carlist[i];
+                
+                cars_allowed += name;
+                if (i < num - 1)
+                    cars_allowed += "\n";
+            }
+
+            if (carlist.size > max_num)
+                cars_allowed += "\n" + context.translate(ROOT, "and the others");
+
+            if (cars_allowed_row != nil)
+            {
+                main::sound.play("ok");
+    
+                // If collapsing the list, reset the scroll in case we were scrolled past the new limit
+                // Slight delay so that the scroll bar moves back before it expands, as it would look ugly
+                if (!list_expanded)
+                {
+                    Pane::VBox::Regulation::clip::space.actor.destinationY = 0;
+                    context.sync(0.15);
+                }
+    
+                // Affect both the violated and regular versions
+                cars_allowed_row.text.text = cars_allowed;
+                cars_allowed_row.textv.text = cars_allowed;
+            }
+        }
+    }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module GTmodeProject::EventInfoDialog::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
@@ -331,11 +574,21 @@ module PROJECT::ROOT::Pane::Buttons::Cancel
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module GTmodeProject::EventInfoDialog::Pane::Buttons::Garage
 {
     function onActivate(context)
     {
-        if (violated)
+        main::sound.play("ok");
+        GarageRoot::open(context, true);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventInfoDialog::Pane::Buttons::OK
+{
+    function onActivate(context)
+    {
+        if (violated || custom_reg_violated)
         {
             main::sound.play("disable");
             openConfirmDialog(context, 2, context.translate(ROOT, "regulation violated"));

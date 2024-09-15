@@ -10,7 +10,7 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::PhotoTravelRoot
 {
     static course_list;
 
@@ -161,7 +161,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::ScrollBox::SelectBox
+module GTmodeProject::PhotoTravelRoot::ScrollBox::SelectBox
 {
     function onValueChanged(context)
     {
@@ -169,7 +169,7 @@ module PROJECT::ROOT::ScrollBox::SelectBox
     }
 }
 
-module PROJECT::ROOT::hidden::Ticket
+module GTmodeProject::PhotoTravelRoot::hidden::Ticket
 {
     function onFocusEnter(context, event)
     {

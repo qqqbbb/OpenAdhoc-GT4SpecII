@@ -12,7 +12,7 @@
 
 #define NIKE_ONE "nike_one_04"
 
-module PROJECT::ROOT
+module GTmodeProject::EyetoyRoot
 {
     static gtshirt;
     static recognized;
@@ -174,6 +174,8 @@ module PROJECT::ROOT
         main::game.garage.addNewCar(car, 0);
         main::game.calendar.putPresentCarEvent(car, 0);
 
+        refreshOwnedCars();
+
         Eyetoy.visible = false;
         Frame.visible = false;
         carbg.visible = true;
@@ -200,7 +202,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Eyetoy::eyetoy
+module GTmodeProject::EyetoyRoot::Eyetoy::eyetoy
 {
     function onGTShirtFocus(context)
     {
@@ -223,7 +225,7 @@ module PROJECT::ROOT::Eyetoy::eyetoy
     }
 }
 
-module PROJECT::ROOT::CarFace
+module GTmodeProject::EyetoyRoot::CarFace
 {
     function move_car(phase, warp)
     {
@@ -258,7 +260,7 @@ module PROJECT::ROOT::CarFace
     }
 }
 
-module PROJECT::ROOT::Pane::OK
+module GTmodeProject::EyetoyRoot::Pane::OK
 {
     function onActivate(context, event)
     {

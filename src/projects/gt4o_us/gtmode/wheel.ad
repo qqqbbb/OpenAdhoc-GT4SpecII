@@ -374,6 +374,7 @@ module WheelData
    static used06_carnum = 15;
 
    static used06_carlist = [
+      "mazd0092",
       "audi0005",
       "mits0040",
       "toyt0022",

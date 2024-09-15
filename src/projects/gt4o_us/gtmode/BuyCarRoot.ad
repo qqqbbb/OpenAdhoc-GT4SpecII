@@ -9,9 +9,8 @@
 //---------------------------------------------------------------------------------------
 // module
 //---------------------------------------------------------------------------------------
-
-module PROJECT::ROOT
-{
+module GTmodeProject::BuyCarRoot
+{ 
     static current_car;
     static current_gcar;
     static current_col;
@@ -25,6 +24,24 @@ module PROJECT::ROOT
 
     static original_name_scale_x = CarScroll::Name.scale_x;
     static original_name_scale_y = CarScroll::Name.scale_y;
+    static original_price_text_color = Info::Price.text_color;
+    static original_key_w = Pane::Buy.bg.w
+    static original_key_x = Pane::Buy.bg.x
+
+    static current_car_available;
+    static current_car_desc;
+    static original_mini_item_w = hidden::CarItem.w;
+    static zoomed = false;
+    static zoom = 1.0;
+    static zoom_range = 0.4;
+    static orig_camera_view_angle = CarFace.view_angle;
+    static camera_view_angle;
+    static carscroll_orig_y = CarScroll.y;
+    static watcher = nil;
+    static discount_price;
+    static last_car_index = 0;
+
+    clear.visible = false;
 
     function setMoveActor(widget, x, y)
     {
@@ -92,12 +109,33 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+        camera_view_angle = CarFace.view_angle;
+        watcher = main::menu::MScriptWatcher(context, onTick);
+        watcher.interval = 1;
+        watcher.append();
+
+        if (wide)
+        {
+            Pane::Buy.bg.w = original_key_w * 0.75;
+            Pane::Buy.bg.x = original_key_x + 10;
+            Pane::Description.bg.w = original_key_w * 0.75;
+            Pane::Description.bg.x = original_key_x + 10;
+        }
+        else
+        {
+            Pane::Buy.bg.w = original_key_w;
+            Pane::Buy.bg.x = original_key_x;
+            Pane::Description.bg.w = original_key_w;
+            Pane::Description.bg.x = original_key_x;
+        }
+
         hidden.visible = false;
 
         if (current_gpb != nil)
             context.loadGpb("/projects/arcade", current_gpb);
         
         var nation = nil;
+
         switch (current_type)
         {
             case "new":
@@ -109,6 +147,7 @@ module PROJECT::ROOT
             case "used":
                 bg.image_path = "image/gtmode/car/used_bg.png";
                 CarFace.image_path = "image/gtmode/car/env_akasaka.png";
+                ROOT.setFocus(Pane::Buy);
                 break;
 
             case "legend":
@@ -121,6 +160,7 @@ module PROJECT::ROOT
                 nation = main::game.menuRef(1);
                 bg.image_path = "image/gtmode/car/complete_bg.png";
                 CarFace.image_path = "image/gtmode/car/env_akasaka.png";
+                ROOT.setFocus(Pane::Buy);
                 break;
         }
 
@@ -142,10 +182,13 @@ module PROJECT::ROOT
             for (var i = 0; i < current_car_list.size; i++)
             {
                 var car = current_car_list[i];
+                if (wide)
+                    hidden::CarItem.w = original_mini_item_w * 0.85;
                 var item = hidden::CarItem.doCopy();
                 var label = main::menu::MCarData::GetCarLabel(car);
                 var image = item["image"];
                 var pngname = "image/piece/car_mini/" + label + ".png";
+                item["dot"].visible = isCarOwned(label) && show_owned_cars;
 
                 if (context.existGpbBinary(pngname))
                 {
@@ -156,6 +199,13 @@ module PROJECT::ROOT
                 {
                     image.from_disk = true;
                     image.image_path = "/piece/car_mini/" + label + ".img";
+                }
+
+                if (wide)
+                {
+
+                    item["image"].w = 40;
+                    item["image"].x += 1;
                 }
 
                 CarScroll::SelectBox.appendChild(context, item);
@@ -193,10 +243,36 @@ module PROJECT::ROOT
         Pane.actor.warp();
 
         set_car(context);
+
+        current_car_desc = "";
+        var car = main::menu::MCarData::GetCarLabel(current_car);
+        var did = main::menu::MCarData::GetDescriptionID(car);
+
+        // Appears that missing description IDs are returned as 0, so ignore it unless it's the car actually assigned to 0
+        if (did > 0 || (did == 0 && car == "xb_15z_x_2wd_03"))
+        {
+            current_car_desc = context.getUpdateContext().loadFile("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+            logInfo("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+        }
+
+        if (main::menu::MSystem::GetLanguage() != "US" || current_car_desc.size < 1 || current_car_desc == "")
+        {
+            Pane::Description.visible = false;
+            // Move this back to the middle if we're not in an English locale or no description exists
+            Pane::Buy.x = 290;
+        }
+        else
+        {
+            Pane::Description.visible = true;
+            Pane::Buy.x = 350;
+        }
     }
 
     function onFinalize(context)
     {
+        last_car_index = 0;
+        watcher.remove();
+        
         unset_col_select(context);
 
         CarScroll::SelectBox.clearChildren(context);
@@ -204,12 +280,20 @@ module PROJECT::ROOT
         if (current_gpb != nil)
             context.unloadGpb(current_gpb);
         
+        CarFace.view_angle = orig_camera_view_angle;
+        
         leavePage(context, ROOT);
     }
 
     function onCancel(context)
     {
         main::sound.play("cancel");
+
+        if (!CarScroll.visible)
+        {
+            toggleHUD(context);
+            return;
+        }
 
         if (current_type == "used")
             last_focus = current_idx.toString();
@@ -219,29 +303,117 @@ module PROJECT::ROOT
         return EVENTRESULT_FILTER;
     }
 
+    function onKeyPress(context, event)
+    {
+        var last_idx = CarScroll::SelectBox.index;
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                if (!CarScroll.visible)
+                {
+                    toggleHUD(context);
+                    return;
+                }
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_L1:
+                if (CarScroll.actor.out)
+                    return EVENTRESULT_FILTER;
+
+                if (CarScroll::SelectBox.index != 0)
+                    main::sound.play("select");
+
+                CarScroll::SelectBox.decIndex(10);
+                if (last_idx != CarScroll::SelectBox.index)
+                    CarScroll::SelectBox.onValueChanged(context, CarScroll::SelectBox.index);
+            return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_R1:
+                if (CarScroll.actor.out)
+                    return EVENTRESULT_FILTER;
+
+                if (CarScroll::SelectBox.index < (CarScroll::SelectBox.Count() - 1))
+                    main::sound.play("select");
+
+                // Doesn't move if we go over, but the sound shouldn't play if we don't move
+                CarScroll::SelectBox.incIndex(10);
+                if (last_idx != CarScroll::SelectBox.index)
+                    CarScroll::SelectBox.onValueChanged(context, CarScroll::SelectBox.index);
+            return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_START:
+                // Only if we're on the car select part
+                if (!CarScroll.actor.out)
+                {
+                    main::sound.play("ok");
+                    toggleHUD(context);
+                }
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }
+
+    function toggleHUD(context)
+    {
+        Logo::bg.visible = !Logo::bg.visible;
+        CarScroll.visible = !CarScroll.visible;
+        CarScroll.y = CarScroll.visible ? carscroll_orig_y : 900;
+        set_car_info(context, CarFace.car_data);
+        Info.visible = !Info.visible;
+        ROOT["Common"]["Header"].visible = !ROOT["Common"]["Header"].visible;
+    }
+
+    function onTick(context)
+    {
+        var update_context = context.getUpdateContext();
+        var ry = update_context.getPadAnalogChannel(0, 1) * -1;
+        var target = 1.0;
+        
+        if (ry > 0.0)
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+        else 
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+
+        zoom.value += (target - zoom) * 0.1;
+        var fovy = (Math::atan(Math::tan(camera_view_angle * 0.5 * 3.1415927 / 180.0) * zoom)) * 2.0;
+        CarFace.view_angle = (fovy * 180.0) / 3.1415927;
+    }
+
     function set_car_info(context, car_data)
     {
         var tip = ROOT["Common"]["ToolTip"]["tip"];
-        
-        var train = car_data.getDTrainType();
-        if (train == nil)
-            train = "--";
 
-        var power = car_data.getCatPs("%d%s/%s%s");
-        var torque = car_data.getCatTq("%.2t%s/%s%s");
-        var info = context.translate(ROOT, "car_info");
-        tip.value = info.format(train, power, torque);
+        if (CarScroll.visible)
+        {
+            var train = car_data.getDTrainType();
+            if (train == nil)
+                train = "--";
+
+            var power = car_data.getCatPs("%d%s/%s%s");
+            var torque = car_data.getCatTq("%.2t%s/%s%s");
+            var info = context.translate(ROOT, "car_info");
+            tip.value = info.format(train, power, torque);
+        }
+        else 
+        {
+            tip.value = "";
+        }
     }
 
     function set_car_desc(context, car_data)
     {
-        var car = car_data.getCarLabel();
-        var did = main::menu::MCarData::GetDescriptionID(car);
 
-        if (description != nil)
-            ROOT["Common"]["ToolTip"]["tip"].value = description.get("%08d".format(did));
-        else
-            ROOT["Common"]["ToolTip"]["tip"].value = "";
     }
 
     function set_car(context)
@@ -252,15 +424,41 @@ module PROJECT::ROOT
         {
             current_car = current_car_list[CarScroll::SelectBox.index];
             var price = main::menu::MCarData::GetPrice(current_car);
+            discount_price = 0;
 
-            if (main::menu::MCarData::NotForSell(current_car))
+            if (main::menu::MCarData::GetTuner(current_car) == discount_tuner)
+                discount_price = (price * discount_pricemult) / 100;
+            else 
+                discount_price = price;
+            
+            var available = is_available(context, current_car); // Calling this first so we can see the print output, even if NotForSell below is true
+
+            if (main::menu::MCarData::NotForSell(current_car) && !available)
+            {
                 price = 0;
+                current_car_available = false;
+            }
+            else
+                current_car_available = true;
 
-            Info::Price.text = "Cr. " + main::menu::MUtility::GetMoneyString(price);
+            if (discount_price != price && current_car_available)
+            {
+                Info::Price.text = "Cr. " + main::menu::MUtility::GetMoneyString(discount_price);
+                Info::Price.text_color = main::menu::MColorObject(0.86, 0.67, 0.11, 1.0);
+            }
+            else
+            {
+                Info::Price.text = "Cr. " + main::menu::MUtility::GetMoneyString(price);
+                Info::Price.text_color = original_price_text_color;
+            }
+
             label = main::menu::MCarData::GetCarLabel(current_car);
         }
         else
         {
+            // Ensure price colour change doesn't linger if looking at a used car
+            Info::Price.text_color = original_price_text_color;
+
             Info::Price.text = "Cr. " + main::menu::MUtility::GetMoneyString(current_gcar.getUsedPrice());
 
             var distance = current_gcar.getOdometer("%.1t%s");
@@ -276,6 +474,7 @@ module PROJECT::ROOT
         if (context.existGpbBinary(pngname))
         {
             image.from_disk = false;
+            image.image_path = "image/piece/car_logo2/doesntexist.png";
             image.image_path = pngname;
         }
         else
@@ -299,7 +498,7 @@ module PROJECT::ROOT
         CarScroll::Name.scale_y = original_name_scale_y;
         CarScroll::Name.text = CarFace.car_data.name;
         CarScroll::Name.adjustScale();
-        CarFace::move_car(0, 1);
+        CarFace::move_car(0, 1, CarScroll::SelectBox.index);
 
         last_color_index = 0;
 
@@ -307,6 +506,7 @@ module PROJECT::ROOT
         {
             CarFace.setColorIndex(current_col);
             set_car_desc(context, CarFace.car_data);
+            set_car_info(context, CarFace.car_data);
         }
         else
         {
@@ -318,6 +518,12 @@ module PROJECT::ROOT
     {
         CarScroll::SelectBox.outFocus(ROOT);
         CarScroll.actor.out = true;
+
+        module SpecialPaintModule { }
+
+        SpecialPaintModule.load("/projects/specii/SpecialPaintCars");
+        var has_special_paint = SpecialPaintModule::SpecialPaintCars.defined(CarFace.car_code);
+        SpecialPaintModule.clearStatic();
         
         var car_data = CarFace.car_data;
         var col_list = car_data.getColors();
@@ -325,6 +531,9 @@ module PROJECT::ROOT
 
         for (var i = 0; i < num; i++)
         {
+            if (i == num - 1 && has_special_paint && !special_paint_allowed)
+                break;
+
             var chip = hidden::ColItem.doCopy();
             chip["chip"].setData(car_data, i);
             ColScroll::SelectBox.appendChild(context, chip);
@@ -360,11 +569,129 @@ module PROJECT::ROOT
 
         current_col = index;
     }
+
+    // Check if the event responsible for a car unlock has been completed, or if the car is in the user's garage, and unlock it for sale
+    function is_available(context, current_car)
+    {
+        if (isCarOwned(current_car))
+        {
+            logInfo("Car %{current_car} is present in garage, making available for purchase");
+            return true;
+        }
+
+        var unlocked = false;
+        var idx = -1;
+        var isPrizeCar = false;
+        var criteria = "";
+        var criteriaMet = false;
+
+        var nfs = main::menu::MCarData::NotForSell(current_car);
+
+        for (var i = 0; i < PresentData::content_carlist.size; i++)
+        {
+            if (PresentData::content_carlist[i] == current_car)
+            {
+                isPrizeCar = true;
+                idx = i;
+                break;
+            }
+        }
+
+        if (idx > -1) // If the index is over 1 then it was found in the prize list, therefore not an impossible unlock
+        {
+            var event = PresentData::detail_carlist[idx];
+            var isLicence = false;
+            var isMission = event.split(",").size > 1;
+            criteria = PresentData::condition_carlist[idx];
+
+            switch (event)
+            {
+                case "l0b":
+                case "l0a":
+                case "lib":
+                case "lia":
+                case "l0s":
+                    isLicence = true;
+                    break;
+            }
+
+            if (isMission)
+            {
+                var [s0, s1] = event.split(",");
+                for (var i = s0.toInt(); i <= s1.toInt(); i++)
+                {
+                    var unit = main::game.race_record.getUnit("l0m%04d".format(i));
+                    if (unit.result != "1")
+                    {
+                        criteriaMet = false;
+                        break;
+                    }
+                    // If the entire loop runs without hitting the break, it must be all passed
+                    criteriaMet = true;
+                }
+            }
+
+            if (!isLicence && !isMission && criteria != "aspec")
+            {
+                criteriaMet = wonRace(event);
+            }
+            switch (criteria)
+            {
+                case "achievement":
+                    var [achievement, score] = getRaceEventRecordStatistics();
+                    criteriaMet = achievement > (event.toFloat()) * 10;
+                    break;
+
+                case "aspec":
+                    event = "A-Spec points milestone";
+                    switch (criteria)
+                    {
+                        case 1:
+                            criteriaMet = pts >= 10000;
+                            break;
+                        case 2:
+                            criteriaMet = pts >= 15000;
+                            break;
+                        case 3:
+                            criteriaMet = pts >= 20000;
+                            break;
+                    }
+                    break;
+
+                case "license":
+                    criteriaMet = main::game.race_record.isLicensePassed(event);
+                    break;
+
+                case "all_silver":
+                    criteriaMet = main::game.race_record.isLicenseAllSilver(event);
+                    break;
+
+                case "all_gold":
+                    criteriaMet = main::game.race_record.isLicensePerfect(event);
+                    break;
+            }
+
+            var info = "%{current_car} awarded from ";
+            info += isMission ? "mission" : "";
+            info += event;
+            info += criteria == "" ? "" : " %{criteria}";
+            info += ", car %{!nfs ? "is" : "is not" } normally buyable";
+            if (nfs)
+                info += ", car %{criteriaMet ? "is" : "is not" } currently buyable";
+
+            logInfo(info);
+        }
+        else
+            if (nfs)
+                logInfo("!!!! %{current_car} is NotForSell but is not available as a prize !!!!");
+        
+        return criteriaMet;
+    }
 }
 
-module PROJECT::ROOT::CarFace
+module GTmodeProject::BuyCarRoot::CarFace
 {
-    function move_car(phase, warp)
+    function move_car(phase, warp, index)
     {
         if (CarFace.car_model != nil)
         {
@@ -374,13 +701,21 @@ module PROJECT::ROOT::CarFace
                 if (warp == true)
                 {
                     CarFace.car_model.tz = 8.5;
+                    if (index != nil)
+                        if (index < last_car_index)
+                            CarFace.car_model.tx = -10.0;
+                        else if (index > last_car_index)
+                            CarFace.car_model.tx = 10.0;
+                        else 
+                            CarFace.car_model.tx = 0.0;
+                            CarFace.car_model.posInterpolateSpeed = 0.025;
                     CarFace.car_model.ry = 180.0;
                     CarFace.car_model.warp();
                 }
 
                 CarFace.car_model.tx = 0.0;
                 CarFace.car_model.tz = 0.0;
-                CarFace.car_model.posInterpolateSpeed = 0.025;
+                CarFace.car_model.posInterpolateSpeed = 0.105;
             }
             else
             {
@@ -397,24 +732,56 @@ module PROJECT::ROOT::CarFace
     }
 }
 
-module PROJECT::ROOT::CarScroll::SelectBox
+module GTmodeProject::BuyCarRoot::CarScroll::SelectBox
 {
     function onValueChanged(context, index)
     {
         set_car(context);
+        last_car_index = index;
     }
 
     function onActivate(context, event, item)
     {
         main::sound.play("ok");
+
+        if (!CarScroll.visible)
+        {
+            toggleHUD(context);
+            return;
+        }
+
         ROOT.setFocus(nil);
         current_idx = CarScroll::SelectBox.index;
         set_col_select(context);
+
+        current_car_desc = "";
+        var car = main::menu::MCarData::GetCarLabel(current_car);
+        var did = main::menu::MCarData::GetDescriptionID(car);
+        
+        // Appears that missing description IDs are returned as 0, so ignore it unless it's the car actually assigned to 0
+        if (did > 0 || (did == 0 && car == "xb_15z_x_2wd_03"))
+        {
+            current_car_desc = context.getUpdateContext().loadFile("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+            logInfo("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+        }
+
+        if (main::menu::MSystem::GetLanguage() != "US" || current_car_desc.size < 1 || current_car_desc == "")
+        {
+            Pane::Description.visible = false;
+            // Move this back to the middle if we're not in an English locale or no description exists
+            Pane::Buy.x = 290;
+        }
+        else
+        {
+            Pane::Description.visible = true;
+            Pane::Buy.x = 350;
+        }
+
         return EVENTRESULT_FILTER;
     }
 }
 
-module PROJECT::ROOT::ColScroll::SelectBox
+module GTmodeProject::BuyCarRoot::ColScroll::SelectBox
 {
     function onValueChanged(context, index)
     {
@@ -444,7 +811,7 @@ module PROJECT::ROOT::ColScroll::SelectBox
     }
 }
 
-module PROJECT::ROOT::Pane
+module GTmodeProject::BuyCarRoot::Pane
 {
     function onCancel(context)
     {
@@ -470,8 +837,20 @@ module PROJECT::ROOT::Pane
     }
 }
 
-module PROJECT::ROOT::Pane::Buy
+module GTmodeProject::BuyCarRoot::Pane::Description
 {
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+
+        DescriptionPopup::open(context, current_car_desc);
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::BuyCarRoot::Pane::Buy
+{    
     function onActivate(context)
     {
         var price = nil;
@@ -486,16 +865,17 @@ module PROJECT::ROOT::Pane::Buy
         {
             main::sound.play("disable");
             openConfirmDialog(context, 2, context.translate(ROOT, "garage full"));
-            return EVENTRESULT_STOP;
+            return 1;
         }
 
         main::sound.play("ok");
 
         var res = nil;
+        var debug_free = nil;
         if (current_type == "used")
-            res = BuyCarDialog::open(context, current_gcar, 0, 0, 0);
+            [res, debug_free] = BuyCarDialog::open(context, current_gcar, 0, 0, 0,);
         else
-            res = BuyCarDialog::open(context, current_car, 0, 1, 1);
+            [res, debug_free] = BuyCarDialog::open(context, current_car, 0, 1, 1, current_car_available, discount_price); // Override the ability to purchase if the car has been won before
 
         if (res)
         {
@@ -513,7 +893,7 @@ module PROJECT::ROOT::Pane::Buy
             }
 
             main::game.setCarAvailable(current_car);
-            GetCarRoot::open(context, current_car, current_col, current_gcar, price, idx);
+            GetCarRoot::open(context, current_car, current_col, current_gcar, debug_free != nil ? 0 : price, idx);
             return EVENTRESULT_FILTER;
         }
 

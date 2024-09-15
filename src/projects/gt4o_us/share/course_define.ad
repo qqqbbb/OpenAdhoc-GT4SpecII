@@ -33,8 +33,8 @@ module CourseData
     }
     static akasaka = ArcadeCourse("akasaka", 5116.7, 23.2, true, true, true);
     static apricot = ArcadeCourse("apricot", 3863.7, 25.5, true, true, true);
-    static assisi = ArcadeCourse("assisi", 3399.6, 117.3, true, true, false);
-    static autumn = ArcadeCourse("autumn", 2950.0, 30.0, true, false, true);
+    static assisi = ArcadeCourse("assisi", 3399.6, 117.3, true, true, true);
+    static autumn = ArcadeCourse("autumn", 2950.0, 30.0, true, true, true);
     static capri = ArcadeCourse("capri", 4019.8, 138.0, true, true, true);
     static deepforest = ArcadeCourse("deepforest", 3600.8, 45.2, true, true, true);
     static fisco = ArcadeCourse("fisco", 4400.0, 38.1, false, true, true);
@@ -83,6 +83,7 @@ module CourseData
     static trialmt = ArcadeCourse("trialmt", 3982.8, 50.8, true, true, true);
     static tsukuba = ArcadeCourse("tsukuba", 2045.0, 5.3, false, true, true);
     static tsukuba_wet = ArcadeCourse("tsukuba_wet", 2045.0, 5.3, false, false, true);
+    static tt_valencia = ArcadeCourse("tt_valencia", 4051.0, 20.0, false, true, true);
     static yosemite = ArcadeCourse("yosemite", 4787.0, 63.0, true, false, true);
     static yosemite_dirt = ArcadeCourse("yosemite_dirt", 3519.5, 35.0, true, false, true);
     static yosemite_dirt_short = ArcadeCourse("yosemite_dirt_short", 1934.0, 31.5, true, false, true);
@@ -123,7 +124,8 @@ module CourseData
         suzuka_east,
         suzuka_west,
         sarthe,
-        sarthe_old
+        sarthe_old,
+        tt_valencia
     ];
 
     static city_crslist = [
@@ -240,6 +242,7 @@ module CourseData
         trialmt,
         tsukuba,
         tsukuba_wet,
+        //tt_valencia,
         yosemite,
         yosemite_dirt,
         yosemite_dirt_short,

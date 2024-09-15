@@ -13,13 +13,15 @@
 #define MODE_SELECT_RACE 0
 #define MODE_SELECT_MODE 1
 
-module PROJECT::ROOT
+module GTmodeProject::EventCourseRoot
 {
     static page_title;
     static race_list;
     static last_select_race;
     static menu_mode = MODE_SELECT_RACE;
     static preview_enable;
+    static last_focus_race_widget = nil;
+    static last_focus_mode_widget = nil;
     
     function onLoad(context)
     {
@@ -28,6 +30,13 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+        // Some really awful bug kept adding variables to the menuRef stac which would cause the game to crash in this function
+        // Never figured out what it was, but since the string for the SWF file is always at index 2, just keep popping from the stack until it aligns again
+        while (!main::game.menuRef(2).endWith(".swf"))
+        {   
+            main::game.menuPop();
+        }
+
         page_title = getEventTitle(main::game.menuRef(1));
         var bg_name = main::game.menuRef(2);
 
@@ -73,6 +82,7 @@ module PROJECT::ROOT
             case EVENT_PREFIX_AMATEUR:
             case EVENT_PREFIX_PROFESSIONAL:
             case EVENT_PREFIX_EXTREME:
+            case EVENT_PREFIX_SPECIAL:
                 large_flyer_image = "piece/event_flyer/" + getRaceType(eventinfo.race_code) + ".img";
                 break;
 
@@ -85,14 +95,15 @@ module PROJECT::ROOT
             case EVENT_PREFIX_FRENCH:
             case EVENT_PREFIX_ITALIAN:
             case EVENT_PREFIX_JAPANESE:
-            case EVENT_PREFIX_JAPANESE:
             case EVENT_PREFIX_KOREAN:
             case EVENT_PREFIX_BRITISH:
-            case EVENT_PREFIX_AMERICAN:
             case EVENT_PREFIX_AMERICAN:
                 small_flyer_image = "piece/event_flyer/ts_" + getRaceType(eventinfo.race_code) + ".img";
                 break;
         }
+
+        print large_flyer_image;
+        print small_flyer_image;
 
         if (large_flyer_image != nil)
         {
@@ -104,6 +115,19 @@ module PROJECT::ROOT
             flyer.doInitialize(context);
             flyer.adjustSize();
             flyer.x = flyer_cx - (flyer.w / 2.0);
+
+            if (wide) 
+            {
+                flyer.w = 480;
+                flyer.h = 286;
+                flyer.x = 80;
+            }
+            else
+            {
+                flyer.w = 640;
+                flyer.h = 285;
+                flyer.x = 0;
+            }
 
             var info = FG1::info;
             info.text = getEventDescriptionByRaceCode(context, ROOT, eventinfo.race_code);
@@ -127,6 +151,17 @@ module PROJECT::ROOT
                 flyer.doInitialize(context);
                 flyer.adjustSize();
                 flyer.x = flyer_cx - (flyer.w / 2.0);
+
+                if (wide) 
+                {
+                    flyer.w = 480;
+                    flyer.x = 80;
+                }
+                else
+                {
+                    flyer.w = 640;
+                    flyer.x = 0;
+                }
             }
             else
             {
@@ -162,6 +197,11 @@ module PROJECT::ROOT
             {
                 FG2::level.visible = false;
             }
+
+            if (wide)
+                FG2::level.x = 100;
+            else 
+                FG2::level.x = 18;
 
             FG1.visible = false;
             FG2.visible = true;
@@ -206,7 +246,8 @@ module PROJECT::ROOT
             Car::CarFace.car_model.warp();
         }
         
-        Car.visible = true
+        Car.visible = true;
+        setFadeActor(TypicalOpponents["bgf"]);
         context.cursor_visible = true;
     }
 
@@ -250,7 +291,7 @@ module PROJECT::ROOT
         {
             case MODE_SELECT_RACE:
                 set_can_focus(RaceSelect::ScrollBox::SelectBox, true);
-                set_can_focus(ModeSelect::ScrollBox::SelectBox, false );
+                set_can_focus(ModeSelect::ScrollBox::SelectBox, false);
 
                 RaceSelect::ScrollBox::SelectBox.can_focus = true;
                 ModeSelect::ScrollBox::SelectBox.can_focus = false;
@@ -376,9 +417,13 @@ module PROJECT::ROOT
         logo.adjustSize();
         
         var scale = 0.9;
+
+        if (wide)
+            scale = 0.75;
+
         var w = logo.w * scale;
         var h = logo.h * scale;
-        logo.x = logo_cx - (w / 2);
+        logo.x = logo_cx - (w / 2) + 2;
         logo.y = logo_cy - (h / 2);
 
         logo.w = w;
@@ -449,9 +494,14 @@ module PROJECT::ROOT
         logo.adjustSize();
         
         var scale = 0.9;
-        var w = logo.w * scale;
+        var scalew = scale;
+
+        if (wide)
+            scalew = 0.75;
+
+        var w = logo.w * scalew;
         var h = logo.h * scale;
-        logo.x = logo_cx - (w / 2);
+        logo.x = logo_cx - (w / 2) + 2;
         logo.y = logo_cy - (h / 2);
 
         logo.w = w;
@@ -636,29 +686,77 @@ module PROJECT::ROOT
         }
 
         ModeSelect.visible = true;
+        last_focus_mode_widget = ModeSelect::ScrollBox::SelectBox.first;
         ROOT.setFocus(entry);
+    }
+
+    function onActivate(context, event, object)
+    {
+        var item = object.getFocusedWidget();
+        if (item.name == "TypicalOpponents")
+        {
+            var code = getEventInfo(main::game.menuRef(1), main::game.menuRef(0)).race_code;
+            var event = code.substr(0, code.size - 5)
+            var opponent_data = context.getUpdateContext().loadFile("textdata/raw/TypicalOpponents/%{event}")
+            
+            if (opponent_data != nil && opponent_data != "")
+            {
+                var opps = opponent_data.split(";");
+                var col1 = "";
+                var col2 = "";
+
+                for (var i = 0; i < opps.size; i++)
+                {
+                    if (i >= 32)
+                    {
+                        col2 += "etc.";
+                        break;
+                    }
+
+                    if (i > 16)
+                        col2 += i == opps.size - 1 ? "- %{opps[i]}" : "- %{opps[i]}\n"; 
+                    else
+                        col1 += i == opps.size - 1 ? "- %{opps[i]}" : "- %{opps[i]}\n"; 
+                    
+                }
+                main::sound.play("ok");
+                TypicalOpponentsPopup::open(context, col1, col2, context.translate(ROOT, "TypicalOpponents"));
+            }
+            else 
+            {
+                main::sound.play("disable");
+            }
+        }
+        return EVENTRESULT_FILTER;
     }
 }
 
-module PROJECT::ROOT::RaceSelect::ScrollBox::SelectBox
+module GTmodeProject::EventCourseRoot::RaceSelect::ScrollBox::SelectBox
 {
     // Gold any event
-    // Select, L1, Up, Up, Select, R1, Down, Down, Select, L2, Select, R2, Select
+    // L2, R1, R1, R1, L1, L1, L2, R2
     static craft_command = [
-        PS2_PAD_CTRL_SELECT,
-        PS2_PAD_CTRL_L1,
-        PS2_PAD_CTRL_L3_UP,
-        PS2_PAD_CTRL_L3_UP,
-        PS2_PAD_CTRL_SELECT,
-        PS2_PAD_CTRL_R1,
-        PS2_PAD_CTRL_L3_DOWN,
-        PS2_PAD_CTRL_L3_DOWN,
-        PS2_PAD_CTRL_SELECT,
+        //PS2_PAD_CTRL_SELECT,
         PS2_PAD_CTRL_L2,
-        PS2_PAD_CTRL_SELECT,
+        PS2_PAD_CTRL_R1,
+        PS2_PAD_CTRL_R1,
+        //PS2_PAD_CTRL_SELECT,
+        PS2_PAD_CTRL_R1,
+        PS2_PAD_CTRL_L1,
+        PS2_PAD_CTRL_L1,
+        //PS2_PAD_CTRL_SELECT,
+        PS2_PAD_CTRL_L2,
+        //PS2_PAD_CTRL_SELECT,
         PS2_PAD_CTRL_R2,
-        PS2_PAD_CTRL_SELECT
+        //PS2_PAD_CTRL_SELECT
     ];
+
+    if (is_debug)
+    {
+        craft_command = [
+            PS2_PAD_CTRL_R1
+        ];
+    }
 
     function doCraft(context)
     {
@@ -677,6 +775,14 @@ module PROJECT::ROOT::RaceSelect::ScrollBox::SelectBox
 
     function onKeyPress(context, event)
     {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+
         if (craft(context, event, craft_command, doCraft))
             return EVENTRESULT_FILTER;
 
@@ -686,6 +792,7 @@ module PROJECT::ROOT::RaceSelect::ScrollBox::SelectBox
     function onActivate(context, event, object)
     {
         var item = object.getFocusedWidget();
+
         if (item == nil || !item.defined("racecode"))
         {
             main::sound.play("disable");
@@ -705,12 +812,19 @@ module PROJECT::ROOT::RaceSelect::ScrollBox::SelectBox
     }
 }
 
-module PROJECT::ROOT::ModeSelect::ScrollBox::SelectBox
+module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
 {
     function onActivate(context, event, object)
     {
         var item = object.getFocusedWidget();
-        if (item == nil || !item.defined("id"))
+        
+        if (item == nil)
+        {
+            main::sound.play("disable");
+            return EVENTRESULT_FILTER;
+        }
+
+        if (!item.defined("id"))
         {
             main::sound.play("disable");
             return EVENTRESULT_FILTER;
@@ -749,6 +863,8 @@ module PROJECT::ROOT::ModeSelect::ScrollBox::SelectBox
                     context.sync(0.25);
                 }
 
+                //clearFixedGpbs(context);
+
                 main::sound.play("next");
                 main::game.overwrite_enemy_num = 0;
                 main::game.course_code = "";
@@ -785,11 +901,54 @@ module PROJECT::ROOT::ModeSelect::ScrollBox::SelectBox
     }
 }
 
-module PROJECT::ROOT::hidden::CourseItem
+module GTmodeProject::EventCourseRoot::TypicalOpponents
+{
+    function onFocusEnter(context, event)
+    {
+        var tooltip = ROOT["Common"]["ToolTip"]["tip"];
+        tooltip.value = context.translate(ROOT, "TOOLTIP|TypicalOpponents");
+    }
+
+    function onFocusLeave(context, event)
+    {
+        var widget = nil;
+
+        if (menu_mode == MODE_SELECT_MODE)
+        {
+            if (last_focus_mode_widget == nil)
+                widget = ModeSelect::ScrollBox::SelectBox.first;
+            else
+                widget = last_focus_mode_widget;
+        }
+        else if (menu_mode == MODE_SELECT_RACE)
+        {
+            if (last_focus_race_widget == nil)
+                widget = RaceSelect::ScrollBox::SelectBox.first;
+            else
+                widget = last_focus_race_widget;
+        }
+
+        if (widget != nil)
+            ROOT.setFocus(widget);
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventCourseRoot::hidden::ModeItem
+{
+    function onFocusEnter(context, event)
+    {
+        last_focus_mode_widget = event.widget;
+    }
+}
+
+module GTmodeProject::EventCourseRoot::hidden::CourseItem
 {
     function onFocusEnter(context, event)
     {
         var widget = event.widget;
+        last_focus_race_widget = widget;
         if (widget != nil)
         {
             var tooltip_text = "";
@@ -819,7 +978,7 @@ module PROJECT::ROOT::hidden::CourseItem
             if (FG2.visible)
                 FG2::spec.text = spec;
         }
-
-        return EVENTRESULT_CONTINUE;
+        logInfo(ROOT.getFocusedWidget());
+        return 0;
     }
 }

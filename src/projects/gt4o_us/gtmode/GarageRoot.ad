@@ -10,7 +10,7 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::GarageRoot
 {
     static date_format;
     static trade_mode_;
@@ -33,6 +33,10 @@ module PROJECT::ROOT
     static TunerList_;
     static DTrainList_ = ["FF", "FR", "MR", "RR", "4WD"];
 
+    static is_from_event = false;
+    static event_based_filter_category;
+    static event_based_filters;
+
     function onLoad(context)
     {
         setFadeActor(List::left);
@@ -51,8 +55,9 @@ module PROJECT::ROOT
         dtrain_ = "all";
     }
 
-    function open(context)
+    function open(context, from_event)
     {
+        is_from_event = false;
         trade_mode_ = false;
         trade_game_ = nil;
 
@@ -62,6 +67,13 @@ module PROJECT::ROOT
         List::bg.visible = true;
         List::trade_bg.visible = false;
         ridingCarVisible_ = true;
+
+        if (from_event != nil)
+        {
+            is_from_event = from_event;
+            trade_mode_ = false;
+            trade_game_ = nil;
+        }
 
         start_page(context, ROOT);
     }
@@ -103,6 +115,9 @@ module PROJECT::ROOT
         NationList_ = nil;
         TunerList_ = nil;
 
+        event_based_filter_category = nil;
+        event_based_filters = nil;
+
         Focus::Nation::OptionMenu::popup::vbox.clearWindow(context);
         Focus::Manufacturer::OptionMenu::popup::vbox.clearWindow(context);
         Focus::DriveTrain::OptionMenu::popup::vbox.clearWindow(context);
@@ -115,13 +130,27 @@ module PROJECT::ROOT
 
     function onCancel(context)
     {
+        main::sound.play("cancel");
+
         garage_ = nil;
         trade_game_ = nil;
         trade_mode_ = nil;
 
-        main::sound.play("cancel");
+        if (is_from_event)
+        {
+            back_to_event(context, false);
+            return EVENTRESULT_FILTER;
+        }
+
         HomeRoot::open(context);
         return EVENTRESULT_FILTER;
+    }
+
+    function back_to_event(context, rememberFromGarage)
+    {
+        EventHallRoot::is_from_garage = rememberFromGarage;
+
+        start_page(context, EventHallRoot);
     }
 
     function init(context)
@@ -139,8 +168,8 @@ module PROJECT::ROOT
 
     function updateList(context)
     {
-        pickupCars();
-        doSort();
+        pickupCars(context);
+        doSort(context);
         updateView(context);
     }
 
@@ -179,7 +208,7 @@ module PROJECT::ROOT
                 item.active = false;
 
             var label = cg.getCarLabel();
-            item["name"].text = cg.short_name_no_year;
+            item["name"].text = cg.short_name_no_year.substr(0, cg.short_name_no_year.size - 4);
             item["name"].abbreviate();
 
             var year = main::menu::MCarData::GetModelYear(label);
@@ -259,7 +288,7 @@ module PROJECT::ROOT
         column_ = c;
     }
 
-    function doSort()
+    function doSort(context)
     {
         switch (column_)
         {
@@ -299,17 +328,135 @@ module PROJECT::ROOT
                         main::menu::MCarGarage::sortByRideHistory(list_, sortUp_); break;
                     case 9:
                         main::menu::MCarGarage::sortByAspiration(list_, !sortUp_); break;
+                    // These are sloooow with big garages
+                    // But I think I'd rather have them than not
+                    case 10:
+                        sortByCustom(context, "length", sortUp_);
+                        break;
+                    case 11:
+                        sortByCustom(context, "displacement", sortUp_); 
+                        break;
+                    case 12:
+                        sortByCustom(context, "enginetype", sortUp_);
+                        break;
                 }
 
                 break;
         }
     }
 
+    function sortByCustom(context, sorttype, sortUp)
+    {
+        // carlist = [[sortStat, MCarGarage object]]
+        var carList = [];
+        var stringList = [];
+        var dispNoneList = [];
+        var dispThreeList = [];
+        var dispFourList = [];
+        var dispFiveList = [];
+
+        for (var i = 0; i < list_.size; i++)
+        {
+            var stat;
+
+            switch (sorttype)
+            {
+                case "displacement":
+                    // All kinds of screwy string manipulation to try and standardise the displacement figures
+                    var cc = list_[i].getCatDisplacement();
+                    var mult;
+                    var middle = cc.substr(3, 1); // We're lucky that rotaries with multiplication, e.g. 654x2, and the only engines with float displacement, e.g. 499.5, occur at the same char index
+
+                    if (cc.endWith("cc"))
+                        cc = cc.substr(0, cc.size - 2);
+
+                    stat = cc.toInt();
+
+                    if (middle == "x" || middle == ".")
+                    {
+                        cc = cc.substr(0, 3);
+
+                        if (middle == "x")
+                        {
+                            var orig_cc = list_[i].getCatDisplacement();
+                            mult = orig_cc.substr(orig_cc.size - 3, 1);
+                            logInfo(mult);
+                            stat = cc.toFloat() + (mult.toFloat() / 10);
+                        }
+                    }
+
+                    
+                    if (cc.beginWith("-"))
+                        dispNoneList.push([stat, list_[i]]);
+                    else if (cc.size == 4)
+                        dispFourList.push([stat, list_[i]]);
+                    else if (cc.size == 3)
+                        dispThreeList.push([stat, list_[i]]);
+                    else if (cc.size == 5)
+                        dispFiveList.push([stat, list_[i]]);
+
+                    break;
+                case "enginetype":
+                    stat = list_[i].getCatEngineType();
+                    break;
+                case "length":
+                    stat = list_[i].getCatLength();
+                    break;
+            }
+
+            if (sorttype != "displacement")
+                carList.push([stat, list_[i]])
+        }
+        
+        if (sorttype != "displacement")
+            carList.sort(); 
+        else 
+        {
+            var lists = [];
+            lists.push(dispNoneList);
+            lists.push(dispThreeList);
+            lists.push(dispFourList);
+            lists.push(dispFiveList);
+            
+            for (var i = 0; i < lists.size; i++)
+            {
+                lists[i].sort();
+                logInfo(lists[i]);
+                for (var j = 0; j < lists[i].size; j++)
+                {
+                    carList.push(lists[i][j]);
+                }
+            }
+        }
+
+        var newList = [];
+
+        for (var i = 0; i < carList.size; i++)
+        {
+            var [stat, car] = carList[i];
+            newList.push(car);
+        }
+
+        if (!sortUp_)
+        {
+            var newList2 = [];
+
+            for (var i = newList.size - 1; i >= 0; i--)
+            {
+                newList2.push(newList[i]);
+            }
+            newList = newList2;
+        }
+
+        //logInfo(list);
+        list_ = newList;
+    }
+
     function changeSortColumn(context, c)
     {
         page_ = 0;
         setSortColumn(c);
-        doSort();
+        doSort(context);
         updateView(context);
     }
 
@@ -317,7 +464,7 @@ module PROJECT::ROOT
     {
         page_ = 0;
         column_ = c;
-        doSort();
+        doSort(context);
         updateView(context);
     }
 
@@ -332,7 +479,7 @@ module PROJECT::ROOT
     static dispItem_ = [
         "acquire date", "power", "weight", "power weight ratio",
         "price", "drive train", "nation", "tuner", "ride history",
-        "aspiration"
+        "aspiration", "length", "displacement", "enginetype"
     ];
 
     function initDispmenu(context, optionmenu, value, otherValue)
@@ -425,11 +572,20 @@ module PROJECT::ROOT
                 var n = car.rideHistory;
                 if (n < 1023)
                     return (n + 1).toString();
-
+                    
                 return "---";
 
             case 9:
                 return context.translate(ROOT, aspirationStr_[car.getAspiration()]);
+
+            case 10:
+                return car.getCatLength() + "mm";
+
+            case 11:
+                return car.getCatDisplacement();
+
+            case 12:
+                return car.getCatEngineType();
         }
     }
 
@@ -438,7 +594,8 @@ module PROJECT::ROOT
         var vbox = optionmenu["popup"]["vbox"];
         vbox.clearWindow(context);
         var list = garage_.pickupCountry();
-        
+        list.sort();
+
         NationList_ = list;
         var n = list.size;
         var index = 0;
@@ -462,6 +619,7 @@ module PROJECT::ROOT
         var vbox = optionmenu["popup"]["vbox"];
         vbox.clearWindow(context);
         var list = garage_.pickupTuner(nation_);
+        list.sort();
         
         TunerList_ = list;
         var n = list.size;
@@ -522,11 +680,18 @@ module PROJECT::ROOT
 
     function onKeyPress(context, event)
     {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
         return EVENTRESULT_CONTINUE;
     }
 }
 
-module PROJECT::ROOT::Focus::Nation::OptionMenu
+module GTmodeProject::GarageRoot::Focus::Nation::OptionMenu
 {
     function onPopupOpen(context)
     {
@@ -547,7 +712,7 @@ module PROJECT::ROOT::Focus::Nation::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Focus::Manufacturer::OptionMenu
+module GTmodeProject::GarageRoot::Focus::Manufacturer::OptionMenu
 {
     function onPopupOpen(context)
     {
@@ -566,7 +731,7 @@ module PROJECT::ROOT::Focus::Manufacturer::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Focus::DriveTrain::OptionMenu
+module GTmodeProject::GarageRoot::Focus::DriveTrain::OptionMenu
 {
     function onPopupOpen(context)
     {
@@ -585,7 +750,7 @@ module PROJECT::ROOT::Focus::DriveTrain::OptionMenu
     }
 }
 
-module PROJECT::ROOT::List::Title::ButtonName
+module GTmodeProject::GarageRoot::List::Title::ButtonName
 {
     function onActivate(context, event)
     {
@@ -594,7 +759,7 @@ module PROJECT::ROOT::List::Title::ButtonName
     }
 }
 
-module PROJECT::ROOT::List::Title::ButtonYear
+module GTmodeProject::GarageRoot::List::Title::ButtonYear
 {
     function onActivate(context, event)
     {
@@ -603,7 +768,7 @@ module PROJECT::ROOT::List::Title::ButtonYear
     }
 }
 
-module PROJECT::ROOT::List::Title::ButtonColor
+module GTmodeProject::GarageRoot::List::Title::ButtonColor
 {
     function onActivate(context, event)
     {
@@ -612,7 +777,7 @@ module PROJECT::ROOT::List::Title::ButtonColor
     }
 }
 
-module PROJECT::ROOT::List::Title::ButtonItem0
+module GTmodeProject::GarageRoot::List::Title::ButtonItem0
 {
     function onActivate(context, event)
     {
@@ -621,7 +786,7 @@ module PROJECT::ROOT::List::Title::ButtonItem0
     }
 }
 
-module PROJECT::ROOT::List::Title::ButtonItem1
+module GTmodeProject::GarageRoot::List::Title::ButtonItem1
 {
     function onActivate(context, event)
     {
@@ -630,7 +795,7 @@ module PROJECT::ROOT::List::Title::ButtonItem1
     }
 }
 
-module PROJECT::ROOT::List::Title::SortMenu0
+module GTmodeProject::GarageRoot::List::Title::SortMenu0
 {
     function onValueChanged(context, index)
     {
@@ -646,7 +811,7 @@ module PROJECT::ROOT::List::Title::SortMenu0
     }
 }
 
-module PROJECT::ROOT::List::Title::SortMenu1
+module GTmodeProject::GarageRoot::List::Title::SortMenu1
 {
     function onValueChanged(context, index)
     {
@@ -662,7 +827,7 @@ module PROJECT::ROOT::List::Title::SortMenu1
     }
 }
 
-module PROJECT::ROOT::List::Cars
+module GTmodeProject::GarageRoot::List::Cars
 {
     static index_ = 0;
 
@@ -707,6 +872,25 @@ module PROJECT::ROOT::List::Cars
             }
             else
             {
+                // Avoid the possibility of getting around the SureNoOpen/SureNoStrange restrictions with this menu
+                if (is_from_event)
+                {
+                    if (main::game.menuRef(2) != "Special")
+                    {
+                        if (main::menu::MCarData::GetOpenModelType(car.car_code) == 2)
+                        {
+                            main::sound.play("disable");
+                            openConfirmDialog(context, 2, context.translate(TopRoot, "NoOpenModelCar").format(car.name));
+                            return;
+                        }
+                        if (car.isStrange())
+                        {
+                            main::sound.play("disable");
+                            openConfirmDialog(context, 2, context.translate(TopRoot, "NoStrangeCar").format(car.name));
+                            return;
+                        }
+                    }
+                }
                 main::sound.play("ok");
 
                 var manager = nil;
@@ -719,8 +903,52 @@ module PROJECT::ROOT::List::Cars
                         var r = garage_.popGarageCar(car.getGarageIndex(), car, manager);
                         if (r == "OK")
                         {
-                            CarViewRoot::current_car = car;
-                            start_page(context, CarViewRoot);
+                            if (!is_from_event)
+                            {
+                                CarViewRoot::current_car = car;
+                                start_page(context, CarViewRoot);
+                            }
+                            else
+                            {
+                                var manager = nil;
+                                while (1)
+                                {
+                                    manager = checkGameData(context, 0, manager);
+                                    if (manager != nil)
+                                    {
+                                        var r = main::game.garage.pushRidingCar(manager);
+                                        if (r == "OK")
+                                        {
+                                            var hasPrevCar = main::game.garage.hasRidingCar();
+                                            var prevCar = main::menu::MCarGarage();
+
+                                            if (hasPrevCar)
+                                                prevCar.copyFrom(main::game.garage.riding_car);
+
+                                            main::game.garage.setRidingCar(car.getGarageIndex(), car);
+                                            if (doAutoSave(context, ROOT, nil, 0, 0))
+                                            {
+                                                refreshRideCar(ROOT, context, true);
+                                                garage_.popGarageCar(car.getGarageIndex(), car, manager);
+                                                back_to_event(context, true);
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                main::game.garage.cancelRidingCar(hasPrevCar ? prevCar.getGarageIndex() : -1, prevCar);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (reportGameDataError(context, 0, 1, r))
+                                                continue;
+                                        }
+                                    }
+
+                                    openConfirmDialog(context, false, context.translate(ROOT, "cancel change car"));
+                                    break;
+                                }
+                            }
                             break;
                         }
 
@@ -754,8 +982,7 @@ module PROJECT::ROOT::List::Cars
 
             return EVENTRESULT_FILTER;
         }
-        
-        if (event.keysym == PS2_PAD_CTRL_L3_RIGHT)
+        else if (event.keysym == PS2_PAD_CTRL_L3_RIGHT)
         {
             if (list_.size >= 10)
             {
@@ -776,7 +1003,7 @@ module PROJECT::ROOT::List::Cars
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line0
+module GTmodeProject::GarageRoot::List::Cars::Line0
 {
     function onFocusEnter(context, event)
     {
@@ -785,7 +1012,7 @@ module PROJECT::ROOT::List::Cars::Line0
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line1
+module GTmodeProject::GarageRoot::List::Cars::Line1
 {
     function onFocusEnter(context, event)
     {
@@ -794,7 +1021,7 @@ module PROJECT::ROOT::List::Cars::Line1
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line2
+module GTmodeProject::GarageRoot::List::Cars::Line2
 {
     function onFocusEnter(context, event)
     {
@@ -803,7 +1030,7 @@ module PROJECT::ROOT::List::Cars::Line2
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line3
+module GTmodeProject::GarageRoot::List::Cars::Line3
 {
     function onFocusEnter(context, event)
     {
@@ -812,7 +1039,7 @@ module PROJECT::ROOT::List::Cars::Line3
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line4
+module GTmodeProject::GarageRoot::List::Cars::Line4
 {
     function onFocusEnter(context, event)
     {
@@ -821,7 +1048,7 @@ module PROJECT::ROOT::List::Cars::Line4
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line5
+module GTmodeProject::GarageRoot::List::Cars::Line5
 {
     function onFocusEnter(context, event)
     {
@@ -830,7 +1057,7 @@ module PROJECT::ROOT::List::Cars::Line5
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line6
+module GTmodeProject::GarageRoot::List::Cars::Line6
 {
     function onFocusEnter(context, event)
     {
@@ -839,7 +1066,7 @@ module PROJECT::ROOT::List::Cars::Line6
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line7
+module GTmodeProject::GarageRoot::List::Cars::Line7
 {
     function onFocusEnter(context, event)
     {
@@ -848,7 +1075,7 @@ module PROJECT::ROOT::List::Cars::Line7
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line8
+module GTmodeProject::GarageRoot::List::Cars::Line8
 {
     function onFocusEnter(context, event)
     {
@@ -857,7 +1084,7 @@ module PROJECT::ROOT::List::Cars::Line8
     }
 }
 
-module PROJECT::ROOT::List::Cars::Line9
+module GTmodeProject::GarageRoot::List::Cars::Line9
 {
     function onFocusEnter(context, event)
     {
@@ -866,12 +1093,12 @@ module PROJECT::ROOT::List::Cars::Line9
     }
 }
 
-module PROJECT::ROOT::List::left
+module GTmodeProject::GarageRoot::List::left
 {
 
 }
 
-module PROJECT::ROOT::List::right
+module GTmodeProject::GarageRoot::List::right
 {
 
 }

@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT 
+module OptionProject::OptionRoot 
 {
     #include "../share/online_util.ad";
 
@@ -105,8 +105,9 @@ module PROJECT::ROOT
         OptionPage("Arcade", ArcadeRoot, nil),
         OptionPage("SplitBattle", SplitBattleRoot, nil),
         OptionPage("LAN", LANPopup, nil),
-        OptionPage("Network", NetRoot, nil),
+        //OptionPage("Network", NetRoot, nil),
         OptionPage("Course", CourseRoot, nil),
+        OptionPage("Dummy", nil, nil),
 
         OptionPage("Group", "GroupPhotoMode", nil),
         OptionPage("Album", AlbumRoot, nil),
@@ -130,7 +131,12 @@ module PROJECT::ROOT
         OptionPage("Group", "GroupMisc", nil),
         OptionPage("Misc", MiscRoot, nil),
         OptionPage("Unit", UnitRoot, nil),
-        OptionPage("Language", LanguageRoot, nil)
+        OptionPage("Language", LanguageRoot, nil),
+        OptionPage("Secret", SecretRoot, nil),
+        OptionPage("Monitor", MonitorRoot, nil),
+
+        OptionPage("Group", "GroupSpecII", nil),
+        OptionPage("SpecIISetting", SpecIISettingRoot, nil)
     ];
 
     static options_for_demo = [
@@ -176,6 +182,21 @@ module PROJECT::ROOT
 
         item["label"].text = context.translate(ROOT, option.title);
         item["bg"].image_path = "image/option/" + option.path + ".png";
+        
+        if (main::game.option.wide_mode)
+        {
+            item["bg"].w *= 0.875;
+            item["bg"].x += 5;
+        }
+        else
+        {
+            if (option.title == "SpecIISetting")
+            {
+                item["bg"].w *= 0.875;
+                item["bg"].x += 5;
+            }
+        }
+
         item["bg"].doInitialize(context);
         item["label"].adjustScale();
 
@@ -262,14 +283,6 @@ module PROJECT::ROOT
         sLastItemY = top_y + y;
         item.navigate_box = [0, 0, item.w * 5, item.h];
 
-        if (sSecretDone)
-        {
-            var lw = appendSecret(context);
-
-            if (lw != nil)
-                last_focused_widget = lw;
-        }
-
         ScrollWindow.updateGeometry();
         ScrollWindow::clip::space.h = ScrollWindow::clip::space.h + 32.0;
 
@@ -291,18 +304,18 @@ module PROJECT::ROOT
     {
         main::sound.play("cancel");
         
-        if (openConfirmDialog(context, 1, context.translate(ROOT, context.translate(ROOT, "Exit?"))))
+        if (openConfirmDialog(context, 1, context.translate(ROOT, "Exit?")))
         {
             var major = main::game.major_menu_project;
 
             if (major != "")
                 main::game.next_menu_project = major;
-            else
+            else 
                 main::game.setReturnToLastMenuProject();
             start_page(context, nil);
         }
 
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 
     function onActivate(context, event)
@@ -317,85 +330,22 @@ module PROJECT::ROOT
         
         page["open"](context);
 
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
-
-    static sSecretCommand = [
-        PS2_PAD_CTRL_L1,
-        PS2_PAD_CTRL_L3_UP,
-        PS2_PAD_CTRL_L2,
-        PS2_PAD_CTRL_L3_DOWN,
-        PS2_PAD_CTRL_R1,
-        PS2_PAD_CTRL_L3_LEFT,
-        PS2_PAD_CTRL_R2,
-        PS2_PAD_CTRL_L3_RIGHT,
-        PS2_PAD_CTRL_START,
-        PS2_PAD_CTRL_START
-    ];
-
-    static sSecretIndex = 0;
-    static sSecretDone = isOnlineManager();
 
     function onKeyPress(context, event)
     {
-        if (event.port == 0)
-            return EVENTRESULT_CONTINUE;
-
         switch (event.keysym)
         {
-            case sSecretCommand[sSecretIndex]:
-                sSecretIndex++;
-                if (sSecretIndex >= sSecretCommand.size)
-                {
-                    main::sound.play("return");
-                    appendSecret(context);
-                    ScrollWindow.updateGeometry();
-                    ScrollWindow::clip::space.h = ScrollWindow::clip::space.h + 32.0;
-                    return EVENTRESULT_FILTER;
-                }
-                break;
-                
-            default:
-                sSecretIndex = 0;
+            case PS2_PAD_CTRL_L1:
+                logInfo(main::menu::MSystem::GetBuildNumber());
+                return EVENTRESULT_FILTER;
         }
-        //sSecretIndex = 0;
-        return EVENTRESULT_CONTINUE;
-    }
-
-    function appendSecret(context)
-    {
-        ROOT.visible = false;
-        var i = sLastItemNum;
-        var lw = nil;
-        var w = hidden::Item.w + 2.0;
-        var h = hidden::Item.h + 4.0;
-        var x = 0;
-        var y = sLastItemY + h;
-
-        var option = OptionPage("Secret", SecretRoot, nil);
-        var item = AppendItem(context, option, 0, sLastItemX, sLastItemY);
-
-        if (i == last_focused_number)
-            lw = item;
-
-        i++;
-
-        option = OptionPage("Monitor", MonitorRoot, nil);
-        item = AppendItem(context, option, 0, sLastItemX + (item.w + 2.0), sLastItemY);
-
-        if (i == last_focused_number)
-            lw = item;
-
-        i++; 
-        sSecretIndex = 0;
-        sSecretDone = 1;
-        ROOT.visible = true;
-
-        return lw;
+        return STATE_EXIT;
     }
 }
 
-module PROJECT::ROOT::Exit
+module OptionProject::OptionRoot::Exit
 {
     function onActivate(context)
     {
@@ -403,16 +353,16 @@ module PROJECT::ROOT::Exit
     }
 }
 
-module PROJECT::ROOT::hidden::Item
+module OptionProject::OptionRoot::hidden::Item
 {
     function onFocusEnter(context, event)
     {
         ROOT::ToolTip::tip.key = event.widget["title"];
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::LANPopup
+module OptionProject::LANPopup
 {
     static original_y = Pane.y;
     
@@ -478,7 +428,7 @@ module PROJECT::LANPopup
 
     function EraseEndOfLineSpace(text)
     {
-        while (text.at(text.size - 1) == 0x20) // " "
+        while (text.at(text.size - 1) == 32)
             text = text.substr(0, text.size - 1);
 
         return text;
@@ -534,11 +484,11 @@ module PROJECT::LANPopup
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::LANPopup::Pane::Host::OptionMenu
+module OptionProject::LANPopup::Pane::Host::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -546,7 +496,7 @@ module PROJECT::LANPopup::Pane::Host::OptionMenu
     }
 }
 
-module PROJECT::LANPopup::Pane::Style::OptionMenu
+module OptionProject::LANPopup::Pane::Style::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -554,7 +504,7 @@ module PROJECT::LANPopup::Pane::Style::OptionMenu
     }
 }
 
-module PROJECT::LANPopup::Pane::PlayerNum::slider
+module OptionProject::LANPopup::Pane::PlayerNum::slider
 {
     function onValueChanged(context)
     {
@@ -562,7 +512,7 @@ module PROJECT::LANPopup::Pane::PlayerNum::slider
     }
 }
 
-module PROJECT::LANPopup::Pane::MonitorNum::slider
+module OptionProject::LANPopup::Pane::MonitorNum::slider
 {
     function onValueChanged(context)
     {
@@ -571,23 +521,23 @@ module PROJECT::LANPopup::Pane::MonitorNum::slider
     }
 }
 
-module PROJECT::LANPopup::Pane::Buttons::Cancel
+module OptionProject::LANPopup::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::LANPopup::Pane::Buttons::OK
+module OptionProject::LANPopup::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

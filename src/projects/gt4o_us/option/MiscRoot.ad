@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::MiscRoot
 {
     function open(context)
     {
@@ -56,20 +56,17 @@ module PROJECT::ROOT
         setupSlider(Pane::DemoMovieInterval::slider, 1, context.translate(ROOT, "Off"));
     }
 
-    function onFinalize(context)
-    {
+    function onFinalize(context) { }
 
-    }
-
-    function onCancel(context, event, item)
+    function onCancel(context)
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::AutoDemo::slider
+module OptionProject::MiscRoot::Pane::AutoDemo::slider
 {
     function onValueChanged(context)
     {
@@ -77,7 +74,7 @@ module PROJECT::ROOT::Pane::AutoDemo::slider
     }
 }
 
-module PROJECT::ROOT::Pane::DemoMovieInterval::slider
+module OptionProject::MiscRoot::Pane::DemoMovieInterval::slider
 {
     function onValueChanged(context)
     {
@@ -85,23 +82,23 @@ module PROJECT::ROOT::Pane::DemoMovieInterval::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::MiscRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::MiscRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

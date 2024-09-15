@@ -1,0 +1,102 @@
+#define STORAGE_HD 0
+#define STORAGE_MC 1
+
+static specii_opt = main::menu::MOption();
+static netcnf = main::menu::MNetConf();
+static netcnf_active = false;
+netcnf.InitYncf();
+netcnf.InitProperties();
+
+function SaveKvp(context, key, value)
+{
+    var netcnf = main::menu::MNetConf();
+    netcnf.InitYncf();
+    netcnf.InitProperties();
+    // path, ifc, vendor, product - normally vender and product, which gets concatenated as {vendor}/{product} - we reuse them as key/value
+    // changing ifc creates a new entry if it doesn't exist - if vendor/product is the same as an existing entry, dev000 won't be created
+    // if it does exist, EditFiles should be used
+    netcnf.AddFiles("mc0:", "Config_SpecII", key, value); // key/value = 0x100 in size max (or combined?)
+    //netcnf.AddFiles("mc0:", "Config_SpecII", "randomizer_enable", "1");
+
+    var count = netcnf.GetList(0, "mc0:");
+    for (var i = 0; i < count; i++)
+    {
+        var [stat, net, ifc, dev] = netcnf.GetNetListEntry(i); // stat = result as int, net = "Combination1", ifc = empty? can't be fetched, dev = {vendor}/{product}
+        openConfirmDialog(context, 0, dev); 
+    }
+}
+
+function LoadKvp(context, key)
+{
+    if (!netcnf_active)
+    {
+        openConfirmDialog(context, 0, "netcnf.InitYncf return:\n%{netcnf.InitYncf()}");
+        openConfirmDialog(context, 0, "netcnf.InitProperties return:\n%{netcnf.InitProperties()}");
+        netcnf_active = true;
+    }
+
+    var count = netcnf.GetList(0, "mc0:");
+    for (var i = 0; i < count; i++)
+    {
+        var [stat, net, ifc, dev] = netcnf.GetNetListEntry(i); // stat = result as int, net = "Combination1", ifc = empty? can't be fetched, dev = {vendor}/{product}
+        var [k, v] = dev.split("/");
+        openConfirmDialog(context, 0, "LoadKvp loop %{i}\ndev = %{dev}\nk = %{k}\nv = %{v}");
+        if (k == key)
+            return v;
+    }
+    return "Key %{key} not found";
+}
+
+function SaveToOptionsEnt(context, fileName, data)
+{
+    //var opt = main::menu::MOption();
+    specii_opt.entrance_addr = data;
+    specii_opt.bgm_playlist.play_data = Array(0);
+    specii_opt.slide_playlist.play_data = Array(0);
+    specii_opt.save(STORAGE_MC, fileName);
+    //openConfirmDialog(context, 0, specii_opt);
+
+    //opt.load(STORAGE_MC, "options.bin");
+}
+
+function LoadFromOptionsEnt(context, fileName)
+{
+    //specii_opt = main::menu::MOption();
+    openConfirmDialog(context, 0, "Loading from %{fileName}");
+    specii_opt.load(STORAGE_MC, fileName);
+    return specii_opt.entrance_addr;
+}
+
+function GetASMTCS(context)
+{
+    var opt2 = main::menu::MOption();
+    opt2.load(STORAGE_MC, "specii_global.bin");
+    opt2.apply();
+    var assists = nil;
+    //assists = LoadKvp(context, "assists");
+    assists = opt2.entrance_addr;
+
+    openConfirmDialog(context, 0, opt2);
+
+    if (!assists.beginWith("asmo"))
+        return [-1, -1, -1];
+
+    var [asmo, asmu, tcsc] = assists.split(";");
+
+    if (!asmo.beginWith("asmo"))
+        asmo = -1;
+    else 
+        asmo = asmo.split("=")[1]; // Set to equals value
+
+    if (!asmu.beginWith("asmu"))
+        asmu = -1;
+    else
+        asmu = asmu.split("=")[1];
+
+    if (!tcsc.beginWith("tcsc"))
+        tcsc = -1;
+    else 
+        tcsc = tcsc.split("=")[1];
+
+    return [asmo, asmu, tcsc];
+}

@@ -1,4 +1,4 @@
-module PROJECT::ROOT
+module OptionProject::KeyconfigRoot
 {
     static original_y = Pane.y;
     static peripheral = nil;
@@ -30,7 +30,7 @@ module PROJECT::ROOT
             var name = options[i];
             var item = nil;
             
-            if (name == "L1" || name == "L2" || name == "R1" || name == "R2")
+            if ((name == "L1" || name == "L2") || (name == "R1" || name == "R2"))
             {
                 item = hidden::Item.doCopy();
                 item["img"].image_path = "image/option/keys/" + name + ".png";
@@ -41,12 +41,14 @@ module PROJECT::ROOT
                 item = hidden::Item.doCopy();
                 item["img"].image_path = "image/option/keys/" + name + ".png";   
             }
-            else
-            {
+            else 
+            { 
                 item = OptionRoot::hidden::OptionItem.doCopy();
                 item["label"].text = context.translate(ROOT, name);
                 item["label"].adjustScale();
             }
+            
+
             vbox.appendChild(context, item);
         }
     }
@@ -161,9 +163,21 @@ module PROJECT::ROOT
     {
         main::game.setNeedSave();
         var option = main::game.option;
+
+        var analog_accel_list_override;
+        var analog_brake_list_override;
+
+        analog_accel_list_override = key_module["analog_accel_list"]
+        analog_brake_list_override = key_module["analog_brake_list"];
+
+        if ((Pane::Accel::OptionMenu.index == 5 || Pane::Accel::OptionMenu.index == 7) || (Pane::Brake::OptionMenu.index == 5 || Pane::Brake::OptionMenu.index == 7))
+            main::game.toggleTriggerSensitivity(1);
+        else
+            main::game.toggleTriggerSensitivity(0);
+
         apply_dual(context, option, Pane::Steering::OptionMenu.index, "", "ANALOG_STEER", key_module["button_steer_list"], key_module["analog_steer_list"]);
-        apply_dual(context, option, Pane::Accel::OptionMenu.index, "BUTTON_ACCEL", "ANALOG_ACCEL", key_module["button_accel_list"], key_module["analog_accel_list"]);
-        apply_dual(context, option, Pane::Brake::OptionMenu.index, "BUTTON_BRAKE", "ANALOG_BRAKE", key_module["button_brake_list"], key_module["analog_brake_list"]);
+        apply_dual(context, option, Pane::Accel::OptionMenu.index, "BUTTON_ACCEL", "ANALOG_ACCEL", key_module["button_accel_list"], analog_accel_list_override);
+        apply_dual(context, option, Pane::Brake::OptionMenu.index, "BUTTON_BRAKE", "ANALOG_BRAKE", key_module["button_brake_list"], analog_brake_list_override);
         apply_dual(context, option, Pane::Reverse::OptionMenu.index, "BUTTON_REVERSEGEAR", "ANALOG_REVERSEGEAR", key_module["button_reverse_list"], key_module["analog_reverse_list"]);
         apply_dual(context, option, Pane::Side::OptionMenu.index, "BUTTON_SIDEBRAKE", "ANALOG_SIDEBRAKE", key_module["button_side_list"], key_module["analog_side_list"]);
         apply_dual(context, option, Pane::ShiftUp::OptionMenu.index, "BUTTON_SHIFTUP", "ANALOG_SHIFTUP", key_module["button_shiftup_list"], key_module["analog_shiftup_list"]);
@@ -239,7 +253,7 @@ module PROJECT::ROOT
     {
         main::sound.play("cancel");   
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 
     function get_key(optionmenu, button_list, analog_list)
@@ -250,15 +264,14 @@ module PROJECT::ROOT
             return button_list[idx];
         else if (idx - button_list.size < analog_list.size)
             return analog_list[idx - button_list.size];
-        else
-            return nil;
+
+        return nil;
     }
 
     function on_value_changed(context)
     {
         var pairs = [];
         conflict = false;
-        
         Pane::Steering.active = false;
         Pane::Accel.active = false;
         Pane::Brake.active = false;
@@ -334,7 +347,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Pane::Steering::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::Steering::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -342,7 +355,7 @@ module PROJECT::ROOT::Pane::Steering::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Accel::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::Accel::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -350,7 +363,7 @@ module PROJECT::ROOT::Pane::Accel::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Brake::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::Brake::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -358,7 +371,7 @@ module PROJECT::ROOT::Pane::Brake::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Reverse::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::Reverse::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -366,7 +379,7 @@ module PROJECT::ROOT::Pane::Reverse::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Side::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::Side::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -374,7 +387,7 @@ module PROJECT::ROOT::Pane::Side::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::ShiftUp::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::ShiftUp::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -382,7 +395,7 @@ module PROJECT::ROOT::Pane::ShiftUp::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::ShiftDown::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::ShiftDown::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -390,7 +403,7 @@ module PROJECT::ROOT::Pane::ShiftDown::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::BackView::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::BackView::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -398,7 +411,7 @@ module PROJECT::ROOT::Pane::BackView::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::PlayView::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::PlayView::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -406,7 +419,7 @@ module PROJECT::ROOT::Pane::PlayView::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Special::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::Special::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -414,7 +427,7 @@ module PROJECT::ROOT::Pane::Special::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Ghost::OptionMenu
+module OptionProject::KeyconfigRoot::Pane::Ghost::OptionMenu
 {
     function onValueChanged(context)
     {
@@ -422,23 +435,23 @@ module PROJECT::ROOT::Pane::Ghost::OptionMenu
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::KeyconfigRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Default
+module OptionProject::KeyconfigRoot::Pane::Buttons::Default
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         if (!openConfirmDialog(context, 1, context.translate(ROOT, "reset Default. OK?")))
-            return EVENTRESULT_FILTER;
+            return STATE_YIELD;
 
         var option = main::game.option;
         key_module["setDefault"](context, option, port);
@@ -446,7 +459,7 @@ module PROJECT::ROOT::Pane::Buttons::Default
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::KeyconfigRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
@@ -454,12 +467,12 @@ module PROJECT::ROOT::Pane::Buttons::OK
         {
             main::sound.play("disable");
             openConfirmDialog(context, 2, context.translate(ROOT, "Conflict"));
-            return EVENTRESULT_FILTER;
+            return STATE_YIELD;
         }
 
         main::sound.play("ok");
         apply(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

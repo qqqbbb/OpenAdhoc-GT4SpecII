@@ -1,0 +1,185 @@
+
+
+
+
+
+
+
+
+
+
+
+
+module GTmodeProject::QuickMenuPopup
+{
+    #define MENU_POP_COUNT 16
+
+    function clearMenuRefs(context)
+    {
+        for (var i = 0; i < MENU_POP_COUNT; i++)
+            main::game.menuPop();
+    }
+
+    function setMoveActor(widget)
+    {
+        var actor = main::menu::MMoveActor(widget, widget.x, 480.0);
+        widget.actor = actor;
+        widget.actor.ratio = 0.2;
+    }
+
+    function setFadeActorRoot()
+    {
+        var actor = main::menu::MFadeActor(ROOT, 1.0);
+        actor.repeat = false;
+        actor.period = 0.5;
+        ROOT.actor = actor;
+    }
+
+    setMoveActor(Pane);
+    setFadeActorRoot();
+
+    function open(context)
+    {
+        ROOT.setFocus(nil);
+        Pane.actor.destinationY = 480.0;
+        Pane.actor.out = true;
+        Pane.actor.warp();
+
+        ROOT.actor.out = true;
+        ROOT.actor.warp();
+
+        context.pushPage(ROOT);
+        Pane.actor.out = false;
+        ROOT.actor.out = false;
+        ROOT.setFocus(Pane::Close);
+    }
+
+    function close(context)
+    {
+        ROOT.setFocus(nil);
+        Pane.actor.destinationY = 480.0;
+        Pane.actor.out = true;
+        ROOT.actor.out = true;
+
+        setCrossTransition(context);
+
+        context.sync(0.25);
+
+        context.closePage(ROOT);
+    }
+
+    function onInitialize(context)
+    {
+
+    }
+
+    function onFinalize(context) { }
+
+    function onCancel(context, event, item)
+    {
+        main::sound.play("cancel");
+        close(context);
+        return EVENTRESULT_FILTER;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                onCancel(context);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }    
+}
+
+
+module GTmodeProject::QuickMenuPopup::Pane::Close
+{
+    function onActivate(context, event, item)
+    {
+        onCancel(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::QuickMenuPopup::Pane::Map
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        clearMenuRefs(context);
+
+        close(context);
+        start_page(context, TopRoot);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::QuickMenuPopup::Pane::Home
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        clearMenuRefs(context);
+
+        close(context);
+        HomeRoot::open(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::QuickMenuPopup::Pane::EventHall
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        close(context);
+        EventHallPopup::open(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::QuickMenuPopup::Pane::Setting
+{
+    function onActivate(context, event, item)
+    {
+        if (main::game.garage.hasRidingCar() && !main::game.isSuspended())
+        {
+            main::sound.play("ok");
+
+            clearMenuRefs(context);
+
+            main::game.major_menu_project = "gtmode";
+            main::game.major_menu_page = "TopRoot";
+            exit_kick_project(context, "setting");
+            start_page(context, nil);
+            main::game.race_code = "";
+            main::game.course_code = "";
+            main::game.major_menu_widget = "";
+            return EVENTRESULT_FILTER;
+        }
+    }
+}
+
+module GTmodeProject::QuickMenuPopup::Pane::Option
+{
+    function onActivate(context, event, item)
+    {
+        main::sound.play("ok");
+
+        clearMenuRefs(context);
+
+        main::game.major_menu_project = "gtmode";
+        main::game.major_menu_page = "TopRoot";
+        exit_kick_project(context, "option");
+        start_page(context, nil);
+        main::game.major_menu_widget = "";
+        return EVENTRESULT_FILTER;
+    }
+}

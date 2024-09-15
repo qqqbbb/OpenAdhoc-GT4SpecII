@@ -10,21 +10,119 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::DealerRoot
 {
+    #include "../specii/dealerinfo.ad";
+
+    static pic_orig_x = DealerRoot["screenimg"].x;
+    static pic_orig_y = DealerRoot["screenimg"].y;
+    static pic_orig_w = DealerRoot["screenimg"].w;
+    static pic_orig_h = DealerRoot["screenimg"].h;
+
+    // Statics galore
+    // These are all ever so slightly different, blame PD
+    static logo_orig_x = DealerRoot["Logo"].x;
+    static logo_orig_y = DealerRoot["Logo"].y;
+    static logo_orig_w = DealerRoot["Logo"].w;
+    static logo_orig_h = DealerRoot["Logo"].h;
+
+    static new_orig_x = DealerRoot["New"].x;
+    static new_orig_y = DealerRoot["New"]["bg"].y;
+    static new_orig_h = DealerRoot["New"]["bg"].h;
+
+    static classic_orig_x = DealerRoot["Legend"].x;
+    static classic_orig_y = DealerRoot["Legend"]["bg"].y;
+    static classic_orig_h = DealerRoot["Legend"]["bg"].h;
+
+    static tuner_orig_x = DealerRoot["Tuner"].x;
+    static tuner_bg_orig_x = DealerRoot["Tuner"]["bg"].x;
+    static tuner_orig_y = DealerRoot["Tuner"]["bg"].y;
+    static tuner_orig_w = DealerRoot["Tuner"]["bg"].w;
+    static tuner_orig_h = DealerRoot["Tuner"]["bg"].h;
+
+    static event_orig_x = DealerRoot["Event"].x;
+    static event_orig_y = DealerRoot["Event"]["bg"].y;
+    static event_orig_h = DealerRoot["Event"]["bg"].h;
+
+    static last_dealer;
+    static last_focus_widget;
+
+    function setFadeActor(widget)
+    {
+        var actor = main::menu::MFadeActor(widget, 1.0);
+        widget.actor = actor;
+        widget.actor.period = 0.5;
+        widget.actor.repeat = true;
+    }
+
+    function setCrossFade(widget, on)
+    {
+        var actor = main::menu::MFadeActor(widget, 1.0);
+        widget.actor = actor;
+        widget.actor.period = 2.0;
+        widget.actor.repeat = true;
+        widget.actor.out = on;
+        widget.actor.over = 1.0;
+        widget.actor.slope = 0.5;
+        widget.actor.warp();
+    }
+
     function onInitialize(context)
     {
         var nation = main::game.menuRef(1);
         var dealer = main::game.menuRef();
+        var bgNum = 0;
 
-        enterPageNation(context, ROOT, context.translate(NationRoot, "CarTown_" + nation), nation);
+        if (dealer != "polyphony")
+        {
+            setFadeActor(screenimg);
+            setFadeActor(screenimg2);
+            setCrossFade(screenimg, false);
+            setCrossFade(screenimg2, true);
+        }
+        else
+        {
+            screenimg.actor = nil;
+            screenimg2.actor = nil;
+        }
+
+        var newActive = !getCarNum(NewCarData, dealer) == 0;
+        var legendActive = !getCarNum(LegendCarData, dealer) == 0;
+        var eventActive = EventData.defined(dealer + "Events");
+
+        bgNum = ExtraDealerInfo[dealer + "_bgnum"];
+        var rand1 = main::menu::MRandom::GetValue(0, bgNum);
+        var rand2 = main::menu::MRandom::GetValue(0, bgNum);
+
+        if (bgNum > 1)
+        {
+            while (rand1 == last_dealer_img)
+                rand1 = main::menu::MRandom::GetValue(0, bgNum);
+
+            while (rand2 == rand1)
+                rand2 = main::menu::MRandom::GetValue(0, bgNum);
+        }
+        else
+        {
+            rand1 = 0;
+            rand2 = 0;
+        }
+
+        enterPageDealer(context, DealerRoot, context.translate(TopRoot, "TunerName", dealer), nation);
+        
         Logo.from_disk = true;
         Logo.cache = false;
         Logo.image_path = "piece/tuner_logo/" + dealer + ".img";
         Logo.doInitialize(context);
-        
-        screen.flash_path = "piece/tuner_screen/" + dealer + ".strb";
-        screen.doInitialize(context);
+
+        screenimg.image_path = "piece/tuner_screen/img/%{dealer}_%{rand1}.img";
+        last_dealer_img = rand1;
+        screenimg.doInitialize(context);
+
+        screenimg2.image_path = "piece/tuner_screen/img/%{dealer}_%{rand2}.img";
+        screenimg2.doInitialize(context);
+
+        doWideScale(context);
 
         wall.image_path = "image/gtmode/dealer/wall_" + nation + ".png";
         wall.doInitialize(context);
@@ -33,55 +131,49 @@ module PROJECT::ROOT
         Tuner::bg.image_path = "piece/tuneshop_logo/" + subtuner + ".img";
         Tuner::bg.doInitialize(context);
 
-        New.visible = getCarNum(NewCarData, dealer) > 0;
-        Legend.visible = getCarNum(LegendCarData, dealer) > 0;
-        Event.visible = EventData.defined(dealer + "Events");
+        New.insensitive = !newActive;
+        Legend.insensitive = !legendActive;
+        Event.insensitive = !eventActive;
 
-        NewArrow.active = New.visible;
-        LegendArrow.active = Legend.visible;
-        TunerArrow.active = Tuner.visible;
-        EventArrow.active = Event.visible;
+        // This isn't the right way to do lit/dimmed icons as I've since discovered, but it's ancient code and it works
+        New.label.text_color = newActive ? main::menu::MColorObject(1.0, 1.0, 1.0, 1.0) : main::menu::MColorObject(0.4, 0.4, 0.4, 1.0);
+        New::bg.visible = newActive;
+        New::bgdim.visible = !newActive;
+
+        Legend.label.text_color = legendActive ? main::menu::MColorObject(1.0, 1.0, 1.0, 1.0) : main::menu::MColorObject(0.4, 0.4, 0.4, 1.0);
+        Legend::bg.visible = legendActive;
+        Legend::bgdim.visible = !legendActive;
+
+        Event.label.text_color = eventActive ? main::menu::MColorObject(1.0, 1.0, 1.0, 1.0) : main::menu::MColorObject(0.4, 0.4, 0.4, 1.0);
+        Event::bg.visible = eventActive;
+        Event::bgdim.visible = !eventActive;
+
+        Tuner.label.text_color = main::menu::MColorObject(1.0, 1.0, 1.0, 1.0);
 
         var visible_widget = nil;
-        if (New.visible)
+        if (!New.insensitive)
         {
             visible_widget = New;
         }
-        else if (Legend.visible)
+        else if (!Legend.insensitive)
         {
             visible_widget = Legend;
         }
-        else if (Tuner.visible)
+        else if (!Tuner.insensitive)
         {
             visible_widget = Tuner;
         }
-        else if (Event.visible)
+        else if (!Event.insensitive)
         {
             visible_widget = Event;
         }
 
-        focus_last(ROOT, ROOT);
-        var focused_widget = ROOT.getFocusedWidget();
-        if (focused_widget == nil)
-        {
-            ROOT.setFocus(visible_widget);
-        }
-        else if (!New.visible && focused_widget.name == New.name)
-        {
-            ROOT.setFocus(visible_widget);
-        }
-        else if (!Legend.visible && focused_widget.name == Legend.name)
-        {
-            ROOT.setFocus(visible_widget);
-        }
-        else if (!Tuner.visible && focused_widget.name == Tuner.name)
-        {
-            ROOT.setFocus(visible_widget);
-        }
-        else if (!Event.visible && focused_widget.name == Event.name)
-        {
-            ROOT.setFocus(visible_widget);
-        }
+        if (last_dealer != dealer || last_focus_widget == nil)
+            DealerRoot.setFocus(visible_widget);
+        else
+            DealerRoot.setFocus(last_focus_widget);
+
+        last_dealer = dealer;
     }
 
     function onFinalize(context)
@@ -94,23 +186,129 @@ module PROJECT::ROOT
         main::sound.play("cancel");
         var dealer = main::game.menuPop();
         set_last_focus(dealer);
+        last_focus_widget = nil;
         start_page(context, NationRoot);
         return EVENTRESULT_FILTER;
     }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
+    }
+
+    function doWideScale(context)
+    {
+        if (!wide)
+        {
+            // Use the screenimg element to see if we've not already scaled
+            // Awful code
+            if (screenimg.w == pic_orig_w)
+            {
+                screenimg.h = pic_orig_h * 0.8;
+                screenimg.y = pic_orig_y + 65;
+                screenimg2.h = pic_orig_h * 0.8;
+                screenimg2.y = pic_orig_y + 65;
+
+                Logo.h = logo_orig_h * 0.85;
+                //Logo.y = logo_orig_y + 40;
+
+                New::bg.h = new_orig_h * 0.75;
+                New::bgdim.h = new_orig_h * 0.75;
+                New::bg.y = new_orig_y + 10;
+                New::bgdim.y = new_orig_y + 10;
+
+                Legend::bg.h = classic_orig_h * 0.75;
+                Legend::bgdim.h = classic_orig_h * 0.75;
+                Legend::bg.y = classic_orig_y + 10;
+                Legend::bgdim.y = classic_orig_y + 10;
+
+                Event::bg.h = event_orig_h * 0.75;
+                Event::bgdim.h = event_orig_h * 0.75;
+                Event::bg.y = event_orig_y + 15;
+                Event::bgdim.y = event_orig_y + 15;
+
+                Tuner::bg.h = tuner_orig_h;
+                Tuner::bg.y = tuner_orig_y - (tuner_orig_h * 0.3);
+                Tuner::bg.w = tuner_orig_w * 1.1;
+                Tuner::bg.x = tuner_bg_orig_x + ((tuner_orig_w - Tuner.w) * -0.575);
+
+                New.x = new_orig_x - 40;
+                Event.x = event_orig_x + 40;
+                Legend.x = classic_orig_x - 15;
+                Tuner.x = tuner_orig_x + 15;
+            }
+        }
+        else 
+        {
+            screenimg.h = pic_orig_h * 1.1;
+            screenimg.y = pic_orig_y - 30;
+            screenimg2.h = pic_orig_h * 1.1;
+            screenimg2.y = pic_orig_y - 30;
+
+            Logo.h = logo_orig_h;
+            Logo.y = logo_orig_y;
+            Logo.w = logo_orig_w * 0.85;
+
+            New::bg.h = new_orig_h;
+            New::bgdim.h = new_orig_h;
+            New::bg.y = new_orig_y;
+            New::bgdim.y = new_orig_y;
+
+            Legend::bg.h = classic_orig_h;
+            Legend::bgdim.h = classic_orig_h;
+            Legend::bg.y = classic_orig_y;
+            Legend::bgdim.y = classic_orig_y;
+
+            Event::bg.h = event_orig_h;
+            Event::bgdim.h = event_orig_h;
+            Event::bg.y = event_orig_y;
+            Event::bgdim.y = event_orig_y;
+
+            Tuner::bg.h = tuner_orig_h;
+            Tuner::bg.y = tuner_orig_y - (tuner_orig_h * 0.3);
+            Tuner::bg.w = tuner_orig_w * 0.85;
+            //Tuner::bg.x = 0;
+            Tuner::bg.x = tuner_bg_orig_x + ((tuner_orig_w - Tuner.w) * -0.37);
+
+            New.x = new_orig_x;
+            Event.x = event_orig_x;
+            Legend.x = classic_orig_x;
+            Tuner.x = tuner_orig_x;
+        }
+    }
+
+    function enterPageDealer(context, root, title, nation, dealer)
+    {
+        enterPage(context, root, title, 1);
+        var title = root["Common"]["Header"]["Title"];
+        var kokki = title["kokki"];
+        var label = title["label"];
+        
+        kokki.visible = false;
+        label.text = "";
+    }
 }
 
-module PROJECT::ROOT::New
+module GTmodeProject::DealerRoot::New
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         var dealer = main::game.menuRef();
+        last_focus_widget = ROOT::New;
         BuyCarRoot::open(context, NewCarData[dealer + "_carlist"], ROOT, dealer, "new");
         return EVENTRESULT_FILTER;
     }
 }
 
-module PROJECT::ROOT::Event
+module GTmodeProject::DealerRoot::Event
 {
     function onActivate(context)
     {
@@ -119,6 +317,7 @@ module PROJECT::ROOT::Event
 
         main::sound.play("ok");
         var dealer = main::game.menuRef();
+        last_focus_widget = ROOT::Event;
         main::game.menuPush(ROOT.name);
         main::game.menuPush("Event");
         main::game.menuPush("onemake.swf");
@@ -129,22 +328,24 @@ module PROJECT::ROOT::Event
     }
 }
 
-module PROJECT::ROOT::Legend
+module GTmodeProject::DealerRoot::Legend
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         var dealer = main::game.menuRef();
+        last_focus_widget = ROOT::Legend;
         BuyCarRoot::open(context, LegendCarData[dealer + "_carlist"], ROOT, dealer, "legend");
         return EVENTRESULT_FILTER;
     }
 }
 
-module PROJECT::ROOT::Tuner
+module GTmodeProject::DealerRoot::Tuner
 {
     function onActivate(context)
     {
         main::sound.play("ok");
+        last_focus_widget = ROOT::Tuner;
         start_page(context, TuningRoot);
         return EVENTRESULT_FILTER;
     }

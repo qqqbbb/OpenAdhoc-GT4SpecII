@@ -9,47 +9,44 @@
 //---------------------------------------------------------------------------------------
 // module
 //---------------------------------------------------------------------------------------
+#define PARTS_TYPE_BRAKE 1
+#define PARTS_TYPE_BRAKECONTROLLER 2
+#define PARTS_TYPE_SUSPENSION 3
+#define PARTS_TYPE_ASCC 4
+#define PARTS_TYPE_TCSC 5
+#define PARTS_TYPE_CHASSIS 6
+#define PARTS_TYPE_RACINGMODIFY 7
+#define PARTS_TYPE_LIGHTWEIGHT 8
+#define PARTS_TYPE_STEER 9
+#define PARTS_TYPE_DRIVETRAIN 10
+#define PARTS_TYPE_GEAR 11
+#define PARTS_TYPE_ENGINE 12
+#define PARTS_TYPE_NATUNE 13
+#define PARTS_TYPE_TURBINEKIT 14
+#define PARTS_TYPE_PORTPOLISH 15
+#define PARTS_TYPE_ENGINEBALANCE 16
+#define PARTS_TYPE_DISPLACEMENT 17
+#define PARTS_TYPE_COMPUTER 18
+#define PARTS_TYPE_INTERCOOLER 19
+#define PARTS_TYPE_MUFFLER 20
+#define PARTS_TYPE_CLUTCH 21
+#define PARTS_TYPE_FLYWHEEL 22
+#define PARTS_TYPE_PROPELLERSHAFT 23
+#define PARTS_TYPE_LSD 24
+#define PARTS_TYPE_FRONTTIRE 25
+#define PARTS_TYPE_REARTIRE 26
+#define PARTS_TYPE_NOS 27
+#define PARTS_TYPE_SUPERCHARGER 28
+#define PARTS_TYPE_WHEEL 29
+#define PARTS_TYPE_WING 30
+#define PARTS_TYPE_TIRESIZE 31
+#define PARTS_TYPE_TIRECOMPOUND 32
 
-#ifndef PARTS_TYPE_BRAKE
-    #define PARTS_TYPE_BRAKE 1
-    #define PARTS_TYPE_BRAKECONTROLLER 2
-    #define PARTS_TYPE_SUSPENSION 3
-    #define PARTS_TYPE_ASCC 4
-    #define PARTS_TYPE_TCSC 5
-    #define PARTS_TYPE_CHASSIS 6
-    #define PARTS_TYPE_RACINGMODIFY 7
-    #define PARTS_TYPE_LIGHTWEIGHT 8
-    #define PARTS_TYPE_STEER 9
-    #define PARTS_TYPE_DRIVETRAIN 10
-    #define PARTS_TYPE_GEAR 11
-    #define PARTS_TYPE_ENGINE 12
-    #define PARTS_TYPE_NATUNE 13
-    #define PARTS_TYPE_TURBINEKIT 14
-    #define PARTS_TYPE_PORTPOLISH 15
-    #define PARTS_TYPE_ENGINEBALANCE 16
-    #define PARTS_TYPE_DISPLACEMENT 17
-    #define PARTS_TYPE_COMPUTER 18
-    #define PARTS_TYPE_INTERCOOLER 19
-    #define PARTS_TYPE_MUFFLER 20
-    #define PARTS_TYPE_CLUTCH 21
-    #define PARTS_TYPE_FLYWHEEL 22
-    #define PARTS_TYPE_PROPELLERSHAFT 23
-    #define PARTS_TYPE_LSD 24
-    #define PARTS_TYPE_FRONTTIRE 25
-    #define PARTS_TYPE_REARTIRE 26
-    #define PARTS_TYPE_NOS 27
-    #define PARTS_TYPE_SUPERCHARGER 28
-    #define PARTS_TYPE_WHEEL 29
-    #define PARTS_TYPE_WING 30
-    #define PARTS_TYPE_TIRESIZE 31
-    #define PARTS_TYPE_TIRECOMPOUND 32
+#define PARTS_TYPE_TUNE_MAX 32
 
-    #define PARTS_TYPE_TUNE_MAX 32
+#define PARTS_CATEGORY_NONE 0
 
-    #define PARTS_CATEGORY_NONE 0
-#endif
-
-module PROJECT::ROOT
+module GTmodeProject::TuningApplyRoot
 {
     static pict_name = Array(32 + 1);
     pict_name[1] = [nil, "brake"];
@@ -119,6 +116,9 @@ module PROJECT::ROOT
     static parts_types;
     static current_car;
     static current_group;
+    static newDesc = "";
+    static should_replace_labels = false;
+    static is_others;
 
     PartsPict::frame.actor = main::menu::MMoveActor(PartsPict::frame, PartsPict::frame.x, PartsPict::frame.y);
     PartsPict::frame.actor.ratio = 0.2;
@@ -145,7 +145,11 @@ module PROJECT::ROOT
         }
         else if (type == 32)
         {
-            price = 50000;
+            var scaled_price = (main::menu::MCarData::GetPrice(current_car.car_code) / 40).toInt() * 10;
+            if (scaled_price > 35000)
+                price = 35000;
+            else
+                price = scaled_price;
             have = car.getBodyLifeRate() == 0.0;
         }
 
@@ -154,6 +158,7 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+        is_others = false;
         hidden.visible = false;
         enterPage(context, ROOT, "TuningShopTitle");
         ROOT["Common"]["ToolTip"]["tip"].remove();
@@ -202,8 +207,13 @@ module PROJECT::ROOT
                 item["bg"].image_path = "image/gtmode/tuneshop/icon/" + pict_name[type][i] + ".png";
                 
                 var name = getPartsShopName(type, i);
+
                 if (name == nil)
                     name = "";
+
+                // Dumb way of checking if we're in the Others section to do stuff after the loop
+                if (name == "STIFFNESS_REFRESH")
+                    is_others = true;
 
                 item.defineStatic("parts_type", type);
                 item.defineStatic("parts_category", i);
@@ -238,6 +248,42 @@ module PROJECT::ROOT
             }
         }
 
+        // Just some hacky additions to put the full restoration item at the end of the Others menu
+        if (is_others)
+        {
+            var restore = hidden::Item.doCopy();
+            restore["bg"].image_path = "image/gtmode/tuneshop/icon/stiffness_refresh.png";
+
+            restore.defineStatic("parts_type", "FULL_RESTORE");
+            restore.defineStatic("parts_category", 33);
+            restore.defineStatic("parts_name", "FullRestore");
+            
+            var exist = true;
+            var have = current_car.odometer == 0;
+            var allowed = true;
+            var scaled_price = (main::menu::MCarData::GetPrice(current_car.car_code) / 20).toInt() * 10;
+            var price = 0;
+            if (scaled_price > 250000)
+                price = 250000;
+            else
+                price = scaled_price;
+            restore.defineStatic("exist", exist);
+            restore.defineStatic("have", have);
+            restore.defineStatic("allowed", allowed);
+            restore.defineStatic("price", price);
+            
+            restore["done"].visible = exist && have;
+            restore["none"].visible = !exist;
+            restore["yet"].visible = exist && !have && !allowed;
+
+            var pict = hidden::pict.doCopy();
+            pict.image_path = "image/gtmode/tuneshop/parts/stiffness_refresh.png";
+            PartsPict::frame.appendChild(context, pict);
+            pict.x = pict.w * (index * 2);
+
+            ScrollBox::SelectBox.appendChild(context, restore);
+        }
+
         ScrollBox::SelectBox.callFocus(ROOT);
         setPictShown(false);
         PartsPict::frame.actor.warp();
@@ -259,6 +305,18 @@ module PROJECT::ROOT
 
         start_page(context, TuningRoot);
         return EVENTRESULT_FILTER;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
     }
 
     function visiblity_refresh(context)
@@ -306,7 +364,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::ScrollBox::SelectBox
+module GTmodeProject::TuningApplyRoot::ScrollBox::SelectBox
 {
     function onActivate(context, event)
     {
@@ -371,12 +429,21 @@ module PROJECT::ROOT::ScrollBox::SelectBox
         var price = widget["price"];
         main::sound.play("ok");
         
+        print "Category %{category}";
         var res = TuningDialog::open(context, type, category, price);
         if (res)
         {
             main::game.incMoney(-price);
             refreshMoney(ROOT);
             main::game.setNeedSave();
+
+            if (category == 33)
+            {
+                current_car.dirtiness = 0;
+                current_car.refreshBody();
+                current_car.replaceOil();
+                current_car.odometer = 0;
+            }
 
             if (type < PARTS_TYPE_TUNE_MAX)
             {
@@ -388,24 +455,24 @@ module PROJECT::ROOT::ScrollBox::SelectBox
                 var reversibility = current_car.isReversibilityType(type);
                 if (reversibility)
                 {
-                    res = openConfirmDialog(context, 1, context.translate(ROOT, "You bought it. Do you equip this parts now?"));
+                    res = openConfirmDialog(context, 4, context.translate(ROOT, "You bought it. Do you equip this parts now?"));
                     if (res)
                     {
-                        dummyProgress(context, 300.0);
+                        //dummyProgress(context, 300.0);
                         set_parts_consistent(current_car, type, category);
                         openConfirmDialog(context, 0, context.translate(ROOT, "You have equipped this parts."));
                     }
                 }
                 else
                 {
-                    dummyProgress(context, 1000.0);
+                    //dummyProgress(context, 1000.0);
                     set_parts_consistent(current_car, type, category);
                     openConfirmDialog(context, 0, context.translate(ROOT, "You have done this."));
                 }
             }
             else
             {
-                dummyProgress(context, 1000.0);
+                //dummyProgress(context, 1000.0);
                 switch (type)
                 {
                     case 32:
@@ -448,18 +515,37 @@ module PROJECT::ROOT::ScrollBox::SelectBox
     }
 }
 
-module PROJECT::ROOT::hidden::Item
+module GTmodeProject::TuningApplyRoot::hidden::Item
 {
     function onFocusEnter(context, event)
     {
         var item = event.widget;
         var type = item["parts_type"];
-        var category = item["parts_category"];
         var name = item["parts_name"];
-
-        Name::label.text = context.translate(ROOT, name);
-
         var price = item["price"];
+
+        if (type == "FULL_RESTORE")
+        {
+            Name::label.text = context.translate(ROOT, name);
+            ROOT["Common"]["ToolTip"]["tip"].value = context.translate(ROOT, "doc_" + type);
+            Price::label.text = "Cr. " + main::menu::MUtility::GetMoneyString(price);
+            return;
+        }
+
+        var category = item["parts_category"];
+        var car_label = current_car.car_code;
+
+        if (item.defined("gear_%{car_label}_name") && item.defined("gear_%{car_label}_desc"))
+        {
+            Name::label.text = context.translate(ROOT, item["gear_%{car_label}_name"]); 
+            ROOT["Common"]["ToolTip"]["tip"].value = item["gear_%{car_label}_desc"];
+        }
+        else
+        {
+            Name::label.text = context.translate(ROOT, name);
+            ROOT["Common"]["ToolTip"]["tip"].value = context.translate(ROOT, "doc_" + name);
+        }
+
         setPictShown(item["index"]);
 
         if (price < 0)
@@ -467,6 +553,6 @@ module PROJECT::ROOT::hidden::Item
         else
             Price::label.text = "Cr. " + main::menu::MUtility::GetMoneyString(price);
 
-        ROOT["Common"]["ToolTip"]["tip"].value = context.translate(ROOT, "doc_" + name);
+        
     }
 }

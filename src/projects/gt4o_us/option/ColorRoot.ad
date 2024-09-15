@@ -1,18 +1,4 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module PROJECT::ROOT
+module OptionProject::ColorRoot 
 {
     function open(context)
     {
@@ -45,25 +31,27 @@ module PROJECT::ROOT
     function apply()
     {
         main::game.setNeedSave();
-        var option = main::game.option;
 
+        var option = main::game.option;
         var brightness = Pane::Brightness0::slider.index;
         var contrast = Pane::Contrast0::slider.index;
         var chroma = Pane::Chroma0::slider.index;
         var whiteBalance = Pane::WhiteBalance0::slider.index;
+
         option.race_color_correction = [brightness, contrast, chroma, whiteBalance];
 
         brightness = Pane::Brightness1::slider.index;
         contrast = Pane::Contrast1::slider.index;
         chroma = Pane::Chroma1::slider.index;
         whiteBalance = Pane::WhiteBalance1::slider.index;
-        option.replay_color_correction = [brightness, contrast, chroma, whiteBalance];
 
+        option.replay_color_correction = [brightness, contrast, chroma, whiteBalance];
     }
 
     function onInitialize(context)
     {
         ROOT.setFocus(Pane::Brightness0::slider);
+
         reflect(context);
 
         setupSlider(Pane::Brightness0::slider);
@@ -75,13 +63,9 @@ module PROJECT::ROOT
         setupSlider(Pane::Contrast1::slider);
         setupSlider(Pane::Chroma1::slider);
         setupSlider(Pane::WhiteBalance1::slider);
-
     }
 
-    function onFinalize(context)
-    {
-
-    }
+    function onFinalize(context) { }
 
     function onCancel(context)
     {
@@ -91,7 +75,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Pane::Brightness0::slider
+module OptionProject::ColorRoot::Pane::Brightness0::slider
 {
     function onValueChanged(context)
     {
@@ -99,7 +83,7 @@ module PROJECT::ROOT::Pane::Brightness0::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Contrast0::slider
+module OptionProject::ColorRoot::Pane::Contrast0::slider
 {
     function onValueChanged(context)
     {
@@ -107,7 +91,7 @@ module PROJECT::ROOT::Pane::Contrast0::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Chroma0::slider
+module OptionProject::ColorRoot::Pane::Chroma0::slider
 {
     function onValueChanged(context)
     {
@@ -115,8 +99,7 @@ module PROJECT::ROOT::Pane::Chroma0::slider
     }
 }
 
-
-module PROJECT::ROOT::Pane::WhiteBalance0::slider
+module OptionProject::ColorRoot::Pane::WhiteBalance0::slider
 {
     function onValueChanged(context)
     {
@@ -124,7 +107,7 @@ module PROJECT::ROOT::Pane::WhiteBalance0::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Brightness1::slider
+module OptionProject::ColorRoot::Pane::Brightness1::slider
 {
     function onValueChanged(context)
     {
@@ -132,7 +115,7 @@ module PROJECT::ROOT::Pane::Brightness1::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Contrast1::slider
+module OptionProject::ColorRoot::Pane::Contrast1::slider
 {
     function onValueChanged(context)
     {
@@ -140,7 +123,7 @@ module PROJECT::ROOT::Pane::Contrast1::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Chroma1::slider
+module OptionProject::ColorRoot::Pane::Chroma1::slider
 {
     function onValueChanged(context)
     {
@@ -148,8 +131,7 @@ module PROJECT::ROOT::Pane::Chroma1::slider
     }
 }
 
-
-module PROJECT::ROOT::Pane::WhiteBalance1::slider
+module OptionProject::ColorRoot::Pane::WhiteBalance1::slider
 {
     function onValueChanged(context)
     {
@@ -157,7 +139,7 @@ module PROJECT::ROOT::Pane::WhiteBalance1::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::ColorRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
@@ -167,7 +149,7 @@ module PROJECT::ROOT::Pane::Buttons::Cancel
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::ColorRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {

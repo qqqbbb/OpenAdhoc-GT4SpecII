@@ -7,7 +7,7 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::GetCourseDialog
 {
     static course;
 
@@ -107,7 +107,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Dialog::OK
+module GTmodeProject::GetCourseDialog::Dialog::OK
 {
     function onActivate(context, event, item)
     {

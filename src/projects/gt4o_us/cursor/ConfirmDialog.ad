@@ -7,7 +7,7 @@
 
 
 
-module PROJECT::ROOT
+module CursorProject::ConfirmDialog
 {
     static result = nil;
     static current_type = 0;
@@ -20,7 +20,7 @@ module PROJECT::ROOT
         setFadeActor(Dialog::Buttons::YesNo::No::bgf);
         setFadeActor(Dialog::Buttons::OK::bgf);
         setMoveActor(Dialog);
-        setFadeActorRoot(ROOT);
+        setFadeActorRoot(ConfirmDialog);
     }
 
     function open_motion(context)
@@ -33,12 +33,12 @@ module PROJECT::ROOT
         Dialog::Buttons::YesNo::Yes::bgf.actor.period = 0.25 / ratio;
         Dialog::Buttons::YesNo::No::bgf.actor.period = 0.25 / ratio;
         Dialog::Buttons::OK::bgf.actor.period = 0.25 / ratio;
-        ROOT.actor.period = 0.5 / ratio;
-        ROOT.actor.out = true;
-        ROOT.actor.warp();
-        context.pushPage(ROOT);
+        ConfirmDialog.actor.period = 0.5 / ratio;
+        ConfirmDialog.actor.out = true;
+        ConfirmDialog.actor.warp();
+        context.pushPage(ConfirmDialog);
         Dialog.actor.out = 0;
-        ROOT.actor.out = 0;
+        ConfirmDialog.actor.out = 0;
         context.sync(0.1);
         Dialog::Message::caution.x = Dialog::Message.w - Dialog::Message::caution.w - 3;
         context.sync(0.4);
@@ -56,9 +56,9 @@ module PROJECT::ROOT
         }
 
         Dialog.actor.out = true;
-        ROOT.actor.out = true;
+        ConfirmDialog.actor.out = true;
         context.sync(0.5);
-        context.closePage(ROOT);
+        context.closePage(ConfirmDialog);
     }
 
     function open(context, type, message, title, root, yes_text, no_text, equalized)
@@ -74,31 +74,31 @@ module PROJECT::ROOT
         if (yes_text == nil)
         {
             if (type != 4)
-                yes_text = context.translate(ROOT, "OK");
+                yes_text = context.translate(ConfirmDialog, "OK");
             else
-                yes_text = context.translate(ROOT, "Yes");
+                yes_text = context.translate(ConfirmDialog, "Yes");
         }
         else
         {
             if (root != nil)
                 yes_text = context.translate(root, yes_text);
 
-            cancel_disable = true;
+            //cancel_disable = true;
         }
 
         if (no_text == nil)
         {
             if (type != 4)
-                no_text = context.translate(ROOT, "Cancel");
+                no_text = context.translate(ConfirmDialog, "Cancel");
             else
-                no_text = context.translate(ROOT, "No");
+                no_text = context.translate(ConfirmDialog, "No");
         }
         else
         {
             if (root != nil)
                 no_text = context.translate(root, no_text);
 
-            cancel_disable = true;
+            //cancel_disable = true;
         }
 
         var mf = Dialog::Message::message;
@@ -128,7 +128,7 @@ module PROJECT::ROOT
                 Dialog::Buttons::OK.visible = true;
 
                 if (title == nil)
-                    Dialog::Title::title.text = context.translate(ROOT, "Confirm");
+                    Dialog::Title::title.text = context.translate(ConfirmDialog, "Confirm");
 
                 Dialog::Title::title.visible = true;
                 Dialog::Title::titleE.visible = false;
@@ -144,7 +144,7 @@ module PROJECT::ROOT
                 Dialog::Buttons::OK.visible = false;
 
                 if (title == nil)
-                    Dialog::Title::title.text = context.translate(ROOT, "Dialog");
+                    Dialog::Title::title.text = context.translate(ConfirmDialog, "Dialog");
 
                 Dialog::Title::title.visible = true;
                 Dialog::Title::titleE.visible = false;
@@ -158,7 +158,7 @@ module PROJECT::ROOT
                 Dialog::Buttons::OK.visible = true;
 
                 if (title == nil)
-                    Dialog::Title::titleE.text = context.translate(ROOT, "Incomplete");
+                    Dialog::Title::titleE.text = context.translate(ConfirmDialog, "Incomplete");
 
                 Dialog::Title::title.visible = false;
                 Dialog::Title::titleE.visible = true;
@@ -173,20 +173,20 @@ module PROJECT::ROOT
         switch (type)
         {
             case 0:
-                ROOT.setFocus(Dialog::Buttons::OK);
+                ConfirmDialog.setFocus(Dialog::Buttons::OK);
                 break;
 
             case 1:
             case 4:
-                ROOT.setFocus(Dialog::Buttons::YesNo::Yes);
+                ConfirmDialog.setFocus(Dialog::Buttons::YesNo::Yes);
                 break;
 
             case 3:
-                ROOT.setFocus(Dialog::Buttons::YesNo::No);
+                ConfirmDialog.setFocus(Dialog::Buttons::YesNo::No);
                 break;
 
             case 2:
-                ROOT.setFocus(Dialog::Buttons::OK);
+                ConfirmDialog.setFocus(Dialog::Buttons::OK);
                 break;
         }
 
@@ -205,7 +205,7 @@ module PROJECT::ROOT
 
     function close(context)
     {
-        ROOT.setFocus(nil);
+        ConfirmDialog.setFocus(nil);
         close_motion(context);
         Dialog::Message::message.text = nil;
         cancel_disable = nil;
@@ -224,44 +224,44 @@ module PROJECT::ROOT
     function onCancel(context)
     {
         if (cancel_disable != nil && cancel_disable)
-            return EVENTRESULT_FILTER;
+            return STATE_YIELD;
 
         main::sound.play("cancel");
         result = false;
         close(context, 0);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Dialog::Buttons::OK
+module CursorProject::ConfirmDialog::Dialog::Buttons::OK
 {
     function onActivate(context, event, item)
     {
         main::sound.play("ok");
         result = true;
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Dialog::Buttons::YesNo::No
+module CursorProject::ConfirmDialog::Dialog::Buttons::YesNo::No
 {
     function onActivate(context, event, item)
     {
         main::sound.play("ok");
         result = false;
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 } 
 
-module PROJECT::ROOT::Dialog::Buttons::YesNo::Yes
+module CursorProject::ConfirmDialog::Dialog::Buttons::YesNo::Yes
 {
     function onActivate(context, event, item)
     {
         main::sound.play("ok");
         result = true;
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 } 

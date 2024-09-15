@@ -16,12 +16,12 @@ module DS2
         "L2",
         "SELECT",
         "UP",
-        "DOWN",
-        "NONE"
+        "DOWN"//,
+        //"NONE"
     ];
     static analog_accel_list = [
-        "LYF",
-        "LYL"
+        "RYF",
+        "RYL"
     ];
     static button_brake_list = button_accel_list;
     static analog_brake_list = analog_accel_list;
@@ -30,17 +30,21 @@ module DS2
     static button_side_list = button_accel_list;
     static analog_side_list = analog_accel_list;
     static button_shiftup_list = button_accel_list;
-    static analog_shiftup_list = analog_accel_list;
+    static analog_shiftup_list = [
+        "RYF",
+        "RYL",
+        "NONE"
+    ];
     static button_shiftdown_list = button_accel_list;
-    static analog_shiftdown_list = analog_accel_list;
+    static analog_shiftdown_list = analog_shiftup_list;
     static button_backview_list = button_accel_list;
-    static analog_backview_list = [];
+    static analog_backview_list = ["NONE"];
     static button_playview_list = button_accel_list;
-    static analog_playview_list = [];
+    static analog_playview_list = ["NONE"];
     static button_special_list = button_accel_list;
-    static analog_special_list = [];
+    static analog_special_list = ["NONE"];
     static button_ghost_list = button_accel_list;
-    static analog_ghost_list = [];
+    static analog_ghost_list = ["NONE"];
 
     function setDefault(context, option, port)
     {

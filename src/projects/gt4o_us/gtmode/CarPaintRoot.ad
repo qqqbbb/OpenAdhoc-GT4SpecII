@@ -1,0 +1,211 @@
+module GTmodeProject::CarPaintRoot
+{
+    static watcher = nil;
+    static camera_view_angle;
+    static zoom = 1.0;
+    static zoom_range = 0.3;
+    static from_debug = false;
+    static riding_car;
+    static current_price;
+
+    function onInitialize(context)
+    {
+        enterPage(context, ROOT, context.translate(GTAutoRoot, "GTAutoTitle"));
+
+        ROOT["Common"]["ToolTip"]["tip"].remove();
+
+        ColScroll::SelectBox.clearChildren(context);
+        riding_car = main::game.garage.riding_car;
+        var car_price = main::menu::MCarData::GetPrice(riding_car.car_code);
+        CarFace.car_garage = riding_car;
+        CarFace.car_model.motion = 1;
+        CarFace.action_type = "normal";
+
+        if (GTAutoRoot::has_special_paint)
+        {
+            // This could do something differently if special paints should be locked behind a criteria
+        }
+
+        var car_data = CarFace.car_data;
+        var col_list = car_data.getColors();
+
+        var num = col_list.size;
+
+        if (GTAutoRoot::has_special_paint)
+            num = col_list.size + 1;
+
+        for (var i = 0; i < num; i++)
+        {
+            //if (i == num - 1 && GTAutoRoot::has_special_paint && !special_paint_allowed)
+            //    break;
+
+            var chip = ColItem.doCopy();
+            chip["chip"].setData(car_data, i);
+            chip.visible = true;
+            chip["chip"].visible = true;
+            chip.defineStatic("colIdx", i);
+
+            // Cars can have one special paint at most, for simplicity's sake these will always go on the end
+            if (i == num - 1 && GTAutoRoot::has_special_paint)
+                chip.defineStatic("price", (car_price.toFloat() / 80.0).toInt() * 10);
+            else
+                chip.defineStatic("price", (car_price.toFloat() / 100.0).toInt() * 10);
+
+            ColScroll::SelectBox.appendChild(context, chip);
+
+            if (i == riding_car.getColorIndex())
+                chip["dot"].visible = true;
+        }
+
+        camera_view_angle = CarFace.view_angle
+        watcher = main::menu::MScriptWatcher(context, onTick);
+        watcher.interval = 1;
+        watcher.append();
+
+        Price::label.text = main::menu::MUtility::GetMoneyString((car_price.toFloat() / 100.0).toInt() * 10);
+
+        ROOT.setFocus(ColScroll::SelectBox.first);
+
+        var col_idx = riding_car.getColorIndex();
+        if (col_idx > 0)
+        {
+            ColScroll::SelectBox.index = col_idx;
+            ColScroll::SelectBox.callFocus(ROOT);
+        }
+
+        ROOT["Common"]["ToolTip"]["tip"].value = context.translate(GTAutoRoot, "TOOLTIP|PaintSelect");
+
+        set_col(context);
+    }
+
+    function onFinalize(context)
+    {
+    }
+    
+    function onCancel(context, event)
+    {
+        main::sound.play("cancel");
+
+        if (from_debug)
+            start_page(context, DebugMenuRoot);
+        else
+            start_page(context, GTAutoRoot);
+
+        from_debug = false;
+
+        if (watcher != nil)
+        {
+            watcher.remove();
+            watcher = nil;
+        }
+
+        return EVENTRESULT_FILTER
+    }
+
+    function set_col(context)
+    {
+        var index = 0;
+        var w = ROOT.getFocusedWidget();
+
+        if (w != nil)  
+            if (w.defined("colIdx"))
+                index = w["colIdx"];
+        
+        CarFace.setColorIndex(index);
+        var colname = CarFace.car_data.getColorName(index);
+
+        current_price = ColScroll::SelectBox.getItem(index).price;
+        Price::label.text = main::menu::MUtility::GetMoneyString(current_price);
+
+        if (colname != "-")
+            ColScroll::Name.text = colname;
+        else   
+            ColScroll::Name.text = "";
+    }
+
+    function onTick(context)
+    {
+        var update_context = context.getUpdateContext();
+        var ry = update_context.getPadAnalogChannel(0, 1) * -1;
+        var target = 1.0;
+        
+        if (ry > 0.0)
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+        else 
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+
+        zoom.value += (target - zoom) * 0.1;
+        var fovy = (Math::atan(Math::tan(camera_view_angle * 0.5 * 3.1415927 / 180.0) * zoom)) * 2.0;
+        CarFace.view_angle = (fovy * 180.0) / 3.1415927;
+    }
+}
+
+module GTmodeProject::CarPaintRoot::ColScroll::SelectBox
+{
+    function onActivate(context, event)
+    {
+        var index = 0;
+        var w = ROOT.getFocusedWidget();
+
+        if (w != nil)  
+            if (w.defined("colIdx"))
+                index = w["colIdx"];
+
+        if (index == riding_car.getColorIndex())
+        {
+            main::sound.play("disable");
+            return EVENTRESULT_FILTER;
+        }
+
+        if (!sureEnoughMoney(context, current_price))
+        {
+            return EVENTRESULT_FILTER;
+        }
+
+        if (main::game.garage.isFull())
+        {
+            main::sound.play("disable");
+            openConfirmDialog(context, 2, context.translate(BuyCarRoot, "garage full"));
+            return EVENTRESULT_FILTER;
+        }
+        
+        main::sound.play("ok");
+
+
+        var dialogText;
+
+        if (ColScroll::Name.text == "" || ColScroll::Name.text.beginWith(" "))
+            dialogText = "Purchase this car paint?\nAny installed rims or wings will be removed.";
+        else
+            dialogText = "Purchase the following car paint:\n%{CarFace.car_data.getColorName(index)}\nAny installed rims or wings will be removed."
+
+        if (openConfirmDialog(context, 1, dialogText, "Confirm Purchase", "Buy"))
+        {
+            main::sound.play("buy");
+            copyGarageCar(context, index);
+            main::game.incMoney(-current_price);
+
+            refreshRideCar(ROOT, context, true);
+
+            main::game.setNeedSave();
+            start_page(context, GTAutoRoot);
+        }
+
+        return EVENTRESULT_FILTER
+    }
+    
+    function onValueChanged(context, index)
+    {
+        logInfo(index);
+        set_col(context);
+
+    }
+}

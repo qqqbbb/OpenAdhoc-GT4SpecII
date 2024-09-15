@@ -10,8 +10,14 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::HomeRoot
 {
+    #define LICENSE_B "l0b"
+    #define LICENSE_A "l0a"
+    #define LICENSE_IB "lib"
+    #define LICENSE_IA "lia"
+    #define LICENSE_S "l0s"
+
     static at_home = false;
 
     function onLoad(context)
@@ -47,7 +53,7 @@ module PROJECT::ROOT
     function onStart(context)
     {
         setColorTransition(context);
-        context.transition.period = 0.25;
+        context.transition.period = 0.15;
     }
 
     function onInitialize(context)
@@ -104,11 +110,23 @@ module PROJECT::ROOT
             Car::CarName.text = "";
         }
 
+        Car::licenceb.visible = main::game.race_record.isLicensePassed(LICENSE_B);
+        Car::licencea.visible = main::game.race_record.isLicensePassed(LICENSE_A);
+        Car::licenceib.visible = main::game.race_record.isLicensePassed(LICENSE_IB);
+        Car::licenceia.visible = main::game.race_record.isLicensePassed(LICENSE_IA);
+        Car::licences.visible = main::game.race_record.isLicensePassed(LICENSE_S);
+
+        var oilWear = main::game.garage.riding_car.getOilLifeRate();
+        Car::Oil.visible = oilWear >= 0.75;
+        Car::GTWorld.visible = wonRace("pr_gtworld_1000");
+        //logInfo(oilWear);
+
         print "calcurating ... start\n";
         var game_stat = getRaceEventRecordStatistics();
         print "calcurating ... done\n";
 
         var achievement = game_stat[0];
+        print game_stat;
         Status::Achievement::value.text = main::menu::MUtility::GetFormatString("%.1t", achievement.toInt()) + "%%";
         Status::AspecPoint::value.text = context.translate(ROOT, "PointsFormat").format(game_stat[1].toString());
         Status::AspecPoint::value.adjustScale();
@@ -192,8 +210,13 @@ module PROJECT::ROOT
     {
         switch (event.keysym)
         {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+                
             case PS2_PAD_CTRL_START:
-                if (main::game.garage.hasRidingCar() && !main::game.isSuspended())
+                if (main::game.garage.hasRidingCar()) //&& !main::game.isSuspended())
                 {
                     main::sound.play("return");
                     main::game.major_menu_project = "gtmode";
@@ -243,7 +266,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Buttons::Garage
+module GTmodeProject::HomeRoot::Buttons::Garage
 {
     function onActivate(context, event)
     {
@@ -259,7 +282,7 @@ module PROJECT::ROOT::Buttons::Garage
     }
 }
 
-module PROJECT::ROOT::Buttons::Labo
+module GTmodeProject::HomeRoot::Buttons::Labo
 {
     function onActivate(context, event)
     {
@@ -279,7 +302,7 @@ module PROJECT::ROOT::Buttons::Labo
     }
 }
 
-module PROJECT::ROOT::Buttons::Diary
+module GTmodeProject::HomeRoot::Buttons::Diary
 {
     function onActivate(context, event)
     {
@@ -290,7 +313,7 @@ module PROJECT::ROOT::Buttons::Diary
     }
 }
 
-module PROJECT::ROOT::Buttons::Status
+module GTmodeProject::HomeRoot::Buttons::Status
 {
     function onActivate(context, event)
     {
@@ -301,7 +324,7 @@ module PROJECT::ROOT::Buttons::Status
     }
 }
 
-module PROJECT::ROOT::Buttons::Option
+module GTmodeProject::HomeRoot::Buttons::Option
 {
     function onActivate(context, event)
     {
@@ -315,7 +338,7 @@ module PROJECT::ROOT::Buttons::Option
     }
 }
 
-module PROJECT::ROOT::Buttons::Trade
+module GTmodeProject::HomeRoot::Buttons::Trade
 {
     function onActivate(context, event)
     {
@@ -380,7 +403,7 @@ module PROJECT::ROOT::Buttons::Trade
     }
 }
 
-module PROJECT::ROOT::Buttons::Save
+module GTmodeProject::HomeRoot::Buttons::Save
 {
     function end_func(context)
     {

@@ -1,0 +1,238 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module OptionProject::SpecIISettingRoot
+{
+    function open(context)
+    {
+        start_page(context, ROOT);
+    }
+
+    function close(context)
+    {
+        start_page(context, OptionRoot);
+    }
+
+    function reflect(context)
+    {
+        if (randomizer_enabled == nil)
+            randomizer_enabled = 0;
+        if (global_asmo == nil)
+            global_asmo = -1;
+        if (global_asmu == nil)
+            global_asmu = -1;
+        if (global_tcsc == nil)
+            global_tcsc = -1;
+        if (show_owned_cars == nil)
+            show_owned_cars = 1;
+        if (cam_flag == nil)
+            cam_flag = 8;
+        if (gauge_mode == nil)
+            gauge_mode = -1;
+
+        var option = main::game.option;
+        Pane::Randomizer::OptionMenu.setIndex(context, randomizer_enabled);
+        Pane::ASMO::OptionMenu.setIndex(context, global_asmo + 1);
+        Pane::ASMU::OptionMenu.setIndex(context, global_asmu + 1);
+        Pane::TCS::OptionMenu.setIndex(context, global_tcsc + 1);
+        Pane::HighlightOwned::OptionMenu.setIndex(context, show_owned_cars);
+
+        
+        var flagActive = cam_flag & FLAG_BONNET_CAM;
+        Pane::BonnetCam::OptionMenu.setIndex(context, flagActive ? 1 : 0);
+        flagActive = cam_flag & FLAG_INTERIOR_CAM;
+        Pane::InteriorCam::OptionMenu.setIndex(context, flagActive ? 1 : 0);
+        flagActive = cam_flag & FLAG_ROOF_CAM;
+        Pane::RoofCam::OptionMenu.setIndex(context, flagActive ? 1 : 0);
+        flagActive = cam_flag & FLAG_GT3_CAM;
+        Pane::GT3Cam::OptionMenu.setIndex(context, flagActive ? 1 : 0);
+
+        Pane::GaugeMode::OptionMenu.setIndex(context, gauge_mode + 1);
+    }
+
+    function apply(context)
+    {
+        saveNewSettings(context);
+    }
+
+    function onInitialize(context)
+    {
+        ROOT.setFocus(Pane::Randomizer::OptionMenu);
+
+        reflect(context);
+    }
+
+    function onFinalize()
+    {
+
+    }
+
+    function onCancel(context)
+    {
+        main::sound.play("cancel");
+        close(context);
+        return STATE_YIELD;
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::Randomizer::OptionMenu
+{
+    function onFocusEnter(context, event)
+    {
+        ROOT::ToolTip::tip.value = context.translate(ROOT, "TOOLTIP|Randomizer").format(main::game.username);
+    }
+
+    function onValueChanged(context, index)
+    {
+        randomizer_enabled = index;
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::ASMO::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        global_asmo = index - 1;
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::ASMU::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        global_asmu = index - 1;
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::TCS::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        global_tcsc = index - 1;
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::HighlightOwned::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        show_owned_cars = index;
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::BonnetCam::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        var camActive = index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_BONNET_CAM;
+            main::game.toggleBonnetCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_BONNET_CAM;
+            main::game.toggleBonnetCam();
+        }
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::InteriorCam::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        var camActive = index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_INTERIOR_CAM;
+            main::game.toggleInteriorCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_INTERIOR_CAM;
+            main::game.toggleInteriorCam();
+        }
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::RoofCam::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        var camActive = index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_ROOF_CAM;
+            main::game.toggleRoofCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_ROOF_CAM;
+            main::game.toggleRoofCam();
+        }
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::GT3Cam::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        var camActive = index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_GT3_CAM;
+            main::game.toggleGT3Cam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_GT3_CAM;
+            main::game.toggleGT3Cam();
+        }
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::GaugeMode::OptionMenu
+{
+    function onValueChanged(context, index)
+    {
+        gauge_mode = index - 1;
+        main::game.toggleGaugeMode(gauge_mode);
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::Buttons::Cancel
+{
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+        close(context);
+        return STATE_YIELD;
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::Buttons::OK
+{
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+        apply(context);
+        close(context);
+        return STATE_YIELD;
+    }
+}

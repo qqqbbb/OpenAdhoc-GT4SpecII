@@ -48,3 +48,5 @@ files_to_compile:
     is_main: true
   - name: UnitRoot.ad
     is_main: true
+  - name: SpecIISettingRoot.ad
+    is_main: true

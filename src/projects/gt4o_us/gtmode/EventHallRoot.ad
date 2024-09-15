@@ -13,10 +13,15 @@
 #define MIN_LICENSE 0
 #define MAX_LICENSE 5
 
-module PROJECT::ROOT
+module GTmodeProject::EventHallRoot
 {
+    static is_active = false;
+    static is_from_garage = false;
     static page_title;
     static last_select_index;
+    static last_select_item;
+    static swf_name;
+    static return_root;
 
     function onLoad(context)
     {
@@ -36,13 +41,19 @@ module PROJECT::ROOT
 
     function onInitialize(context)
     {
+        var bg_name;
+        var return_page;
+
+        is_active = true;
+
         page_title = getEventTitle(main::game.menuRef());
-        var bg_name = main::game.menuRef(1);
+        bg_name = main::game.menuRef(1);
+        return_page = main::game.menuRef(3)
+        return_root = return_page;
 
         if (page_title != nil)
             context.loadGpb("/projects/gtmode", page_title);
 
-        var return_page = main::game.menuRef(3);
         if (return_page != nil && return_page == "DealerRoot")
         {
             var nation = main::game.menuRef(5);
@@ -64,6 +75,7 @@ module PROJECT::ROOT
             bg_flash.doInitialize(context);
             bg_flash.reset();
             bg_image.visible = false;
+            swf_name = bg_name;
         }
         else
         {
@@ -84,13 +96,47 @@ module PROJECT::ROOT
 
         if (last_select_index != nil)
         {
+            last_select_index = last_select_index.toInt();
             ScrollBox::SelectBox.index = last_select_index;
             ROOT.setFocus(ScrollBox::SelectBox.getChild(last_select_index));
+        }
+
+        context.pushEvent(main::menu::MScriptEvent(context, ROOT, "returnToEventInfo"));
+    }
+
+    function returnToEventInfo(context)
+    {
+        if (is_from_garage)
+        {
+            context.sync(0.25);
+            //main::sound.play("ok");
+
+            ROOT.setFocus(nil);
+            var event_info = last_select_item["event_info"];
+            var event_index = last_select_item["index"];
+            ScrollBox.actor.out = true;
+            
+            var result = EventInfoDialog::open(context, event_info, last_select_index, swf_name, return_root, page_title);
+            if (result)
+            {
+                main::game.menuPush(event_index.toString());
+                main::game.saveMenuStack();
+                start_page(context, EventCourseRoot);
+            }
+            else
+            {
+                ScrollBox.actor.out = false;
+            }
+
+            ROOT.setFocus(ScrollBox::SelectBox.getChild(last_select_index));
+            context.cursor_visible = true;
+            is_from_garage = false;
         }
     }
 
     function onFinalize(context)
     {
+        is_active = false;
         ROOT.setFocus(nil);
         ScrollBox::SelectBox.clearChildren(context);
         ScrollBox::inc_arrow::image.actor = nil;
@@ -110,10 +156,10 @@ module PROJECT::ROOT
         var last_focused_widget = main::game.menuPop();
         var return_page_name = main::game.menuPop();
 
-        if (PROJECT.defined(return_page_name))
+        if (GTmodeProject.defined(return_page_name))
         {
             set_last_focus(last_focused_widget);
-            start_page(context, PROJECT[return_page_name]);
+            start_page(context, GTmodeProject[return_page_name]);
         }
         else
         {
@@ -122,6 +168,18 @@ module PROJECT::ROOT
 
         last_select_index = nil;
         return EVENTRESULT_FILTER;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
     }
 
     function onActivate(context, event, object)
@@ -137,7 +195,7 @@ module PROJECT::ROOT
         }
 
         var event_info = item["event_info"];
-        var event_index= item["index"];
+        var event_index = item["index"];
         last_select_index = event_index;
 
         if (event_info == nil)
@@ -157,10 +215,13 @@ module PROJECT::ROOT
 
         ScrollBox.actor.out = true;
 
-        var result = EventInfoDialog::open(context, event_info);
+        last_select_item = f;
+
+        var result = EventInfoDialog::open(context, event_info, last_select_index, swf_name, return_root, page_title); // Passing these values through to be returned to from the garage
         if (result)
         {
             main::game.menuPush(event_index.toString());
+            main::game.saveMenuStack();
             start_page(context, EventCourseRoot);
         }
         else
@@ -198,9 +259,13 @@ module PROJECT::ROOT
         var large_image_name = "image/gtmode/event/ticket/" + race_type + ".png";
         var small_image_name = "image/gtmode/event/ticket/ts_" + race_type + ".png";
         var default_image_name = "image/gtmode/event/ticket_" + page_title + ".png";
+        var placeholder_image_name = "piece/common/placeholder.img";
 
         var simple_ticket = false;
         var image_name = nil;
+
+        print large_image_name;
+        print small_image_name;
 
         if (context.existGpbBinary(large_image_name))
             image_name = large_image_name;
@@ -213,7 +278,14 @@ module PROJECT::ROOT
             }
             else
             {
-                image_name = default_image_name;
+                if (context.existGpbBinary(default_image_name))
+                    image_name = default_image_name;
+                else
+                {
+                    // If we're not in a region-based event hall but there is no image it needs a placeholder
+                    simple_ticket = false;
+                    image_name = placeholder_image_name;
+                }
             }
         }
 
@@ -231,13 +303,21 @@ module PROJECT::ROOT
         
         var ticket = item["Ticket"];
         var image = ticket["image"];
-        image.from_disk = false;
+        image.from_disk = image_name == placeholder_image_name;
         image.cache = false;
         image.setImagePath(image_name);
         target.appendChild(context, item);
 
+        if (wide)
+        {
+            image.w *= 0.75;
+            image.x += 30;
+        }
+
         if (ticket.defined("label"))
         {
+            if (wide)
+                ticket["label"].x -= 7;
             ticket["label"].text = eventname;
             ticket["label"].adjustScale();
         }
@@ -246,7 +326,12 @@ module PROJECT::ROOT
         {
             var level = getEventLevelByRaceCode(race_code);
             if (level != nil)
+            {
                 ticket["level"].text = context.translate(ROOT, "Level_" + level);
+
+                if (wide)
+                    ticket["level"].x += 30;
+            }
         }
 
         if (simple_ticket)
@@ -275,6 +360,15 @@ module PROJECT::ROOT
         var stub = hidden::TicketStubLong.doCopy();
         ticket.appendChild(context, stub);
 
+        if (wide)
+        {
+            stub.x *= 0.87;
+            stub.w *= 1.05;
+            
+            stub["stages"].w *= 0.75;
+            stub["stages"].x += 40;
+        }
+
         var race_list = extractSubRaceCode(race_code);
         var num_races = race_list != nil ? race_list.size : 0;
         var num_series = getSeriesRaceCount(race_code);
@@ -283,6 +377,7 @@ module PROJECT::ROOT
         stub["label"].text = getEventNameByRaceCodeForTitle(context, ROOT, race_code);
         stub["label"].adjustScale();
         stub["type"].text = context.translate(ROOT, num_series > 0 ? "ChampionshipRace" : "SingleRace");
+        stub["type"].adjustScale();
         stub["stages"].setImagePath("image/gtmode/event/" + num_races.toString() + ".png");
         stub["stages"].doInitialize(context);
         stub["license"].visible = true;
@@ -316,8 +411,13 @@ module PROJECT::ROOT
         var race = main::menu::MRaceData(race_list[0]);
 
         var stub = hidden::TicketStubShort.doCopy();
-        
         ticket.appendChild(context, stub);
+
+        if (wide)
+        {
+            stub.x *= 0.87;
+            stub.w *= 1.05;
+        }
         
         stub["license"].visible = true;
         stub["license"].cache = false;
@@ -348,9 +448,18 @@ module PROJECT::ROOT
     {
         var event_info = ticket["event_info"];
         var race_code = event_info.race_code;
+
         var stub = hidden::SimpleTicketStubLong.doCopy();
-        
         ticket.appendChild(context, stub);
+
+        if (wide)
+        {
+            stub.x *= 0.87;
+            stub.w *= 1.05;
+            
+            stub["stages"].w *= 0.75;
+            stub["stages"].x += 40;
+        }
         
         var race_list = extractSubRaceCode(race_code);
         var num_races = race_list != nil ? race_list.size : 0;
@@ -395,6 +504,12 @@ module PROJECT::ROOT
 
         var stub = hidden::SimpleTicketStubShort.doCopy();
         ticket.appendChild(context, stub);
+
+        if (wide)
+        {
+            stub.x *= 0.87;
+            stub.w *= 1.05;
+        }
         
         stub["license"].visible = true;
         stub["license"].cache = false;
@@ -555,9 +670,42 @@ module PROJECT::ROOT
         if (rank_text != nil)
             item["label"].text = rank_text;
     }
+
+    function checkPrize(context, widget, callingItem)
+    {
+        if (!is_debug)
+            return;
+            
+        var idx = -1;
+        var code = widget["event_info"].race_code;
+
+        if (code.endWith("1"))
+            code = code.substr(0, code.size - 1) + "0";
+
+        for (var i = 0; i < PresentData::detail_carlist.size; i++)
+        {
+            if (PresentData::detail_carlist[i] == code)
+            {
+                idx = i;
+                break;
+            }
+        }
+
+        if (idx > -1)
+        {
+            if (PresentData::content_carlist[idx] != nil)
+            {
+                logInfo("%{callingItem}: %{code}, prize = %{PresentData::content_carlist[idx]}");
+                return;
+            }
+        }
+
+
+        logInfo("!!! %{code} has no prize defined, event progress will not count !!!");
+    }
 }
 
-module PROJECT::ROOT::ScrollBox::SelectBox
+module GTmodeProject::EventHallRoot::ScrollBox::SelectBox
 {
     function onValueChanged(context)
     {
@@ -570,11 +718,14 @@ module PROJECT::ROOT::ScrollBox::SelectBox
     }
 }
 
-module PROJECT::ROOT::hidden::EventItem
+module GTmodeProject::EventHallRoot::hidden::EventItem
 {
     function onFocusEnter(context, event)
     {
         var widget = event.widget;
+
+        checkPrize(context, widget, "EventItem");
+
         if (widget != nil && widget.defined("tooltip_text"))
         {
             var tooltip = ROOT["Common"]["ToolTip"]["tip"];
@@ -585,11 +736,14 @@ module PROJECT::ROOT::hidden::EventItem
     }
 }
 
-module PROJECT::ROOT::hidden::SimpleEventItem
+module GTmodeProject::EventHallRoot::hidden::SimpleEventItem
 {
     function onFocusEnter(context, event)
     {
         var widget = event.widget;
+
+        checkPrize(context, widget, "SimpleEventItem");
+
         if (widget != nil && widget.defined("tooltip_text"))
         {
             var tooltip = ROOT["Common"]["ToolTip"]["tip"];

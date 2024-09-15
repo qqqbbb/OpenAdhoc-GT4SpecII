@@ -7,7 +7,7 @@
 
 
 
-module PROJECT::ROOT
+module BootProject::MovieRoot
 {
     static end_flg = nil;
 
@@ -66,7 +66,7 @@ module PROJECT::ROOT
 
     function skip(context)
     {
-        if (ROOT.isClosed())
+        if (MovieRoot.isClosed())
             return;
 
         if (!end_flg)
@@ -74,38 +74,39 @@ module PROJECT::ROOT
             end_page(context);
         }
 
+        print "intro skipped";
         main::game.menu_result = "terminate";
     }
 
     function onActivate(context)
     {
         skip(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 
     function onKeyPress(context, event, item)
     {
-        if (event.keysym == CELL_PAD_CTRL_START) // TODO: Change that
+        if (event.keysym == PS2_PAD_CTRL_START)
         {
             skip(context);
-            return EVENTRESULT_FILTER;
+            return STATE_YIELD;
         }
 
-        return EVENTRESULT_CONTINUE;
+        return STATE_EXIT;
     }
 
     function onCancel(context, event, item)
     {
         skip(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Mpeg
+module BootProject::MovieRoot::Mpeg
 {
     function onMovieFinish(context)
     {
-        if (ROOT.isClosed())
+        if (MovieRoot.isClosed())
             return;
 
         if (!end_flg)

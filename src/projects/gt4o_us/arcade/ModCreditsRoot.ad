@@ -1,0 +1,70 @@
+module ArcadeProject::ModCreditsRoot
+{
+    static qr_w = Page2::QR1.w;
+    static qr_x = Page2::QR1.x;
+    static gt_w = GT4.w;
+    static gt_x = GT4.x;
+    static page = 1;
+
+    // Quick and dirty page switching stuff to flick between credits and donate page
+
+    function onCancel(context)
+    {
+        main::sound.play("cancel");
+        start_page(context, TopRoot);
+        return EVENTRESULT_FILTER;
+    }
+
+    function onInitialize(context)
+    {
+        context.cursor_visible = false;
+        Page1::Credits.text = context.getUpdateContext().loadFile("textdata/c1.txt");
+
+        Page2::QR1.from_disk = true;
+        Page2::QR1.image_path = "/piece/modcredits/qr_ad.img";
+
+        if (wide)
+        {
+            Page2::QR1.w = qr_w * 0.75;
+            Page2::QR1.x = qr_x + 20;
+        }
+        else
+        {
+            GT4.w = gt_w * 1.25;
+            GT4.x = gt_x - 12;
+        }
+
+        Page2::Ad.adjustScale();
+
+        Page2::QR1.doInitialize(context);
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {                    
+            case CELL_PAD_CTRL_L3_RIGHT:
+                if (page == 1)
+                {
+                    main::sound.play("cursor");
+                    page = 2;
+                    Page1.visible = false;
+                    Page2.visible = true;
+                    PageNum.text = "Page %{page}/2";
+                }
+                return EVENTRESULT_FILTER;   
+                
+            case CELL_PAD_CTRL_L3_LEFT:
+                if (page == 2)
+                {
+                    main::sound.play("cursor");
+                    page = 1;
+                    Page1.visible = true;
+                    Page2.visible = false;
+                    PageNum.text = "Page %{page}/2";
+                }
+                return EVENTRESULT_FILTER;  
+        }
+        return EVENTRESULT_CONTINUE;
+    }
+}

@@ -1,0 +1,27 @@
+#include "../share/course_define.ad";
+#include "../share/page_util.ad";
+
+function logInfo(msg)
+{
+    print "\n--------------------\n";
+    print "\n%{msg}\n";
+    print "\n--------------------\n";
+}
+
+//logInfo("hook ready");
+
+module OptionProject::KeyconfigRoot
+{
+    function apply_dual(context, option, index, button_func, analog_func, button_list, analog_list)
+    {
+        logInfo("i = %{index}, button_func = %{button_func}, analog_func = %{analog_func}, button_list = %{button_list}, analog_list = %{analog_list}, peripheral = %{peripheral}");
+        option.unsetButtonKey(port, peripheral, button_func, button_list);
+        option.unsetAnalogKey(port, peripheral, analog_func, analog_list);
+        
+        if (index < button_list.size)
+            option.setButtonConfig(port, peripheral, button_list[index], button_func);
+
+        if (index - button_list.size < analog_list.size)
+            option.setAnalogConfig(port, peripheral, analog_list[index - button_list.size], analog_func);
+    }
+}

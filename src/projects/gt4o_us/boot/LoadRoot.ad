@@ -7,15 +7,15 @@
 
 
 
-module PROJECT::ROOT
+module BootProject::LoadRoot
 {   
     function onInitialize(context)
     {
         if (DEMO)
-            ROOT.visible = false;
+            LoadRoot.visible = false;
 
         context.cursor_visible = false;
-        context.pushEvent(main::menu::MScriptEvent(context, ROOT, "init"));
+        context.pushEvent(main::menu::MScriptEvent(context, LoadRoot, "init"));
     }
 
     function onFinalize(context)
@@ -25,19 +25,27 @@ module PROJECT::ROOT
 
     function start_next(context)
     {
-        if (main::menu::MSystem::GetRegionCode() == "uk")
-        {
+        //if (main::menu::MSystem::GetRegionCode() == "uk")
+        //{
             start_page(context, LanguageRoot);
-        }
-        else
-        {
-            start_page(context, CheckRoot);
-        }
+        //}
+        //else
+        //{
+        //    start_page(context, CheckRoot);
+        //}
     }
 
     function init(context)
     {
-        print "auto load.\n";
+        // Pushing UsingLanguages from the config file resulted in some weird behaviour, so pushing them at this later stage instead
+        if (main::UsingLanguages.size == 1)
+        {
+            main::UsingLanguages.push("FR");
+            main::UsingLanguages.push("DE");
+            main::UsingLanguages.push("IT");
+            main::UsingLanguages.push("ES");
+        }
+        //print "auto load.\n";
 
         var manager = main::menu::MMemoryCardManager("MODE_LOAD_GAME");
         var file = manager.getNewFile();
@@ -56,6 +64,37 @@ module PROJECT::ROOT
 
             if (main::menu::MSystem::IsOEM() && r != "OK")
                 continue;
+
+            var accel_list = main::game.option.searchButtonConfig(0, "DUALSHOCK 2", "BUTTON_ACCEL");
+            var brake_list = main::game.option.searchButtonConfig(0, "DUALSHOCK 2", "BUTTON_BRAKE");
+            var accel_is_trigger = false;
+            var brake_is_trigger = false;
+    
+            for (var i = 0; i < accel_list.size; i++)
+            {
+                if (accel_list[i] == "L2" || accel_list[i] == "R2")
+                {
+                    accel_is_trigger = true;
+                    break;
+                }
+            }
+    
+            for (var i = 0; i < brake_list.size; i++)
+            {
+                print "brake_list[%{i}] == %{brake_list[i]}";
+                if (brake_list[i] == "L2" || brake_list[i] == "R2")
+                {
+                    brake_is_trigger = true;
+                    break;
+                }
+            }
+    
+            if (accel_is_trigger || brake_is_trigger)
+            {
+                //print "At least one of accel/brake is bound to a trigger, enabling sensitivity patch";
+                main::game.toggleTriggerSensitivity(1);
+            }
+            // No else block here as if it wasn't true then the code was never patched to begin with
 
             if (r == "OK")
             {
@@ -83,6 +122,6 @@ module PROJECT::ROOT
     function onCancel(context, event, item)
     {
         main::sound.play("disabled");
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

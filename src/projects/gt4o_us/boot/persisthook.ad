@@ -1,0 +1,12 @@
+module SettingProject::SettingRoot
+{
+    function onKeyPress(context, event, item)
+    {
+        if (event.keysym == PS2_PAD_CTRL_SELECT)
+        {
+            main::sound.play("next");
+
+            return STATE_YIELD;
+        }
+    }
+}

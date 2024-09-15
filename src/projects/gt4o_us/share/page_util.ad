@@ -51,6 +51,7 @@ function _start_page(context, next_page)
         }
     }
 
+    //print "\n---End of _start_page, next_page = %{next_page}---\n";
     context.flushKeyEvent();
 }
 

@@ -1,0 +1,24 @@
+module DiscountData 
+{
+    static discount_week4 = ["subaru", 85];
+    static discount_week7 = ["renault", 85];
+    static discount_week10 = ["ford", 85];
+    static discount_week14 = ["jaguar", 85];
+    static discount_week17 = ["fiat", 90];
+    static discount_week20 = ["bmw", 90];
+    static discount_week24 = ["hyundai", 90];
+    static discount_week27 = ["volkswagen", 85];
+    static discount_week31 = ["mazda", 85];
+    static discount_week35 = ["audi", 90];
+    static discount_week39 = ["toyota", 85];
+    static discount_week43 = ["chevrolet", 90];
+    static discount_week48 = ["nissan", 85];
+    static discount_week50 = ["mitsubishi", 90];
+    static discount_week54 = ["honda", 90];
+    static discount_week57 = ["citroen", 85];
+    static discount_week61 = ["peugeot", 85];
+    static discount_week65 = ["fiat", 90];
+    static discount_week69 = ["dodge", 85];
+    static discount_week73 = ["fpv", 90];
+    static discount_week76 = ["chevrolet", 85];
+}

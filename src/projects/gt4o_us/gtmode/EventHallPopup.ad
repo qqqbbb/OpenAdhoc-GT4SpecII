@@ -1,0 +1,189 @@
+
+
+
+
+
+
+
+
+
+
+
+
+module GTmodeProject::EventHallPopup
+{
+    #define MENU_POP_COUNT 16
+
+    function clearMenuRefs(context)
+    {
+        for (var i = 0; i < MENU_POP_COUNT; i++)
+            main::game.menuPop();
+    }
+
+    function setMoveActor(widget)
+    {
+        var actor = main::menu::MMoveActor(widget, widget.x, 480.0);
+        widget.actor = actor;
+        widget.actor.ratio = 0.2;
+    }
+
+    function setFadeActorRoot()
+    {
+        var actor = main::menu::MFadeActor(ROOT, 1.0);
+        actor.repeat = false;
+        actor.period = 0.5;
+        ROOT.actor = actor;
+    }
+
+    setMoveActor(Pane);
+    setFadeActorRoot();
+
+    function open(context)
+    {
+        ROOT.setFocus(nil);
+        Pane.actor.destinationY = 480.0;
+        Pane.actor.out = true;
+        Pane.actor.warp();
+
+        ROOT.actor.out = true;
+        ROOT.actor.warp();
+
+        context.pushPage(ROOT);
+        Pane.actor.out = false;
+        ROOT.actor.out = false;
+        ROOT.setFocus(Pane::Close);
+    }
+
+    function close(context)
+    {
+        ROOT.setFocus(nil);
+        Pane.actor.destinationY = 480.0;
+        Pane.actor.out = true;
+        ROOT.actor.out = true;
+
+        setCrossTransition(context);
+
+        context.sync(0.25);
+
+        context.closePage(ROOT);
+    }
+
+    function onInitialize(context)
+    {
+
+    }
+
+    function onFinalize(context) { }
+
+    function onCancel(context, event, item)
+    {
+        main::sound.play("cancel");
+        close(context);
+        QuickMenuPopup::open(context);
+        return EVENTRESULT_FILTER;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                onCancel(context);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }    
+}
+
+
+module GTmodeProject::EventHallPopup::Pane::Close
+{
+    function onActivate(context, event, item)
+    {
+        onCancel(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::Beginner
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::BeginnerHall::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::Professional
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::ProfessionalHall::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::Extreme
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::ExtremeHall::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::Endurance
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::Endurance::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::American
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::RaceAmerican::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::European
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::RaceEuropean::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::Japanese
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::RaceJapanese::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::Rally
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::Rally::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::EventHallPopup::Pane::Mission
+{
+    function onActivate(context, event, item)
+    {
+        TopRoot::ScrollWindow::clip::space::Mission::onActivate(context);
+        return EVENTRESULT_FILTER;
+    }
+}
+

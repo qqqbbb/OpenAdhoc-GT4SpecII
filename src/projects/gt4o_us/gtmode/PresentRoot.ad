@@ -10,7 +10,7 @@
 
 
 
-module PROJECT::ROOT
+module GTmodeProject::PresentRoot
 {
     function makeColumn(i)
     {
@@ -125,6 +125,15 @@ module PROJECT::ROOT
         return main::game.race_record.isLicensePerfect(category);
     }
 
+    function hall_clear(id, column)
+    {
+        if (main::game.present.getByRace(id))
+            return false;
+
+        var hall = column[1];
+        return isHallComplete(hall);
+    }
+
     function mission_1st(id, column)
     {
         if (main::game.present.getByRace(id))
@@ -176,6 +185,32 @@ module PROJECT::ROOT
         var present_num = PresentData::condition_carlist.size;
         for (var i = 0; i < present_num; i++)
         {
+            if (is_kaizo)
+            {
+                switch (i)
+                {
+                    // Block all licence prizes except B from ever appearing
+                    case 112:
+                    case 113:
+                    case 114:
+                    case 115:
+                    case 117:
+                    case 118:
+                    case 119:
+                    case 120:
+                    case 122:
+                    case 123:
+                    case 124:
+                    case 125:
+                    case 127:
+                    case 128:
+                    case 129:
+                    case 130:
+                        continue;
+                        break;
+                }
+            }
+
             var column = makeColumn(i);
             var func = column[0];
 
@@ -322,7 +357,7 @@ module PROJECT::ROOT
         else if (main::game.major_menu_project == "gtmode" && main::game.major_menu_page != "")
         {
                 var page = PROJECT[main::game.major_menu_page];
-                main::game.major_menu_project == ""; // BUG: "==", possible bug
+                main::game.major_menu_project == ""; // BUG: Was "==", possible bug
                 main::game.major_menu_page = "";
                 start_page(context, page);
         }
@@ -344,8 +379,33 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::CarPane
+module GTmodeProject::PresentRoot::CarPane
 {
+    function fnv1a(str)
+    {
+        var result = 0x811c9dc5;
+        var prime = 16777619;
+        for (var i = 0; i < str.size; i++)
+        {
+            result ^= str.at(i);
+            result *= prime;
+        }
+
+        return result;
+    }
+
+    function djb33_hash(str)
+    {
+        var h = 5381;
+        for (var i = 0; i < str.size; i++)
+        {
+            h += (h << 5);
+            h ^= str.at(i); // at returns byte representation of a specific char
+        }
+
+        return h;
+    }
+
     function get_car(context, func, race, type, car, col)
     {
         main::sound.startStreamEx("pcm", "get_car", -1, 1, main::game.option.menu_bgm_volume);
@@ -361,6 +421,14 @@ module PROJECT::ROOT::CarPane
 
         context.sync(4.0);
         Name.actor.out = false;
+        if (PresentData.defined("allcars_carnum"))
+        {
+            if (randomizer_enabled == 1)
+            {
+                car = PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carnum-1, fnv1a(main::game.username + race + func))];
+                col = "-";
+            }
+        }
         Name::label.text = main::menu::MCarData::GetCarName(car);
         Name::label.adjustScale();
 
@@ -372,7 +440,7 @@ module PROJECT::ROOT::CarPane
         {
             if (main::menu::MSystem::GetVersionBranch() != "beta") // GT4 Online
                 ending = "ending";
-                
+            
             col = "-";
         }
 
@@ -393,6 +461,7 @@ module PROJECT::ROOT::CarPane
         {
             main::game.garage.addNewCar(car, col);
             main::game.calendar.putPresentCarEvent(car, col);
+            refreshOwnedCars();
         }
         else
             var no_get = context.translate(ROOT, "since garage full you didnot get");
@@ -435,6 +504,12 @@ module PROJECT::ROOT::CarPane
                 ToolTip::tip.value = str;
                 break;
 
+            case "hall_clear":
+                var str = context.translate(ROOT, func + "_" + race);
+                str = str + no_get;
+                ToolTip::tip.value = str;
+                break;
+
             case "win":
                 var event_name = getEventNameByRaceCode(context, ROOT, race);
                 var str = context.translate(ROOT, func);
@@ -445,6 +520,13 @@ module PROJECT::ROOT::CarPane
 
             case "achievement":
                 var str = context.translate(ROOT, func + "_" + race);
+                str = str + no_get;
+                ToolTip::tip.value = str;
+                break;
+
+            case "aspec":
+                var str = context.translate(ROOT, func + "_" + race);
+                str = str + no_get;
                 ToolTip::tip.value = str;
                 break;
 
@@ -453,16 +535,18 @@ module PROJECT::ROOT::CarPane
                 break;
         }
 
-        context.sync(3.0);
+        //context.sync(3.0); // Only existed to time the appearance of OK with the music drop
         OK.visible = true;
         context.cursor_visible = true;
+
+        main::game.setNeedSave();
 
         ROOT.setFocus(OK);
         context.flushKeyEvent();
     }
 }
 
-module PROJECT::ROOT::CarPane::CarFace
+module GTmodeProject::PresentRoot::CarPane::CarFace
 {
     function move_car(phase, warp)
     {
@@ -497,7 +581,7 @@ module PROJECT::ROOT::CarPane::CarFace
     }
 }
 
-module PROJECT::ROOT::CarPane::OK
+module GTmodeProject::PresentRoot::CarPane::OK
 {
     function onActivate(context)
     {
@@ -508,7 +592,7 @@ module PROJECT::ROOT::CarPane::OK
     }
 }
 
-module PROJECT::ROOT::PaperPane
+module GTmodeProject::PresentRoot::PaperPane
 {
     function get_paper(context, category)
     {
@@ -538,7 +622,7 @@ module PROJECT::ROOT::PaperPane
         ToolTip::tip.value = context.translate(PresentRoot, "you got license");
 
         Paper.actor.out = false;
-        context.sync(5.0);
+        //context.sync(5.0);
 
         Paper::OK.visible = true;
         context.cursor_visible = true;
@@ -548,7 +632,7 @@ module PROJECT::ROOT::PaperPane
     }
 }
 
-module PROJECT::ROOT::PaperPane::Paper::OK
+module GTmodeProject::PresentRoot::PaperPane::Paper::OK
 {
     function onActivate(context)
     {

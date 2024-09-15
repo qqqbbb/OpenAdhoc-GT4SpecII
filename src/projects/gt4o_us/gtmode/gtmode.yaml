@@ -80,4 +80,17 @@ files_to_compile:
     is_main: true
   - name: Template.ad
     is_main: true
-
+  - name: DescriptionPopup.ad
+    is_main: true
+  - name: TypicalOpponentsPopup.ad
+    is_main: true
+  - name: SpecIISettingRoot.ad
+    is_main: true
+  - name: QuickMenuPopup.ad
+    is_main: true
+  - name: EventHallPopup.ad
+    is_main: true
+  - name: CarPaintRoot.ad
+    is_main: true
+  - name: DebugMenuRoot.ad
+    is_main: true

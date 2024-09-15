@@ -12,7 +12,7 @@
 
 
 
-module PROJECT::ROOT
+module OptionProject::ArcadeRoot
 {
     module PenaltyType
     {
@@ -59,6 +59,8 @@ module PROJECT::ROOT
         option.tire_damage = Pane::TireDamage::OptionMenu.index;
         option.assist_asm = Pane::DrivingAssist::OptionMenu.index == 2 ? true : false;
         option.assist_tcs = Pane::DrivingAssist::OptionMenu.index > 0 ? true : false;
+        print option.assist_tcs;
+        print option.assist_asm;
         option.penalty_type = PenaltyTypeString[Pane::Penalty::OptionMenu.index];
         option.arcade_time_limit = Pane::TimeLimit::slider.index * 30;
         main::game.setNeedSave();
@@ -77,7 +79,7 @@ module PROJECT::ROOT
         setupSlider(Pane::TimeLimit::slider, 30, context.translate(ROOT, "none"));
     }
 
-    function onFinalize(context)
+    function onFinalize()
     {
 
     }
@@ -86,11 +88,11 @@ module PROJECT::ROOT
     {
         main::sound.play("cancel");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::RaceLaps::slider
+module OptionProject::ArcadeRoot::Pane::RaceLaps::slider
 {
     function onValueChanged(context)
     {
@@ -98,7 +100,7 @@ module PROJECT::ROOT::Pane::RaceLaps::slider
     }
 }
 
-module PROJECT::ROOT::Pane::TimeLimit::slider
+module OptionProject::ArcadeRoot::Pane::TimeLimit::slider
 {
     function onValueChanged(context)
     {
@@ -106,23 +108,23 @@ module PROJECT::ROOT::Pane::TimeLimit::slider
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::ArcadeRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::ArcadeRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {
         main::sound.play("ok");
         apply(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

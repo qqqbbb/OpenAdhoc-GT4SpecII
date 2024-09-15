@@ -10,7 +10,7 @@
 // module
 //---------------------------------------------------------------------------------------
 
-module PROJECT::ROOT
+module GTmodeProject::LogRoot
 {
     static current_view_day = 0;
     static original_title_color = nil;
@@ -193,7 +193,7 @@ module PROJECT::ROOT
                     
                     if (event[3] != nil)
                         price = event[3].toInt();
-                        
+                    
                     if (price >= 65535)
                         record.push(context.translate(ROOT, "SellCarFormatPriceless").format(name));
                     else if (price > 0)
@@ -477,6 +477,11 @@ module PROJECT::ROOT
                 ROOT.visible = true;
                 context.sync();
 
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
                 return EVENTRESULT_FILTER;
         }
 

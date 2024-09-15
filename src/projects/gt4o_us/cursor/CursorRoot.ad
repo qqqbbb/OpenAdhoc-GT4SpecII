@@ -7,7 +7,7 @@
 
 
 
-module PROJECT::ROOT
+module CursorProject::CursorRoot
 {
     function setIcon(context, name)
     {
@@ -15,6 +15,12 @@ module PROJECT::ROOT
             name = "cursor";
 
         var image_path = "image/cursor/" + name + ".png";
+
+        if (main::game.option.wide_mode)
+            Cursor.w = 28;
+        else
+            Cursor.w = 32;
+
         if (Cursor.image_path != image_path)
         {
             Cursor.image_path = image_path;

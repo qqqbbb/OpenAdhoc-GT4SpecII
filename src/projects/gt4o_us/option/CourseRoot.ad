@@ -1,4 +1,4 @@
-module PROJECT::ROOT
+module OptionProject::CourseRoot
 {
     function open(context)
     {
@@ -45,7 +45,8 @@ module PROJECT::ROOT
             Pane::ScrollBox::SelectBox.appendChild(context, item);
 
             if (main::game.favorite_course.has(crs))
-                item.active = true;
+                
+            item.active = true;
         }
     }
 
@@ -69,7 +70,7 @@ module PROJECT::ROOT
         Pane::ScrollBox::SelectBox.clearWindow(context);
     }
 
-    function onCancel(context, event, item)
+    function onCancel(context)
     {
         var ret = decide(context, 0);
         main::sound.play("cancel");
@@ -83,7 +84,7 @@ module PROJECT::ROOT
         {
             main::sound.play("disable");
             openConfirmDialog(context, 2, context.translate(ROOT, "course at least one"));
-            return EVENTRESULT_FILTER;
+            return STATE_YIELD;
         }
         else 
         {
@@ -109,14 +110,14 @@ module PROJECT::ROOT
             {
                 main::sound.play("disable");
                 openConfirmDialog(context, 2, context.translate(ROOT, "multi player course at least one"));
-                return EVENTRESULT_FILTER;
+                return STATE_YIELD;
             }
 
             if (!split_enable)
             {
                 main::sound.play("disable");
                 openConfirmDialog(context, 2, context.translate(ROOT, "split course at least one"));
-                return EVENTRESULT_FILTER;
+                return STATE_YIELD;
             }
         }
 
@@ -125,11 +126,11 @@ module PROJECT::ROOT
 
         apply(context);
         close(context);
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }
 
-module PROJECT::ROOT::Pane::ScrollBox::SelectBox
+module OptionProject::CourseRoot::Pane::ScrollBox::SelectBox
 {
     function onValueChanged(context)
     {
@@ -137,7 +138,7 @@ module PROJECT::ROOT::Pane::ScrollBox::SelectBox
     }
 }
 
-module PROJECT::ROOT::OK
+module OptionProject::CourseRoot::OK
 {
     function onActivate(context)
     {
@@ -145,7 +146,7 @@ module PROJECT::ROOT::OK
     }
 }
 
-module PROJECT::ROOT::hidden::Item
+module OptionProject::CourseRoot::hidden::Item
 {
     function onActivate(context, event)
     {
@@ -163,13 +164,13 @@ module PROJECT::ROOT::hidden::Item
             openConfirmDialog(context, 2, context.translate(ROOT, "course full"));
         }
         else
-        {   
+        {
             main::sound.play("ok");
             main::game.favorite_course.append(crs);
         }
-        
+
         widget.active = main::game.favorite_course.has(crs);
 
-        return EVENTRESULT_FILTER;
+        return STATE_YIELD;
     }
 }

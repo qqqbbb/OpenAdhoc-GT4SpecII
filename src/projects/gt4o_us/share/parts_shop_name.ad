@@ -14,6 +14,9 @@
 
 function getPartsShopName(type, cat)
 {
+	if (type == "FULL_RESTORE")
+		return type;
+	
 	if (type < 32)
 		return getPartsName(type, cat);
 	else
@@ -22,6 +25,9 @@ function getPartsShopName(type, cat)
 		{
 			case 32:
 				return "STIFFNESS_REFRESH";
+				break;
+			case 33:
+				return "FULL_RESTORE";
 				break;
 			default:
 				return "getPartsShopName ERROR";

@@ -1,26 +1,12 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module PROJECT::ROOT
+module OptionProject::UnitRoot
 {
-    module VelocityType
+    module VelocityType 
     {
         static KMPH = 0;
         static MPH = 1;
     }
 
-    module PowerType
+    module PowerType 
     {
         static PS = 0;
         static HP = 1;
@@ -31,7 +17,7 @@ module PROJECT::ROOT
         static PF = 6;
     }
 
-    module TorqueType 
+    module TorqueType
     {
         static KGFM = 0;
         static FTLB = 1;
@@ -55,33 +41,32 @@ module PROJECT::ROOT
     function reflect(context)
     {
         var option = main::game.option;
+
         Pane::Velocity::OptionMenu.setIndex(context, VelocityType[option.unit_velocity]);
         Pane::Power::OptionMenu.setIndex(context, PowerType[option.unit_power]);
         Pane::Torque::OptionMenu.setIndex(context, TorqueType[option.unit_torque]);
-
     }
 
     function apply(context)
     {
         main::game.setNeedSave();
+        
         var option = main::game.option;
-
         option.unit_velocity = VelocityString[Pane::Velocity::OptionMenu.index];
         option.unit_power = PowerString[Pane::Power::OptionMenu.index];
         option.unit_torque = TorqueString[Pane::Torque::OptionMenu.index];
+
         option.apply();
     }
 
     function onInitialize(context)
     {
-        ROOT.setFocus(Pane::Velocity::OptionMenu);
+        UnitRoot.setFocus(Pane::Velocity::OptionMenu);
+
         reflect(context);
     }
 
-    function onFinalize(context)
-    {
-
-    }
+    function onFinalize(context) { }
 
     function onCancel(context, event, item)
     {
@@ -91,7 +76,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::Cancel
+module OptionProject::UnitRoot::Pane::Buttons::Cancel
 {
     function onActivate(context)
     {
@@ -101,7 +86,7 @@ module PROJECT::ROOT::Pane::Buttons::Cancel
     }
 }
 
-module PROJECT::ROOT::Pane::Buttons::OK
+module OptionProject::UnitRoot::Pane::Buttons::OK
 {
     function onActivate(context)
     {

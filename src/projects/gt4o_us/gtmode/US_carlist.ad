@@ -50,7 +50,7 @@ module NewCarData
         "tt_dtm_02"
     ];
 
-    static bmw_carnum = 11;
+    static bmw_carnum = 10;
     static bmw_carlist = [
         "_120i_04",
         "_120d_04",
@@ -61,8 +61,12 @@ module NewCarData
         "m3_gtr_str_03",
         "m5_05",
         "_320i_etcc_03",
-        "m3_gtr_alms_01",
-        "mclaren_f1_gtr_long_97"
+        "m3_gtr_alms_01"
+    ];
+
+    static cadillac_carnum = 1;
+    static cadillac_carlist = [
+        "cien_dmv_02"
     ];
 
     static callaway_carnum = 1;
@@ -75,12 +79,14 @@ module NewCarData
         "caterham_7_fb_02"
     ];
 
-    static chevrolet_carnum = 4;
+    static chevrolet_carnum = 6;
     static chevrolet_carlist = [
         "ssr_03",
         "camaro_ss_00",
         "corvette_z06_00",
-        "silverado_sst_02"
+        "silverado_sst_02",
+        "camaro_race_00",
+        "corvette_cr5_00"
     ];
 
     static chrysler_carnum = 4;
@@ -128,7 +134,7 @@ module NewCarData
         "coupe_turboplus_00"
     ];
 
-    static ford_carnum = 8;
+    static ford_carnum = 11;
     static ford_carlist = [
         "ka_01",
         "focus_st170_jp_03",
@@ -136,14 +142,18 @@ module NewCarData
         "mustang_gt_05",
         "svt_f150_lightning_03",
         "ford_gt_05",
+        "ford_gt_no_stripe_05",
         "ford_gt_concept_dmv_02",
+        "ford_gt_concept_gulf_02",
+        "ford_gt_lm_sp2_04",
         "focus_wrc_99"
     ];
 
-    static fpv_carnum = 2;
+    static fpv_carnum = 3;
     static fpv_carlist = [
         "fpv_f6_typhoon_04",
-        "fpv_gt_04"
+        "fpv_gt_04",
+        "fpv_gt_no_stripe_04"
     ];
 
     static gillet_carnum = 1;
@@ -162,7 +172,7 @@ module NewCarData
         "hommell_rs_berlinetta_99"
     ];
 
-    static honda_carnum = 23;
+    static honda_carnum = 25;
     static honda_carlist = [
         "insight_mt_99",
         "fit_w_ff_01",
@@ -178,6 +188,7 @@ module NewCarData
         "nsx_r_02",
         "nsx_s_01",
         "nsx_r_01",
+        "nsx_r_proto_lm_road_01",
         "integra_r_lm_01",
         "s2000_lm_race_00",
         "gathers_civic_98",
@@ -186,14 +197,18 @@ module NewCarData
         "loctite_nsx_01",
         "mobil_nsx_01",
         "raybrig_nsx_00",
-        "takata_dome_nsx_03"
+        "takata_dome_nsx_03",
+        "nsx_r_proto_lm_01"
     ];
 
-    static hyundai_carnum = 4;
+    static hyundai_carnum = 7;
     static hyundai_carlist = [
+        "tiburon_turbulence_99",
         "tiburon_gt_v6_01",
+        "tascani_ccs_03",
         "hcd6_concept_01",
         "clix_concept_01",
+        "click_r_04",
         "accent_wrc_01"
     ];
 
@@ -215,14 +230,15 @@ module NewCarData
         "land_range_stormer_04"
     ];
 
-    static lexus_carnum = 6;
+    static lexus_carnum = 7;
     static lexus_carlist = [
         "lexus_sc430_us_01",
         "lexus_is_us_98",
         "lexus_is200_rs200_98",
         "lexus_is300_sc_us_01",
         "gs300_us_00",
-        "gs300_vertex_us_00"
+        "gs300_vertex_us_00",
+        "lexus_is200_gt1_race_04"
     ];
 
     static lister_carnum = 1;
@@ -230,31 +246,38 @@ module NewCarData
         "storm_v12_race_99"
     ];
 
-    static lotus_carnum = 5;
+    static lotus_carnum = 6;
     static lotus_carlist = [
         "elise2000_00",
+        "elise_type72_01",
         "elise_111s_03",
         "elise_111r_04",
         "esprit_sport350_00",
         "esprit_v8_02"
     ];
 
-    static mazda_carnum = 14;
+    static mazda_carnum = 20;
     static mazda_carlist = [
         "demio_sport_03",
         "miata_1600_nra_04",
         "miata_1800_rs_04",
+        "mx5_gms_05",
         "protege_sport20_02",
         "mazda6_sport_23z_03",
         "rx8_03",
         "rx8_typee_03",
         "rx8_types_03",
         "rx7_spiritr_a_02",
+        "murao_rx7_03",
         "kusabi_concept_03",
+        "rx8_concept_01",
+        "rx8_tmv_01",
         "mazda6_tmv_01",
         "mazdaspeed_6_05",
         "mazda_suv_concept_05",
-        "mazda6_tmv_n1_01"
+        "mazda6_tmv_n1_01",
+        "rx7_lm_race_00",
+        "rx8_lm_01"
     ];
 
     static mercedes_carnum = 9;
@@ -282,7 +305,7 @@ module NewCarData
         "mini_cooper_s_02"
     ];
 
-    static mitsubishi_carnum = 11;
+    static mitsubishi_carnum = 13;
     static mitsubishi_carlist = [
         "colt_15_sportx_02",
         "eclipse_spyder_gts_03",
@@ -293,8 +316,10 @@ module NewCarData
         "lancer_evo8_rs_03",
         "i_concept_03",
         "cz3_tar_tmv_01",
+        "fto_lm_race_00",
         "pajero_evo_sp_03",
-        "lancer_wrc_03"
+        "lancer_wrc_03",
+        "cz3_tar_wrc_01"
     ];
 
     static nike_carnum = 1;
@@ -302,7 +327,7 @@ module NewCarData
         "nike_one_04"
     ];
 
-    static nissan_carnum = 27;
+    static nissan_carnum = 32;
     static nissan_carlist = [
         "micra_12c_5d_03",
         "cube_ex_2wd_02",
@@ -313,6 +338,7 @@ module NewCarData
         "_350z_03",
         "fairlady_z_st_02",
         "r34_gtr_m_01",
+        "r34_gtr_v_gtcolor_pc_01",
         "r34_gtr_v2_00",
         "r34_gtr_v2_nur_02",
         "r34_skyline_gtr_00",
@@ -320,8 +346,12 @@ module NewCarData
         "r34_skyline_gtr_sc_mp3_00",
         "r34_skyline_v2_n1_00",
         "_350z_gt4_05",
+        "r34_gtr_v_gtcolor_01",
+        "stream_z_04",
         "gtr_concept_tmv_01",
         "mm_r_tmv_01",
+        "gtr_concept_lm_01",
+        "_350z_lm_us_02",
         "razo_silvia_01",
         "calsonic_gtr_00",
         "loctite_gtr_00",
@@ -342,11 +372,12 @@ module NewCarData
         "opel_astra_race_00"
     ];
 
-    static pagani_carnum = 3;
+    static pagani_carnum = 4;
     static pagani_carlist = [
         "zonda_c12_00",
         "zonda_c12s_00",
-        "zonda_c12s_gmv_02"
+        "zonda_c12s_gmv_02",
+        "zonda_race_00"
     ];
 
     static panoz_carnum = 1;
@@ -360,18 +391,21 @@ module NewCarData
         "pescarolo_c60_lmp1_04"
     ];
 
-    static peugeot_carnum = 6;
+    static peugeot_carnum = 7;
     static peugeot_carlist = [
         "_106_rally_03",
         "_106_s16_03",
         "_206cc_20_01",
         "_307_xsi_04",
         "_206_rc_03",
-        "_206_wrc_exxon_99"
+        "_206_wrc_exxon_99",
+        "_206_wrc_99"
     ];
 
-    static polyphony_carnum = 0;
-    static polyphony_carlist = [];
+    static polyphony_carnum = 1;
+    static polyphony_carlist = [
+        "formula_gran_turismo_04"
+    ];
 
     static pontiac_carnum = 4;
     static pontiac_carlist = [
@@ -427,7 +461,7 @@ module NewCarData
         "c8_laviolette_02"
     ];
 
-    static subaru_carnum = 13;
+    static subaru_carnum = 14;
     static subaru_carlist = [
         "legacy_b4_30r_03",
         "legacy_wgn_30r_03",
@@ -437,11 +471,12 @@ module NewCarData
         "legacy_sdn_20gt_b_03",
         "legacy_wgn_20gt_03",
         "legacy_wgn_20gt_b_03",
-        "cusco_impreza_03",
         "impreza_wrc_01",
         "impreza_wrc_03",
         "impreza_wrc_99",
-        "impreza_wrc_prot_01"
+        "impreza_wrc_prot_01",
+        "impreza_lm_race_00",
+        "cusco_impreza_03"
     ];
 
     static suzuki_carnum = 5;
@@ -459,25 +494,31 @@ module NewCarData
         "zz2_00"
     ];
 
-    static toyota_carnum = 18;
+    static toyota_carnum = 24;
     static toyota_carlist = [
         "prius_g_touring_03",
         "vitz_rs15_00",
         "voltz_s_2wd_02",
         "mr2_spyder_v_us_02",
         "vitz_rs_turbo_02",
+        "altezza_as200_98",
         "runx_z_aero_tourer_02",
         "will_vs_01",
+        "altezza_rs200_98",
+        "altezza_gita_as300_01",
         "tacoma_x_runner_04",
         "caldina_gt_four_02",
-        "rsc_tmv_01",
         "mtr_gmv_04",
+        "rsc_tmv_01",
+        "rsc_tmv_lm_01",
         "mrs_autobacs_00",
         "wedssport_celica_03",
+        "altezza_lm_race_00",
         "au_supra_01",
         "castrol_supra_00",
         "castrol_supra_01",
         "denso_supra_00",
+        "esso_supra_01",
         "woodone_supra_03"
     ];
 
@@ -487,6 +528,16 @@ module NewCarData
         "t350c_03",
         "tuscan_speed6_00",
         "cerbera_speed12_00"
+    ];
+
+    static vauxhall_carnum = 6;
+    static vauxhall_carlist = [
+        "vauxhall_corsa_comf_14_3dr_01",
+        "vauxhall_tigra_16i_99",
+        "vauxhall_vx220_00",
+        "vauxhall_vx220_turbo_00",
+        "vauxhall_vectra_32v6_jp_03",
+        "vauxhall_astra_race_00"
     ];
 
     static volkswagen_carnum = 12;
@@ -554,9 +605,10 @@ module LegendCarData
         "exp_speed8_03",
     ];
 
-    static bmw_carnum = 2;
+    static bmw_carnum = 3;
     static bmw_carlist = [
         "_2002_turbo_73",
+        "mclaren_f1_gtr_long_97",
         "v12_lmr_99"
     ];
 
@@ -564,11 +616,6 @@ module LegendCarData
     static buick_carlist = [
         "buick_gnx_87",
         "buick_special_62"
-    ];
-
-    static cadillac_carnum = 1;
-    static cadillac_carlist = [
-        "cien_dmv_02"
     ];
 
     static chaparral_carnum = 2;
@@ -587,7 +634,7 @@ module LegendCarData
         "corvette_zr1_90",
         "chevelle_ss_454_ls6_70",
         "camaro_irocz_88",
-        "corvette_cr5_00"
+        "corvette_z06_race_63"
     ];
 
     static citroen_carnum = 1;
@@ -622,15 +669,19 @@ module LegendCarData
         "dome_zero_78"
     ];
 
-    static fiat_carnum = 1;
+    static fiat_carnum = 3;
     static fiat_carlist = [
-        "_500_f_65"
+        "_500_f_65",
+        "_500_l_69",
+        "_500_r_72"
     ];
 
-    static ford_carnum = 3;
+    static ford_carnum = 5;
     static ford_carlist = [
         "model_t_tourer_15",
+        "rs200_84",
         "rs200_rally_85",
+        "escort_wrc_98",
         "gt40_race_69"
     ];
 
@@ -659,10 +710,11 @@ module LegendCarData
         "bellett_1600_gtr_69"
     ];
 
-    static jaguar_carnum = 3;
+    static jaguar_carnum = 4;
     static jaguar_carlist = [
         "e_type_coupe_61",
         "xj220_gt_road_92",
+        "xj220_gt_race_92",
         "xjr9_race_88"
     ];
 
@@ -698,9 +750,11 @@ module LegendCarData
         "mini_marcos_gt_70"
     ];
 
-    static mazda_carnum = 3;
+    static mazda_carnum = 5;
     static mazda_carlist = [
         "carol_360_deluxe_62",
+        "az1_92",
+        "_110s_67",
         "_110s_68",
         "_787b_91"    
     ];
@@ -721,8 +775,10 @@ module LegendCarData
         "cougar_xr7_67"
     ];
 
-    static mini_carnum = 0;
-    static mini_carlist = [];
+    static mini_carnum = 1;
+    static mini_carlist = [
+        "mini_cooper_13i_98"
+    ];
 
     static mitsubishi_carnum = 9;
     static mitsubishi_carlist = [
@@ -764,12 +820,13 @@ module LegendCarData
         "opel_calibra_race_94"
     ];
 
-    static peugeot_carnum = 4;
+    static peugeot_carnum = 5;
     static peugeot_carlist = [
         "_205_t16_85",
         "_205_t16_rally_85",
         "_205_t16_wrc_ev2_86",
-        "_905b_evo1_exxon_92"
+        "_905b_evo1_exxon_92",
+        "_905b_evo1_92"
     ];
 
     static plymouth_carnum = 2;
@@ -812,7 +869,7 @@ module LegendCarData
         "escudo_pikespeak_98"
     ];
 
-    static toyota_carnum = 9;
+    static toyota_carnum = 10;
     static toyota_carlist = [
         "sports_800_65",
         "celica_1600gt_70",
@@ -821,6 +878,7 @@ module LegendCarData
         "celica_wrc_95",
         "corolla_wrc_98",
         "gt_one_race_exxon_99",
+        "gt_one_race_99",
         "minolta_toyota_88cv_89",
         "toyota7_70"
     ];
@@ -828,6 +886,11 @@ module LegendCarData
     static triumph_carnum = 1;
     static triumph_carlist = [
         "spitfire_1500_74"
+    ];
+
+    static vauxhall_carnum = 1;
+    static vauxhall_carlist = [
+        "vauxhall_calibra_race_94"
     ];
 
     static volkswagen_carnum = 3;
@@ -928,7 +991,754 @@ module CompleteCarData
 
 module PresentData 
 {
-    static condition_carnum = 172;
+    static allcars_carnum = 744; // Commenting this out disables the randomizer
+    static allcars_carlist = [
+        "_106_rally_03",
+        "_106_s16_03",
+        "_1100_standard_type11_49",
+        "_110s_67",
+        "_110s_68",
+        "_117_coupe_68",
+        "_120d_04",
+        "_120i_04",
+        "_1300_coupe_9s_70",
+        "_147_20_twinspark_02",
+        "_147_gta_02",
+        "_155_v6ti_dtm_93",
+        "_156_25v6_98",
+        "_166_25v6_24v_s_98",
+        "_190e_evo2_91",
+        "_190e_evo2_dtm_92",
+        "_2000_gt_67",
+        "_2002_turbo_73",
+        "_205_t16_85",
+        "_205_t16_rally_85",
+        "_205_t16_wrc_ev2_86",
+        "_206_rc_03",
+        "_206_s16_99",
+        "_206_wrc_99",
+        "_206_wrc_exxon_99",
+        "_206cc_20_01",
+        "_240_glt_estate_88",
+        "_240rs_gpb_rally_85",
+        "_240sx_180_us_96",
+        "_240sx_silvia_us_96",
+        "_240zg_71",
+        "_2cv_typea_54",
+        "_3000gt_mr_95",
+        "_3000gt_mr_98",
+        "_3000gt_sl_95",
+        "_3000gt_sl_96",
+        "_3000gt_sl_98",
+        "_3000gt_vr4_us_98",
+        "_3000gt_vr4t_us_95",
+        "_3000gt_vr4t_us_96",
+        "_300c_05",
+        "_300sl_coupe_54",
+        "_300zx_2by2_us_98",
+        "_300zx_2seat_us_89",
+        "_300zx_2seat_us_98",
+        "_307_xsi_04",
+        "_320i_etcc_03",
+        "_330i_05",
+        "_3400s_00",
+        "_350z_03",
+        "_350z_gt4_05",
+        "_350z_lm_us_02",
+        "_350z_roadster_03",
+        "_360_58",
+        "_406_coupe_30_98",
+        "_500_f_65",
+        "_500_l_69",
+        "_500_r_72",
+        "_5_maxi_turbo_rally_85",
+        "_5_turbo_80",
+        "_787b_91",
+        "_905b_evo1_92",
+        "_905b_evo1_exxon_92",
+        "a112_abarth_79",
+        "a160_98",
+        "a2_14_02",
+        "a310_1600ve_73",
+        "a3_32_quattro_03",
+        "a4_dtm_04",
+        "ac_427_sc_66",
+        "accent_wrc_01",
+        "accord_coupe_exv6_6_03",
+        "accord_coupe_us_88",
+        "accord_euro_r_02",
+        "accord_euror_00",
+        "acura_cl_types_01",
+        "acura_cl_types_03",
+        "acura_dnx_02",
+        "acura_hsc_04",
+        "acura_integra_typer_01",
+        "acura_nsx_32l_04",
+        "acura_nsx_32l_97",
+        "acura_nsx_91",
+        "acura_rsx_s_04",
+        "airtrek_turbo_02",
+        "alfa_gt_32_v6_24v_04",
+        "alfa_spider_30v6_01",
+        "alpine_a110_16s_73",
+        "altezza_as200_98",
+        "altezza_gita_as300_01",
+        "altezza_lm_race_00",
+        "altezza_rs200_98",
+        "altoworks_rsz_97",
+        "altoworks_sport_ltd_97",
+        "amemiya_aspara_rx7_04",
+        "amuse_carbonr_04",
+        "amuse_s2000_04",
+        "amuse_s2000_circuit_04",
+        "amuse_s2000_gt1_04",
+        "arta_garaiya_03",
+        "arta_nsx_00",
+        "au_supra_01",
+        "autounion_v16_typec_sl_37",
+        "avantime_30_v6_bvm6_02",
+        "az1_92",
+        "barchetta_gd_00",
+        "be1_87",
+        "beat_91",
+        "beat_f_92",
+        "beat_z_93",
+        "beetle_20_00",
+        "beetle_cup_00",
+        "beetle_rsi_00",
+        "bellett_1600_gtr_69",
+        "blitz_r34_d1_04",
+        "bluebird_1600dx_67",
+        "bluebird_1600sss_rally_69",
+        "bluebird_ht_1800sss_79",
+        "bora_v6_4m_01",
+        "btr_86",
+        "buick_gnx_87",
+        "buick_special_62",
+        "c12_03",
+        "c3_16_02",
+        "c5_v6_exclusive_03",
+        "c8_laviolette_02",
+        "caldina_gt_four_02",
+        "calsonic_gtr_00",
+        "calsonic_skyline_gtr_gpa_93",
+        "camaro_irocz_88",
+        "camaro_race_00",
+        "camaro_ss_00",
+        "camaro_ss_69",
+        "camaro_z28_302_69",
+        "camaro_z28_coupe_97",
+        "cappuccino_91",
+        "cappuccino_95",
+        "carina_ed_20x_4ws_89",
+        "carlton_90",
+        "carol_360_deluxe_62",
+        "castrol_nsx_00",
+        "castrol_supra_00",
+        "castrol_supra_01",
+        "caterham_7_fb_02",
+        "celica_1600gt_70",
+        "celica_2000gt_four_86",
+        "celica_2000gt_r_86",
+        "celica_gt_four_98",
+        "celica_gt_four_rc_91",
+        "celica_gtr_4ws_91",
+        "celica_ss2_97",
+        "celica_ss2_99",
+        "celica_st185_wrc_95",
+        "celica_wrc_95",
+        "celica_xx_2800gt_81",
+        "cerbera_speed12_00",
+        "cerbera_speed6_97",
+        "chaparral_2d_race_67",
+        "chaparral_2j_race_70",
+        "charger_440_rt_70",
+        "charger_superbee_426_hemi_71",
+        "chevelle_ss_454_ls6_70",
+        "cien_dmv_02",
+        "city_turbo2_83",
+        "civic_1500_25i_3d_83",
+        "civic_1500_cx_3d_79",
+        "civic_r_01",
+        "civic_r_04",
+        "civic_r_97",
+        "civic_r_98",
+        "civic_sir2_91",
+        "civic_sir2_92",
+        "civic_sir2_93",
+        "civic_sir2_95",
+        "cizeta_v16t_94",
+        "cl600_00",
+        "click_r_04",
+        "clio_renaultsport_20_02",
+        "clio_sport_race_00",
+        "clio_sport_v6_00",
+        "clio_sport_v6_2_03",
+        "clix_concept_01",
+        "clk55_00",
+        "clk_gtr_race_98",
+        "clk_race_00",
+        "cobra_67",
+        "colt_15_sportx_02",
+        "concept_s2_03",
+        "copen_activetop_02",
+        "copen_detachabletop_02",
+        "corolla_wrc_98",
+        "corvette_convertible_54",
+        "corvette_coupe_63",
+        "corvette_cr5_00",
+        "corvette_gs_96",
+        "corvette_l46_350_69",
+        "corvette_z06_00",
+        "corvette_z06_race_63",
+        "corvette_zr1_90",
+        "cougar_xr7_67",
+        "coupe_turboplus_00",
+        "crossfire_04",
+        "crx_15i_83",
+        "crx_sir_90",
+        "ctr2_96",
+        "ctr_87",
+        "cube_ex_2wd_02",
+        "cube_x_98",
+        "cuda_440_6_71",
+        "cusco_impreza_03",
+        "cz3_tar_tmv_01",
+        "cz3_tar_wrc_01",
+        "db7_vantage_coupe_00",
+        "db9_03",
+        "delsol_sir_92",
+        "delta_hf_integrale_evo_91",
+        "delta_hf_integrale_wrc_92",
+        "delta_s4_wrc_85",
+        "demio_glx_99",
+        "demio_sport_03",
+        "denso_supra_00",
+        "dmc12_stage2_04",
+        "dodge_viper_gtsr_oreca_00",
+        "dome_zero_78",
+        "e55_amg_02",
+        "e_type_coupe_61",
+        "eagle_talon_esi_97",
+        "eclipse_gt_06",
+        "eclipse_gt_95",
+        "eclipse_spyder_gts_03",
+        "elan_s1_62",
+        "element_03",
+        "elise2000_00",
+        "elise_111r_04",
+        "elise_111s_03",
+        "elise_190_98",
+        "elise_type72_01",
+        "escort_wrc_98",
+        "escudo_pikespeak_98",
+        "esprit_sport350_00",
+        "esprit_turbo_hc_87",
+        "esprit_v8_02",
+        "esprit_v8_gt_98",
+        "esprit_v8_se_98",
+        "esso_supra_01",
+        "europa_special_71",
+        "evo6_wrc_99",
+        "exa_canopy_las_88",
+        "exp_speed8_03",
+        "fairlady_2000_68",
+        "fairlady_z_280zl_2s_78",
+        "fairlady_z_300zx_83",
+        "fairlady_z_aero_02",
+        "fairlady_z_st_02",
+        "falcon_xr8_race_00",
+        "falken_gtr_nur_04",
+        "fit_w_ff_01",
+        "focus_rs_02",
+        "focus_st170_jp_03",
+        "focus_wrc_99",
+        "ford_gt_05",
+        "ford_gt_concept_dmv_02",
+        "ford_gt_concept_gulf_02",
+        "ford_gt_lm_sp2_04",
+        "ford_gt_no_stripe_05",
+        "formula_gran_turismo_04",
+        "fpv_f6_typhoon_04",
+        "fpv_gt_04",
+        "fpv_gt_no_stripe_04",
+        "fto_gpr_97",
+        "fto_gpr_99",
+        "fto_gpx_94",
+        "fto_gpx_97",
+        "fto_gpx_99",
+        "fto_gr_94",
+        "fto_gr_97",
+        "fto_lm_race_00",
+        "galant_gto_mr_70",
+        "galant_vr4_89",
+        "garaiya_02",
+        "gathers_civic_98",
+        "ginetta_g4_64",
+        "giulia_sprint_gta_65",
+        "giulia_sprint_s_63",
+        "golf_gti_01",
+        "golf_gti_05",
+        "golf_gti_76",
+        "golf_r32_3d_03",
+        "griffith_500_94",
+        "gs300_us_00",
+        "gs300_us_91",
+        "gs300_vertex_us_00",
+        "gsx_r_4_tmv_01",
+        "gt350_r_65",
+        "gt40_race_69",
+        "gt_one_race_99",
+        "gt_one_race_exxon_99",
+        "gtr_concept_lm_01",
+        "gtr_concept_tmv_01",
+        "gtv_30v6_v24_01",
+        "hcd6_concept_01",
+        "hks_d1_silvia_04",
+        "hommell_rs_berlinetta_99",
+        "hpa_golf_r32_04",
+        "hsr2_concept_89",
+        "i_concept_03",
+        "ibiza_cupra_r_04",
+        "impreza_22b_98",
+        "impreza_coupe_wrx_sti6_99",
+        "impreza_lm_race_00",
+        "impreza_wg_sti_00",
+        "impreza_wg_wrx_99",
+        "impreza_wrc_01",
+        "impreza_wrc_03",
+        "impreza_wrc_99",
+        "impreza_wrc_prot_01",
+        "impreza_wrx_pro_01",
+        "impreza_wrx_sti1_94",
+        "impreza_wrx_sti2_95",
+        "impreza_wrx_sti3_96",
+        "impreza_wrx_sti4_97",
+        "impreza_wrx_sti5_98",
+        "impreza_wrx_sti6_99",
+        "impreza_wrx_sti_00",
+        "impreza_wrx_sti_02",
+        "impreza_wrx_sti_c_04",
+        "infiniti_fx45_dmv_02",
+        "infiniti_g20_20te_90",
+        "infiniti_g35_03",
+        "infiniti_g35_coupe_03",
+        "insight_mt_99",
+        "integra_r_03",
+        "integra_r_95",
+        "integra_r_98",
+        "integra_r_99",
+        "integra_r_lm_01",
+        "interceptor_mk3_74",
+        "ka_01",
+        "karmann_ghia_type1_1500_68",
+        "kei_works_4wd_02",
+        "kpgc10_skyline_gtr_70",
+        "kpgc110_skyline_gtr_73",
+        "kusabi_concept_03",
+        "lancer_1600gsr_73",
+        "lancer_1600gsr_rally_74",
+        "lancer_evo2_gsr_94",
+        "lancer_evo3_gsr_95",
+        "lancer_evo4_96",
+        "lancer_evo4_wrc_97",
+        "lancer_evo5_gsr_98",
+        "lancer_evo6_gsr_99",
+        "lancer_evo6_rs_99",
+        "lancer_evo6_tommi_gsr_00",
+        "lancer_evo6_tommi_rs_00",
+        "lancer_evo7_gsr_01",
+        "lancer_evo7_gta_02",
+        "lancer_evo7_rs_01",
+        "lancer_evo8_gsr_03",
+        "lancer_evo8_mr_gsr_04",
+        "lancer_evo8_rs_03",
+        "lancer_evo_gsr_92",
+        "lancer_ex_1800gsr_ic_turbo_83",
+        "lancer_wrc_03",
+        "land_range_stormer_04",
+        "lapin_turbo_4wd_02",
+        "legacy_b4_20gt_03",
+        "legacy_b4_30r_03",
+        "legacy_b4_blitzen_00",
+        "legacy_b4_rsk_98",
+        "legacy_gtb_96",
+        "legacy_sdn_20gt_b_03",
+        "legacy_wgn_20gt_03",
+        "legacy_wgn_20gt_b_03",
+        "legacy_wgn_30r_03",
+        "legnum_vr4_v_98",
+        "lemans_quattro_03",
+        "levin_bzr_98",
+        "levin_gt_apex_83",
+        "lexus_is200_gt1_race_04",
+        "lexus_is200_rs200_98",
+        "lexus_is300_sc_us_01",
+        "lexus_is_us_98",
+        "lexus_sc430_us_01",
+        "life_step_van_72",
+        "loctite_gtr_00",
+        "loctite_nsx_01",
+        "lupo_14_02",
+        "lupo_cup_00",
+        "lupo_gti_01",
+        "lupo_gti_cup_03",
+        "m3_04",
+        "m3_csl_03",
+        "m3_gtr_alms_01",
+        "m3_gtr_str_03",
+        "m5_05",
+        "m_coupe_98",
+        "march_g_2wd_3dr_99",
+        "mazda6_sport_23z_03",
+        "mazda6_tmv_01",
+        "mazda6_tmv_n1_01",
+        "mazda_323f_r_93",
+        "mazda_suv_concept_05",
+        "mazdaspeed_6_05",
+        "mclaren_f1_gtr_long_97",
+        "megane_20_16v_02",
+        "megane_20_ide_00",
+        "mgf_vvc_97",
+        "miata_1600_nra_04",
+        "miata_1800_rs_04",
+        "miata_18rs_98",
+        "miata_j_lim2_93",
+        "miata_j_lim_91",
+        "miata_rs_00",
+        "miata_sr_lim_97",
+        "miata_sspl1_95",
+        "miata_us_89",
+        "miata_vr_lim_95",
+        "miata_vspl2_93",
+        "micra_12c_5d_03",
+        "midget2_d_type_98",
+        "midget_mp5_63",
+        "mines_evo6_00",
+        "mines_r34_00",
+        "mini_cooper_02",
+        "mini_cooper_13i_98",
+        "mini_cooper_s_02",
+        "mini_marcos_gt_70",
+        "mini_one_02",
+        "minica_dungun_zz_89",
+        "minolta_toyota_88cv_89",
+        "mira_tr_xx_avar_97",
+        "mirage_1400glx_78",
+        "mirage_cyborg_zr_97",
+        "mm_r_tmv_01",
+        "mobil_nsx_01",
+        "model_t_tourer_15",
+        "monaro_cv8_04",
+        "motersport_elise_99",
+        "motor_carriage_886",
+        "motul_pitwork_z_04",
+        "move_custom_rs_lim_4wd_02",
+        "move_cx_2wd_95",
+        "move_srxx_2wd_97",
+        "move_srxx_4wd_97",
+        "mr2_1600_g_86",
+        "mr2_1600_glim_sc_86",
+        "mr2_glimited_97",
+        "mr2_gts_97",
+        "mr2_spyder_us_99",
+        "mr2_spyder_v_us_02",
+        "mr_wagon_sport_04",
+        "mrs_autobacs_00",
+        "mtr_gmv_04",
+        "mugen_motul_civic_87",
+        "mugen_s2000_00",
+        "murao_rx7_03",
+        "mustang_gt_05",
+        "mustang_svt_cobrar_00",
+        "mx5_gms_05",
+        "n360_67",
+        "nike_one_04",
+        "nismo270r_94",
+        "nismo400r_96",
+        "nismo_fairlady_z_ztune_03",
+        "nismo_gtr_lm_95",
+        "nsx_01",
+        "nsx_90",
+        "nsx_93",
+        "nsx_95",
+        "nsx_97",
+        "nsx_99",
+        "nsx_r_01",
+        "nsx_r_02",
+        "nsx_r_92",
+        "nsx_r_proto_lm_01",
+        "nsx_r_proto_lm_road_01",
+        "nsx_s_01",
+        "nsx_s_97",
+        "nsx_s_99",
+        "nsx_s_zero_97",
+        "nsx_s_zero_99",
+        "nuvolari_quattro_03",
+        "odyssey_l_4wd_03",
+        "opel_astra_race_00",
+        "opel_calibra_race_94",
+        "opel_corsa_comf_14_3dr_01",
+        "opel_speedster_00",
+        "opel_speedster_turbo_00",
+        "opel_tigra_16i_99",
+        "opel_vectra_32v6_jp_03",
+        "opera_s2000_04",
+        "opera_z_04",
+        "pajero_evo_sp_03",
+        "pajero_parisdakar_rally_85",
+        "panda_super_ie_90",
+        "panoz_esperante_race_98",
+        "pao_89",
+        "patent_motor_wagen_886",
+        "pennzoil_gtr_01",
+        "penzoil_gtr_99",
+        "pescarolo_c60_03",
+        "pescarolo_c60_lmp1_04",
+        "piazza_xe_81",
+        "pikespeak_quattro_03",
+        "polo_gti_5d_01",
+        "pontiac_gto_389_348_64",
+        "pontiac_gto_57_coupe_04",
+        "pontiac_vibe_gt_03",
+        "prelude_s_96",
+        "prelude_s_98",
+        "prelude_si_vtec_91",
+        "prelude_sir_96",
+        "prelude_sir_s_98",
+        "primera_20v_us_01",
+        "prius_g_02",
+        "prius_g_touring_03",
+        "protege_sport20_02",
+        "prowler_02",
+        "pt_cruiser_00",
+        "punto_hgt_abarth_00",
+        "quattro_82",
+        "r30_skyline_ht2000_rsx_tc_84",
+        "r30_skyline_ht2000_turbo_rs_83",
+        "r31_skyline_gtsr_87",
+        "r32_gtr_stune_00",
+        "r32_gtr_v2_94",
+        "r32_gtst_m_91",
+        "r32_skyline_gtr_89",
+        "r32_skyline_gtr_91",
+        "r32_skyline_gtr_n1_91",
+        "r32_skyline_gtr_v_93",
+        "r32_skyline_gtr_v_n1_93",
+        "r32_skyline_gts25_s_91",
+        "r32_skyline_gtst_m_89",
+        "r33_gtr_v_97",
+        "r33_skyline_gtr_95",
+        "r33_skyline_gtr_96",
+        "r33_skyline_gtr_97",
+        "r33_skyline_gtr_n1_95",
+        "r33_skyline_gtr_v_95",
+        "r33_skyline_gtr_v_96",
+        "r33_skyline_gtr_v_lm_96",
+        "r34_gtr_m_01",
+        "r34_gtr_rtune_99",
+        "r34_gtr_v2_00",
+        "r34_gtr_v2_nur_02",
+        "r34_gtr_v_99",
+        "r34_gtr_v_gtcolor_01",
+        "r34_gtr_v_gtcolor_pc_01",
+        "r34_skyline_gtr_00",
+        "r34_skyline_gtr_99",
+        "r34_skyline_gtr_m_nur_02",
+        "r34_skyline_gtr_sc_mp2_99",
+        "r34_skyline_gtr_sc_mp3_00",
+        "r34_skyline_gtr_v_n1_99",
+        "r34_skyline_v2_n1_00",
+        "r390_race_98",
+        "r390_road_98",
+        "r89c_89",
+        "r8_race_01",
+        "r92cp_92",
+        "r_gt_00",
+        "ram_1500_hemi_4cab_04",
+        "raybrig_nsx_00",
+        "razo_silvia_01",
+        "roadrunner_superbird_70",
+        "rs200_84",
+        "rs200_rally_85",
+        "rs4_01",
+        "rs6_02",
+        "rs6_avant_02",
+        "rsc_tmv_01",
+        "rsc_tmv_lm_01",
+        "runx_z_aero_tourer_02",
+        "rx7_a3_eu_90",
+        "rx7_gt_lim_eu_85",
+        "rx7_gtx_eu_90",
+        "rx7_lm_race_00",
+        "rx7_r_br_01",
+        "rx7_r_eu_91",
+        "rx7_r_eu_93",
+        "rx7_r_s_eu_95",
+        "rx7_rs_00",
+        "rx7_rs_98",
+        "rx7_rs_eu_96",
+        "rx7_rsr_97",
+        "rx7_rz_00",
+        "rx7_rz_eu_92",
+        "rx7_rz_eu_93",
+        "rx7_rz_eu_95",
+        "rx7_rz_eu_96",
+        "rx7_spiritr_a_02",
+        "rx8_03",
+        "rx8_concept_01",
+        "rx8_lm_01",
+        "rx8_tmv_01",
+        "rx8_typee_03",
+        "rx8_types_03",
+        "s13_ks_88",
+        "s13_ks_91",
+        "s13_silvia_qs_88",
+        "s13_silvia_qs_91",
+        "s14_silvia_ks_aero_93",
+        "s14_silvia_qs_aero_93",
+        "s14_silvia_qs_aero_96",
+        "s15_silvia_specs_aero_99",
+        "s15_specr_aero_99",
+        "s2000_a_99",
+        "s2000_lm_race_00",
+        "s2000_typev_03",
+        "s2000_typev_us_00",
+        "s2000_typev_us_01",
+        "s2000_us_01",
+        "s2000_us_04",
+        "s3_02",
+        "s4_03",
+        "s4_98",
+        "s500_63",
+        "s600_64",
+        "s60_t5_sport_03",
+        "s800_66",
+        "s800_rsc_68",
+        "s_type_r_02",
+        "saleen_s7_02",
+        "sauber_mercedes_c9_89",
+        "sc300_us_97",
+        "sera_92",
+        "series1_sc_03",
+        "sileighty_xx",
+        "silverado_sst_02",
+        "silvia_240rs_83",
+        "silvia_65",
+        "silvia_varietta_00",
+        "skyline_1500dx_63",
+        "skyline_2000gtb_67",
+        "skyline_300gt_01",
+        "skyline_350gt8_02",
+        "skyline_sport_coupe_60",
+        "sl500_02",
+        "sl500_98",
+        "sl55_amg_02",
+        "sl600_04",
+        "sl600_98",
+        "sl65_amg_04",
+        "slk230_komp_98",
+        "slr_mclaren_03",
+        "solstice_dmv_02",
+        "spider_duetto_66",
+        "spirra_46_v8_04",
+        "spitfire_1500_74",
+        "spoon_civic_00",
+        "spoon_fit_03",
+        "spoon_integra_r_99",
+        "spoon_s2000_00",
+        "spoon_s2000_race_00",
+        "sports_800_65",
+        "srt4_03",
+        "ss_commodore_04",
+        "ssr_03",
+        "stagea_25t_rs_fours_98",
+        "stagea_260rs_autech_98",
+        "starion_4wd_gpb_84",
+        "starlet_granza_v_97",
+        "storia_cx_2wd_98",
+        "storia_cx_4wd_98",
+        "storia_x4_98",
+        "storm_v12_race_99",
+        "stratos_73",
+        "stratos_wrc_77",
+        "stream_z_04",
+        "sunfire_gxp_02",
+        "supra_25gt_ttr_90",
+        "supra_30gt_turbo_a_88",
+        "supra_rz_97",
+        "supra_szr_97",
+        "svt_f150_lightning_03",
+        "t350c_03",
+        "tacoma_x_runner_04",
+        "takata_dome_nsx_03",
+        "tamora_02",
+        "tank_car_03",
+        "tascani_ccs_03",
+        "taurus_sho_98",
+        "tf160_03",
+        "tiburon_gt_v6_01",
+        "tiburon_turbulence_99",
+        "today_g_85",
+        "toms_chaser_00",
+        "toyota7_70",
+        "trd_celica_sportm_00",
+        "trial_celica_ss2_03",
+        "trueno_bzr_98",
+        "trueno_gt_apex_83",
+        "trueno_gt_apex_shigeno_00",
+        "tt_00",
+        "tt_coupe_32_03",
+        "tt_dtm_02",
+        "tuscan_speed6_00",
+        "v12_lmr_99",
+        "v8_vantage_99",
+        "v8s_91",
+        "vanquish_04",
+        "vauxhall_astra_race_00",
+        "vauxhall_calibra_race_94",
+        "vauxhall_corsa_comf_14_3dr_01",
+        "vauxhall_tigra_16i_99",
+        "vauxhall_vectra_32v6_jp_03",
+        "vauxhall_vx220_00",
+        "vauxhall_vx220_turbo_00",
+        "vertigo_race_04",
+        "viper_gts_99",
+        "viper_gtsr_00",
+        "viper_srt10_03",
+        "vitz_euro_00",
+        "vitz_f_99",
+        "vitz_rs15_00",
+        "vitz_rs_turbo_02",
+        "voltz_s_2wd_02",
+        "w12_tmv_01",
+        "wagon_r_rr_98",
+        "wedssport_celica_03",
+        "will_vs_01",
+        "woodone_supra_03",
+        "xa_15s_2wd_03",
+        "xanavi_gtr_01",
+        "xanavi_nismo_gtr_03",
+        "xantia_30i_v6_exclusive_00",
+        "xb_15z_x_2wd_03",
+        "xj220_gt_race_92",
+        "xj220_gt_road_92",
+        "xjr9_race_88",
+        "xkr_coupe_99",
+        "xkr_rperform_02",
+        "xsara_vtr_03",
+        "xsara_wrc_99",
+        "z4_30i_03",
+        "z_act_70",
+        "zonda_c12_00",
+        "zonda_c12s_00",
+        "zonda_c12s_gmv_02",
+        "zonda_race_00",
+        "zz2_00",
+        "zzs_00"
+    ];
+
+    static condition_carnum = 202;
     static condition_carlist = [
         "win",
         "win",
@@ -1099,12 +1909,42 @@ module PresentData
         "mission_1st",
         "mission_1st",
         "mission_1st",
+        "mission_1st",
+        "mission_1st",
         "achievement",
         "achievement",
-        "achievement"
+        "achievement",
+        "win", // am_wagon_0000
+        "win",  // us_dodge_viper_0000
+        "win", // am_fourcyl_0000
+        "win", // am_sixcyl_0000
+        "win", // us_ford_mustang_0000
+        "aspec",
+        "aspec",
+        "aspec",
+        "win", // Beat the Beat
+        "win", // Clubman Race Series
+        "win", // Rally Homologation Heroes
+        "win", // Faszination
+        "win", // Route 5 All-Night
+        "win", // Trial Mountain 30 Laps
+        "win", // JGTC GT500
+        "win", // City Slickers
+        "win", // Mid-Field 100 Miles
+        "win", // Seattle 100 Miles
+        "win", // Jaguar Sports Legends
+        "hall_clear", // Beginner Hall completion
+        "hall_clear", // Professional Hall completion
+        "hall_clear", // Extreme Hall completion
+        "hall_clear", // Japanese Hall completion
+        "hall_clear", // American Hall completion
+        "hall_clear", // European Hall completion
+        "hall_clear", // Special Condition Hall completion
+        "hall_clear", // Endurance Hall completion
+        "win", // Focus Cup
     ];
 
-    static detail_carnum = 172;
+    static detail_carnum = 202;
     static detail_carlist = [
         "am_sunday_0000",
         "am_ff_0000",
@@ -1124,8 +1964,8 @@ module PresentData
         "pr_supercar_0000",
         "pr_gtworld_1000",
         "ex_gtallstar_1000",
-        "ex_dream_1000",
-        "ex_polyphony_1000",
+        "ex_dream_0800",
+        "ex_polyphony_0800",
         "ex_wind_0000",
         "ex_formula_1500",
         "ex_real_circuit_0000",
@@ -1140,7 +1980,7 @@ module PresentData
         "en_nur4h_0000",
         "en_suzuka1000_0000",
         "en_motegi8h_0000",
-        "en_tsukuba9h_0000",
+        "ex_eightcyl_0500", // Was previously Tsukuba 9h
         "en_sarthe24h_0000",
         "en_sarthe_old24h_0000",
         "en_fuji1000_0000",
@@ -1163,15 +2003,15 @@ module PresentData
         "usrmuscle_0000",
         "usrmuscle_old_0000",
         "jprjapan_0500",
-        "jprjgtc_1000",
+        "jp_jgtc300_0500",
         "jprjp_70_0000",
         "jprjp_80_0000",
         "jprjp_90_0000",
-        "jprjp_compact_0500",
+        "jprjp_compact_0400",
         "it_alfa_gta_0000",
         "uk_aston_0000",
         "uk_lotus_elise_0500",
-        "uk_lotus_classic_0500",
+        "uk_lotus_classic_0000",
         "uk_mg_0000",
         "uk_triumph_spitfire_0000",
         "uk_tvr_0000",
@@ -1191,11 +2031,11 @@ module PresentData
         "us_chry_crossfire_0000",
         "us_saleen_s7_0000",
         "us_shelby_cobra_0000",
-        "fr_citroen_2cv_0500",
+        "fr_citroen_2cv_0000",
         "fr_peugeot_206_0000",
         "fr_renault_clio_0500",
         "fr_renault_megane_0500",
-        "fr_renault_alpine_0500",
+        "fr_renault_alpine_0300",
         "jp_daihatsu_copen_0000",
         "jp_daihatsu_midget2_0000",
         "jp_honda_typer_0000",
@@ -1203,7 +2043,7 @@ module PresentData
         "jp_isuzu_0000",
         "jp_mazda_rotary_0000",
         "jp_mazda_roadster_0500",
-        "jp_mazda_rx8_0500",
+        "jp_mazda_rx8_0000",
         "jp_mitsubishi_mirage_0500",
         "jp_mitsubishi_evo_0000",
         "jp_nissan_gtr_0000",
@@ -1270,17 +2110,47 @@ module PresentData
         "rh_yosemite_dirt_short_e_0000",
         "rh_yosemite_dirt_short_n_0000",
         "rh_yosemite_dirt_short_h_0000",
-        "1,10",
+        "1,5",
+        "6,10",
         "11,20",
         "21,24",
         "25,29",
         "30,34",
+        "35,40",
         "25",
         "50",
-        "100"
+        "100",
+        "am_wagon_0000", // Start of added events
+        "us_dodge_viper_0000",
+        "am_fourcyl_0000",
+        "am_sixcyl_0000",
+        "us_ford_mustang_0000",
+        "1", // A-Spec milestones
+        "2",
+        "3",
+        "jp_honda_beat_0000", // Beat the Beat
+        "pr_clubman_race_0400", // Clubman League
+        "pr_homologation_0000", // Rally Homologation Heroes
+        "de_ruf_0000", // Faszination
+        "en_route5_0000", // Route 5 All-Night
+        "en_trialmt_0000", // Trial Mountain 30 Laps
+        "jp_jgtc500_0800", // JGTC GT500
+        "pr_city_0000", // City Slickers
+        "en_midfield_0000", // Mid-Field 100 Miles
+        "en_seattle_0000", // Seattle 100 Miles
+        "uk_jaguar_0000", // Jaguar Sports Legends
+        "BeginnerHallEvents", // Beginner Hall completion
+        "ProfessionalHallEvents", // Professional Hall completion
+        "ExtremeHallEvents", // Extreme Hall completion
+        "JapaneseRaceEvents", // Japanese Hall completion
+        "AmericanRaceEvents", // American Hall completion
+        "EuropeanRaceEvents", // European Hall completion
+        "RallyEvents", // Special Condition Hall completion
+        "EnduranceEvents", // Endurance Hall completion
+        "us_ford_focus_0000", // Focus Cup
     ];
 
-    static type_carnum = 172;
+    static type_carnum = 202;
     static type_carlist = [
         "car",
         "car",
@@ -1316,7 +2186,7 @@ module PresentData
         "car",
         "car",
         "car",
-        "car",
+        "car", // ex_eightcyl_0500 - Was previously Tsukuba 9h
         "car",
         "car",
         "car",
@@ -1453,359 +2323,450 @@ module PresentData
         "car",
         "car",
         "car",
-        "car"
+        "car",
+        "car",
+        "car",
+        "car", // (Start of added events) am_wagon_0000
+        "car",  // us_dodge_viper_0000
+        "car",   // am_fourcyl_0000
+        "car", // am_sixcyl_0000
+        "car", // us_ford_mustang_0000
+        "car", // A-Spec Milestones
+        "car", // A-Spec Milestones
+        "car", // A-Spec Milestones
+        "car", // Beat the Beat
+        "car", // Clubman Race Series
+        "car", // Rally Homologation Heroes
+        "car", // Faszination
+        "car", // Route 5 All-Night
+        "car", // Trial Mountain 30 Laps
+        "car", // JGTC GT500
+        "car", // City Slickers
+        "car", // Mid-Field 100 Miles
+        "car", // Seattle 100 Miles
+        "car", // Jaguar Sports Legends
+        "car", // Beginner Hall completion
+        "car", // Professional Hall completion
+        "car", // Extreme Hall completion
+        "car", // Japanese Hall completion
+        "car", // American Hall completion
+        "car", // European Hall completion
+        "car", // Special Condition Hall completion
+        "car", // Endurance Hall completion
+        "car", // Focus Cup
     ];
 
-    static content_carnum = 172;
+    static content_carnum = 202;
     static content_carlist = [
-        "a112_abarth_79",
-        "mazda6_tmv_01",
-        "skyline_2000gtb_67",
-        "mtr_gmv_04",
-        "esprit_turbo_hc_87",
-        "ginetta_g4_64",
-        "prowler_02",
-        "silverado_sst_02",
-        "mazdaspeed_6_05",
-        "stream_z_04",
-        "nsx_r_01",
-        "murao_rx7_03",
-        "ctr_87",
-        "motor_carriage_886",
-        "s800_rsc_68",
-        "cizeta_v16t_94",
-        "ford_gt_lm_sp2_04",
-        "mclaren_f1_gtr_long_97",
-        "gtr_concept_lm_01",
-        "opera_s2000_04",
-        "w12_tmv_01",
-        "sauber_mercedes_c9_89",
-        "r34_gtr_v_gtcolor_pc_01",
-        "ford_gt_no_stripe_05",
-        "caterham_7_fb_02",
-        "autounion_v16_typec_sl_37",
-        "gt40_race_69",
-        "rx7_lm_race_00",
-        "fto_lm_race_00",
-        "nsx_r_proto_lm_01",
-        "formula_gran_turismo_04",
-        "chaparral_2d_race_67",
-        "storm_v12_race_99",
-        "nsx_r_proto_lm_road_01",
-        "calsonic_skyline_gtr_gpa_93",
-        "r8_race_01",
-        "exp_speed8_03",
-        "r92cp_92",
-        "ford_gt_concept_gulf_02",
-        "minolta_toyota_88cv_89",
-        "charger_superbee_426_hemi_71",
-        "xj220_gt_race_92",
-        "e_type_coupe_61",
-        "europa_special_71",
-        "clk_gtr_race_98",
-        "_155_v6ti_dtm_93",
-        "_2cv_typea_54",
-        "patent_motor_wagen_886",
-        "_240_glt_estate_88",
-        "giulia_sprint_s_63",
-        "m3_gtr_alms_01",
-        "_190e_evo2_dtm_92",
-        "corvette_convertible_54",
-        "camaro_race_00",
-        "chevelle_ss_454_ls6_70",
-        "roadrunner_superbird_70",
-        "_350z_lm_us_02",
-        "motul_pitwork_z_04",
-        "kpgc10_skyline_gtr_70",
-        "hsr2_concept_89",
-        "nismo400r_96",
-        "life_step_van_72",
-        "giulia_sprint_gta_65",
-        "db9_03",
-        "elise_type72_01",
-        "elan_s1_62",
-        "mgf_vvc_97",
-        "spitfire_1500_74",
-        "cerbera_speed12_00",
-        "lemans_quattro_03",
-        "pikespeak_quattro_03",
-        "_2002_turbo_73",
-        "m3_gtr_str_03",
-        "clk_race_00",
-        "_300sl_coupe_54",
-        "mini_marcos_gt_70",
-        "opel_calibra_race_94",
-        "_1100_standard_type11_49",
-        "karmann_ghia_type1_1500_68",
-        "golf_gti_76",
-        "corvette_z06_race_63",
-        "camaro_irocz_88",
-        "viper_gtsr_00",
-        "nike_one_04",
-        "gt350_r_65",
-        "_2cv_typea_54",
-        "_205_t16_rally_85",
-        "clio_sport_race_00",
-        "avantime_30_v6_bvm6_02",
-        "alpine_a110_16s_73",
-        "storia_x4_98",
-        "midget_mp5_63",
-        "acura_hsc_04",
-        "mugen_motul_civic_87",
-        "_117_coupe_68",
-        "_110s_67",
-        "mazda_suv_concept_05",
-        "rx8_lm_01",
-        "i_concept_03",
-        "lancer_1600gsr_rally_74",
-        "nismo_gtr_lm_95",
-        "mm_r_tmv_01",
-        "sileighty_xx",
-        "_240zg_71",
-        "_360_58",
-        "impreza_lm_race_00",
-        "concept_s2_03",
-        "gsx_r_4_tmv_01",
-        "altezza_lm_race_00",
-        "vitz_rs_turbo_02",
-        "clix_concept_01",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "lupo_14_02",
-        "sunfire_gxp_02",
-        "nike_one_04",
-        "nismo270r_94",
-        "cougar_xr7_67",
-        "kusabi_concept_03",
-        "acura_dnx_02",
-        "rx8_tmv_01",
-        "gtr_concept_tmv_01",
-        "solstice_dmv_02",
-        "s500_63",
-        "r34_gtr_v_gtcolor_01",
-        "interceptor_mk3_74",
-        "dome_zero_78",
-        "model_t_tourer_15",
-        "cien_dmv_02",
-        "delta_hf_integrale_wrc_92",
-        "delta_s4_wrc_85",
-        "rsc_tmv_lm_01",
-        "impreza_wrc_prot_01",
-        "rs200_rally_85",
-        "rs200_84",
-        "cz3_tar_wrc_01",
-        "starion_4wd_gpb_84",
-        "rsc_tmv_01",
-        "lancer_evo4_wrc_97",
-        "bluebird_1600sss_rally_69",
-        "infiniti_fx45_dmv_02",
-        "impreza_wrc_01",
-        "stratos_wrc_77",
-        "a310_1600ve_73",
-        "_5_maxi_turbo_rally_85",
-        "_205_t16_wrc_ev2_86",
-        "cz3_tar_tmv_01",
-        "celica_wrc_95",
-        "_240rs_gpb_rally_85",
-        "_5_turbo_80",
-        "escort_wrc_98",
-        "pajero_parisdakar_rally_85",
-        "rx8_concept_01",
-        "mazda6_tmv_n1_01",
-        "ford_gt_concept_dmv_02",
-        "land_range_stormer_04",
-        "impreza_wrc_99",
-        "escudo_pikespeak_98",
-        "hcd6_concept_01",
-        "celica_st185_wrc_95",
-        "pajero_evo_sp_03",
-        "dmc12_stage2_04",
-        "tank_car_03",
-        "zonda_race_00",
-        "toyota7_70",
-        "r89c_89",
-        "nuvolari_quattro_03",
-        "xjr9_race_88",
-        "formula_gran_turismo_04",
+        "city_turbo2_83",    // Sunday Cup
+        "golf_gti_05",    // FF Challenge
+        "s800_66",    // FR Challenge
+        "airtrek_turbo_02",    // 4WD Challenge
+        "mr2_gts_97",    // MR Challenge
+        "az1_92",    // Light-weight K-Car Cup
+        "vauxhall_vx220_00",    // Spider & Roadster
+        "ram_1500_hemi_4cab_04",    // Sports Truck Race
+        "celica_gt_four_rc_91",    // Clubman Cup
+        "nismo400r_96",    // Tuning Car Grand Prix
+        "nsx_r_92",    // Race of NA Sport
+        "mines_evo6_00",    // Race of Turbo Sport
+        "r_gt_00",    // Boxer Spirit
+        "bellett_1600_gtr_69",    // World Classics
+        "lupo_gti_cup_03",    // World Compact
+        "r390_road_98",    // Supercar Festival
+        "castrol_supra_00",    // Gran Turismo World Championship
+        "s2000_lm_race_00",    // Gran Turismo All Stars
+        "impreza_lm_race_00",    // Dream Car Championship
+        "opera_z_04",    // Polyphony Digital Cup
+        "zonda_c12s_gmv_02",    // Like the Wind
+        "formula_gran_turismo_04",    // Formula GT World Championship
+        "storm_v12_race_99",    // World Circuit Tour
+        "esprit_sport350_00",    // Premium Sports Lounge
+        "caterham_7_fb_02",    // Road-going Formula
+        "woodone_supra_03",    // Grand Valley 300 km
+        "r8_race_01",    // Laguna Seca 200 miles
+        "_787b_91",    // Roadster 4h Endurance
+        "integra_r_lm_01",    // Tokyo R246 300 km
+        "takata_dome_nsx_03",    // Super Speedway 150 miles
+        "formula_gran_turismo_04",    // Nurburgring 24h Endurance
+        "clk_gtr_race_98",    // Nurburgring 4h Endurance
+        "xanavi_gtr_01",    // Suzuka 1000 km
+        "nsx_r_proto_lm_01",    // Motegi 8h Endurance
+        "w12_tmv_01",    // Eight-Plus Cylinder Shootout (previously Tsukuba 9h)
+        "exp_speed8_03",    // Circuit de la Sarthe 24h I
+        "exp_speed8_03",    // Unused (previously Circuit de la Sarthe 24h II)
+        "minolta_toyota_88cv_89",    // Fuji 1000 km
+        "ford_gt_lm_sp2_04",    // Infineon World Sports
+        "lancer_wrc_03",    // El Capitan 200 miles
+        "mclaren_f1_gtr_long_97",    // New York 200 miles
+        "m3_gtr_alms_01",    // Pan Euro Championship
+        "esprit_turbo_hc_87",    // British GT Series
+        "elise_111r_04",    // British Lightweight Series
+        "r8_race_01",    // Deutsche Tourenwagen Meisterschaft
+        "cizeta_v16t_94",    // La Festa Italiano
+        "avantime_30_v6_bvm6_02",    // Tous France Championnat
+        "_300sl_coupe_54",    // Europe Classic Car League
+        "clio_sport_v6_00",    // Euro Hot Hatch League
+        "interceptor_mk3_74",    // Grand Tour
+        "nuvolari_quattro_03",    // Schwarzwald Liga A
+        "sl55_amg_02",    // Schwarzwald Liga B
+        "panoz_esperante_race_98",    // All American Championship
+        "ford_gt_concept_dmv_02",    // Stars and Stripes
+        "charger_440_rt_70",    // Hot Rod Competition
+        "corvette_convertible_54",    // Muscle Car Competition
+        "gtr_concept_lm_01",    // Japan Championship
+        "esso_supra_01",    // JGTC GT300
+        "kpgc110_skyline_gtr_73",    // Japanese 70s Classics
+        "silvia_240rs_83",    // Japanese 80s Festival
+        "evo6_wrc_99",    // Japanese 90s Challenge
+        "n360_67",    // Japanese Compact Cup
+        "giulia_sprint_gta_65",    // GTA Cup
+        "db9_03",    // Aston Martin Carnival
+        "motersport_elise_99",    // Elise Trophy
+        "elan_s1_62",    // Lotus Classics
+        "tf160_03",    // MG Festival
+        "ginetta_g4_64",    // Spitfire Cup
+        "cerbera_speed12_00",    // Black Pool Racers
+        "tt_dtm_02",    // Tourist Trophy
+        "pikespeak_quattro_03",    // A3 Cup
+        "_2002_turbo_73",    // 1 Series Trophy
+        "m3_gtr_str_03",    // Club "M"
+        "slr_mclaren_03",    // Legends of the Silver Arrow
+        "sl65_amg_04",    // SL Challenge
+        "mini_cooper_13i_98",    // Mini Mini Sports Meeting
+        "opel_calibra_race_94",    // Speedster Trophy
+        "_1100_standard_type11_49",    // Beetle Cup
+        "beetle_rsi_00",    // Lupo Cup
+        "golf_gti_76",    // GTi Cup
+        "corvette_cr5_00",    // Vette! Vette! Vette!
+        "camaro_race_00",    // Camaro Meeting
+        "_300c_05",    // Crossfire Trophy
+        "nike_one_04",    // Saleen S7 Club
+        "gt350_r_65",    // Shelby Cobra Cup
+        "xantia_30i_v6_exclusive_00",    // 2HP - 2CV Classics
+        "_205_t16_85",    // 206 Cup
+        "clio_sport_race_00",    // Clio Trophy
+        "a310_1600ve_73",    // Megane Cup
+        "alpine_a110_16s_73",    // Renault Alpine Cup
+        "storia_x4_98",    // Copen Race
+        "midget_mp5_63",    // Midget II Race
+        "nsx_r_proto_lm_road_01",    // Type R Meeting
+        "spoon_civic_00",    // Civic Race
+        "_117_coupe_68",    // Isuzu Sports Classics
+        "amemiya_aspara_rx7_04",    // Club "RE"
+        "mazda6_tmv_01",    // NR-A Roadster Cup
+        "_110s_67",    // NR-A RX-8 Cup
+        "cz3_tar_tmv_01",    // Mirage Cup
+        "lancer_evo4_wrc_97",    // Evolution Meeting
+        "kpgc10_skyline_gtr_70",    // Race of the Red "R" Emblem
+        "mm_r_tmv_01",    // March Brothers
+        "hks_d1_silvia_04",    // Silvia Sisters
+        "dome_zero_78",    // Club "Z"
+        "legacy_b4_blitzen_00",    // Subaru 360 Race
+        "impreza_wrc_01",    // Stars of Pleiades
+        "concept_s2_03",    // Suzuki K-Car Cup
+        "gsx_r_4_tmv_01",    // Suzuki Concepts
+        "altezza_lm_race_00",    // Altezza Race
+        "vitz_rs15_00",    // Vitz Race
+        "hcd6_concept_01",    // Hyundai Sports Festival
+        "-",    // l0b
+        "-",    // l0a
+        "-",    // lib
+        "-",    // lia
+        "-",    // l0s
+        "micra_12c_5d_03", // B Bronze
+        "mazda_suv_concept_05", // A Bronze
+        "clix_concept_01", // IB Bronze
+        "nismo_fairlady_z_ztune_03", // IA Bronze
+        "cobra_67", // S Bronze
+        "sunfire_gxp_02", // B Silver
+        "silverado_sst_02", // A Silver
+        "rx8_concept_01", // IB Silver
+        "r34_gtr_rtune_99", // IA Silver
+        "camaro_irocz_88", // S Silver
+        "charger_superbee_426_hemi_71", // B Gold
+        "mugen_motul_civic_87", // A Gold
+        "buick_special_62", // IB Gold
+        "stratos_wrc_77", // IA Gold
+        "cien_dmv_02", // S Gold
+        "delta_hf_integrale_evo_91",    // Umbria Rally (Easy)
+        "delta_hf_integrale_wrc_92",    // Umbria Rally (Normal)
+        "delta_s4_wrc_85",    // Umbria Rally (Hard)
+        "gtr_concept_tmv_01",    // Capri Rally (Easy)
+        "bluebird_1600sss_rally_69",    // Capri Rally (Normal)
+        "_240rs_gpb_rally_85",    // Capri Rally (Hard)
+        "mazdaspeed_6_05",    // Grand Canyon Rally (Easy)
+        "rs200_84",    // Grand Canyon Rally (Normal)
+        "rs200_rally_85",    // Grand Canyon Rally (Hard)
+        "lancer_1600gsr_rally_74",    // Whistler Ice Race (Easy)
+        "lancer_evo7_gsr_01",    // Whistler Ice Race (Normal)
+        "starion_4wd_gpb_84",    // Whistler Ice Race (Hard)
+        "celica_1600gt_70",    // Chamonix Rally (Easy)
+        "celica_wrc_95",    // Chamonix Rally (Normal)
+        "corolla_wrc_98",    // Chamonix Rally (Hard)
+        "clio_sport_v6_2_03",    // George V Rally (Easy)
+        "_5_turbo_80",    // George V Rally (Normal)
+        "_5_maxi_turbo_rally_85",    // George V Rally (Hard)
+        "impreza_wrx_pro_01",    // Swiss Alps Rally (Easy)
+        "impreza_wrc_99",    // Swiss Alps Rally (Normal)
+        "impreza_wrc_prot_01",    // Swiss Alps Rally (Hard)
+        "solstice_dmv_02",    // Tour of Tahiti (Easy)
+        "escort_wrc_98",    // Tour of Tahiti (Normal)
+        "focus_wrc_99",    // Tour of Tahiti (Hard)
+        "i_concept_03",    // Tsukuba Wet Race (Easy)
+        "hsr2_concept_89",    // Tsukuba Wet Race (Normal)
+        "rsc_tmv_01",    // Tsukuba Wet Race (Hard)
+        "land_range_stormer_04",    // Yosemite Rally I (Easy)
+        "pajero_parisdakar_rally_85",    // Yosemite Rally I (Normal)
+        "pajero_evo_sp_03",    // Yosemite Rally I (Hard)
+        "acura_hsc_04",    // Yosemite Rally II (Easy)
+        "celica_st185_wrc_95",    // Yosemite Rally II (Normal)
+        "accent_wrc_01",    // Yosemite Rally II (Hard)
+        "e_type_coupe_61",    // Missions 1-5
+        "infiniti_fx45_dmv_02", // Missions 6-10
+        "r34_gtr_v_gtcolor_pc_01", // Missions 11-20
+        "corvette_z06_race_63", // Missions 21-24
+        "ford_gt_concept_gulf_02", // Missions 25-30
+        "pescarolo_c60_lmp1_04", // Missions 30-34
+        "formula_gran_turismo_04", // Missions 35-40
+        "_350z_lm_us_02", // 25% Completion
+        "r89c_89", // 50% Completion
+        "formula_gran_turismo_04", // 100% Completion
+        "rs6_avant_02", // (Start of added events) am_wagon_0000
+        "viper_gtsr_00", // us_dodge_viper_0000
+        "integra_r_03", // am_fourcyl_0000
+        "gs300_vertex_us_00", // am_sixcyl_0000
+        "svt_f150_lightning_03", // us_ford_mustang
+        "lemans_quattro_03", // A-Spec Milestone
+        "calsonic_skyline_gtr_gpa_93", // A-Spec Milestone 2
+        "sauber_mercedes_c9_89", // A-Spec Milestone 3
+        "s800_rsc_68", // Beat the Beat
+        "lexus_is200_gt1_race_04", // Clubman Race Series
+        "rsc_tmv_lm_01", // Rally Homologation Heroes
+        "ctr_87", // Faszination
+        "toyota7_70", // Route 5 All-Night
+        "denso_supra_00", // Trial Mountain 30 Laps
+        "r390_race_98", // JGTC GT500
+        "roadrunner_superbird_70", // City Slickers
+        "_155_v6ti_dtm_93", // Mid-Field 100 Miles
+        "dodge_viper_gtsr_oreca_00", // Seattle 100 Miles
+        "xj220_gt_road_92", // Jaguar Sports Legends
+        "rx8_tmv_01", // Beginner Hall completion
+        "clk_race_00", // Professional Hall completion
+        "gt_one_race_99", // Extreme Hall completion
+        "r92cp_92", // Japanese Hall completion
+        "gt40_race_69", // American Hall completion
+        "_905b_evo1_92", // European Hall completion
+        "escudo_pikespeak_98", // Special Condition Hall completion
+        "xjr9_race_88", // Endurance Hall completion
+        "mustang_gt_05", // Focus Cup
     ];
 
-    static content2_carnum = 172;
+    // Not 0-based, maps to VarOrder
+    static content2_carnum = 202;
     static content2_carlist = [
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "ending",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "9",
-        "-",
-        "-",
-        "10",
-        "11",
-        "17",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "3",
-        "-",
-        "-",
-        "12",
-        "-",
-        "2",
-        "-",
-        "-",
-        "-",
-        "6",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "3",
-        "-",
-        "-",
-        "-",
-        "-",
-        "6",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "1",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "11"
+        "-",    // Sunday Cup
+        "-",    // FF Challenge
+        "-",    // FR Challenge
+        "-",    // 4WD Challenge
+        "-",    // MR Challenge
+        "-",    // Light-weight K-Car Cup
+        "-",    // Spider & Roadster
+        "-",    // Sports Truck Race
+        "-",    // Clubman Cup
+        "-",    // Tuning Car Grand Prix
+        "-",    // Race of NA Sport
+        "-",    // Race of Turbo Sport
+        "-",    // Boxer Spirit
+        "-",    // World Classics
+        "-",    // World Compact
+        "-",    // Supercar Festival
+        "ending",// Gran Turismo World Championship
+        "-",    // Gran Turismo All Stars
+        "-",    // Dream Car Championship
+        "-",    // Polyphony Digital Cup
+        "-",    // Like the Wind
+        "-",    // Formula GT World Championship
+        "-",    // World Circuit Tour
+        "-",    // Premium Sports Lounge
+        "-",    // Road-going Formula
+        "-",    // Grand Valley 300 km
+        "1",    // Laguna Seca 200 miles
+        "-",    // Roadster 4h Endurance
+        "-",    // Tokyo R246 300 km
+        "-",    // Super Speedway 150 miles
+        "-",    // Nurburgring 24h Endurance
+        "-",    // Nurburgring 4h Endurance
+        "-",    // Suzuka 1000 km
+        "-",    // Motegi 8h Endurance
+        "-",    // Tsukuba 9h Endurance
+        "-",    // Circuit de la Sarthe 24h I
+        "-",    // Circuit de la Sarthe 24h II
+        "-",    // Fuji 1000 km
+        "-",    // Infineon World Sports
+        "-",    // El Capitan 200 miles
+        "-",    // New York 200 miles
+        "-",    // Pan Euro Championship
+        "-",    // British GT Series
+        "-",    // British Lightweight Series
+        "2",    // Deutsche Tourenwagen Meisterschaft
+        "-",    // La Festa Italiano
+        "-",    // Tous France Championnat
+        "-",    // Europe Classic Car League
+        "5",    // Euro Hot Hatch League (Clio V6 '00 Noir Nocturne)
+        "-",    // Grand Tour
+        "-",    // Schwarzwald Liga A
+        "-",    // Schwarzwald Liga B
+        "-",    // All American Championship
+        "-",    // Stars and Stripes
+        "-",    // Hot Rod Competition
+        "-",    // Muscle Car Competition
+        "-",    // Japan Championship
+        "-",    // JGTC GT300
+        "-",    // Japanese 70s Classics
+        "-",    // Japanese 80s Festival
+        "-",    // Japanese 90s Challenge
+        "-",    // Japanese Compact Cup
+        "-",    // GTA Cup
+        "-",    // Aston Martin Carnival
+        "-",    // Elise Trophy
+        "-",    // Lotus Classics
+        "-",    // MG Festival
+        "-",    // Spitfire Cup
+        "-",    // Black Pool Racers
+        "-",    // Tourist Trophy
+        "-",    // A3 Cup
+        "-",    // 1 Series Trophy
+        "-",    // Club "M"
+        "3",    // Legends of the Silver Arrow
+        "-",    // SL Challenge
+        "-",    // Mini Mini Sports Meeting
+        "-",    // Speedster Trophy
+        "-",    // Beetle Cup
+        "-",    // Lupo Cup
+        "-",    // GTi Cup
+        "-",    // Vette! Vette! Vette!
+        "-",    // Camaro Meeting
+        "-",    // Crossfire Trophy
+        "-",    // Saleen S7 Club
+        "-",    // Shelby Cobra Cup
+        "-",    // 2HP - 2CV Classics
+        "-",    // 206 Cup
+        "-",    // Clio Trophy
+        "-",    // Megane Cup
+        "-",    // Renault Alpine Cup
+        "2",    // Copen Race
+        "-",    // Midget II Race
+        "-",    // Type R Meeting
+        "-",    // Civic Race
+        "6",    // Isuzu Sports Classics
+        "-",    // Club "RE"
+        "-",    // NR-A Roadster Cup
+        "-",    // NR-A RX-8 Cup
+        "-",    // Mirage Cup
+        "-",    // Evolution Meeting
+        "-",    // Race of the Red "R" Emblem
+        "-",    // March Brothers
+        "-",    // Silvia Sisters
+        "-",    // Club "Z"
+        "-",    // Subaru 360 Race
+        "-",    // Stars of Pleiades
+        "-",    // Suzuki K-Car Cup
+        "-",    // Suzuki Concepts
+        "-",    // Altezza Race
+        "7",    // Vitz Race
+        "-",    // Hyundai Sports Festival
+        "-",    // l0b
+        "-",    // l0a
+        "-",    // lib
+        "-",    // lia
+        "-",    // l0s
+        "-",    // B Bronze
+        "-",    // A Bronze
+        "-",    // IB Bronze
+        "-",    // IA Bronze
+        "-",    // S Bronze
+        "-",    // B Silver
+        "-",    // A Silver
+        "-",    // IB Silver
+        "-",    // IA Silver
+        "-",    // S Silver
+        "-",    // B Gold
+        "-",    // A Gold
+        "-",    // IB Gold
+        "-",    // IA Gold
+        "-",    // S Gold
+        "4",    // Umbria Rally (Easy)
+        "-",    // Umbria Rally (Normal)
+        "-",    // Umbria Rally (Hard)
+        "-",    // Capri Rally (Easy)
+        "-",    // Capri Rally (Normal)
+        "-",    // Capri Rally (Hard)
+        "-",    // Grand Canyon Rally (Easy)
+        "-",    // Grand Canyon Rally (Normal)
+        "-",    // Grand Canyon Rally (Hard)
+        "-",    // Whistler Ice Race (Easy)
+        "-",    // Whistler Ice Race (Normal)
+        "-",    // Whistler Ice Race (Hard)
+        "-",    // Chamonix Rally (Easy)
+        "-",    // Chamonix Rally (Normal)
+        "-",    // Chamonix Rally (Hard)
+        "-",    // George V Rally (Easy)
+        "-",    // George V Rally (Normal)
+        "-",    // George V Rally (Hard)
+        "-",    // Swiss Alps Rally (Easy)
+        "-",    // Swiss Alps Rally (Normal)
+        "-",    // Swiss Alps Rally (Hard)
+        "-",    // Tour of Tahiti (Easy)
+        "-",    // Tour of Tahiti (Normal)
+        "-",    // Tour of Tahiti (Hard)
+        "-",    // Tsukuba Wet Race (Easy)
+        "-",    // Tsukuba Wet Race (Normal)
+        "-",    // Tsukuba Wet Race (Hard)
+        "-",    // Yosemite Rally I (Easy)
+        "-",    // Yosemite Rally I (Normal)
+        "-",    // Yosemite Rally I (Hard)
+        "-",    // Yosemite Rally II (Easy)
+        "-",    // Yosemite Rally II (Normal)
+        "-",    // Yosemite Rally II (Hard)
+        "-",    // Missions 1-5
+        "-",    // Missions 6-10
+        "-",    // Missions 11-20
+        "-",    // Missions 21-24
+        "-",    // Missions 25-30
+        "-",    // Missions 30-34
+        "-",    // Missions 35-40
+        "-",    // 25% Completion
+        "-",    // 50% Completion
+        "11",    // 100% Completion
+        "-",     // (Start of added events)
+        "-",      // us_dodge_viper_0000
+        "-",     // am_fourcyl_0000
+        "-",     // am_sixcyl_0000
+        "-",     // us_ford_mustang
+        "-",      // A-Spec Milestone 1
+        "-",      // A-Spec Milestone 2
+        "-",      // A-Spec Milestone 3
+        "-",     // Beat the Beat
+        "-",     // Clubman Race Series
+        "-",     // Rally Homologation Heroes     
+        "-",    // Faszination
+        "-", // Route 5 All-Night
+        "-", // Trial Mountain 30 Laps
+        "-", // JGTC GT500
+        "-", // City Slickers
+        "-", // Mid-Field 100 Miles
+        "-", // Seattle 100 Miles
+        "-", // Jaguar Sports Legends
+        "-", // Beginner Hall completion
+        "-", // Professional Hall completion
+        "-", // Extreme Hall completion
+        "-", // Japanese Hall completion
+        "-", // American Hall completion
+        "-", // European Hall completion
+        "-", // Special Condition Hall completion
+        "-", // Endurance Hall completion
+        "-", // Focus Cup
     ];
 }
 
@@ -1959,702 +2920,722 @@ module PresentTimeData
 
 module EnemyCarData 
 {
-    static enemy_carnum = 693;
-    static enemy_carlist = [
-        "cobra_67",
-        "ac_427_sc_66",
-        "tamora_02",
-        "griffith_500_94",
-        "sl65_amg_04",
-        "sl600_04",
-        "sl55_amg_02",
-        "s2000_us_01",
-        "s2000_a_99",
-        "s2000_us_04",
-        "s2000_typev_us_00",
-        "s2000_typev_us_01",
-        "s2000_typev_03",
-        "_350z_roadster_03",
-        "z4_30i_03",
-        "sl500_02",
-        "elan_s1_62",
-        "lexus_sc430_us_01",
-        "fairlady_2000_68",
-        "miata_rs_00",
-        "alfa_spider_30v6_01",
-        "slk230_komp_98",
-        "mr2_spyder_v_us_02",
-        "mr2_spyder_us_99",
-        "miata_18rs_98",
-        "tf160_03",
-        "mgf_vvc_97",
-        "miata_sspl1_95",
-        "miata_j_lim2_93",
-        "miata_sr_lim_97",
-        "miata_vr_lim_95",
-        "miata_vspl2_93",
-        "ssr_03",
-        "miata_us_89",
-        "miata_j_lim_91",
-        "barchetta_gd_00",
-        "corvette_convertible_54",
-        "spider_duetto_66",
-        "_206cc_20_01",
-        "s800_66",
-        "beat_91",
-        "beat_f_92",
-        "beat_z_93",
-        "s600_64",
-        "copen_activetop_02",
-        "s500_63",
-        "toyota7_70",
-        "vertigo_race_04",
-        "minolta_toyota_88cv_89",
-        "sauber_mercedes_c9_89",
-        "r89c_89",
-        "r92cp_92",
-        "_787b_91",
-        "cerbera_speed12_00",
-        "gt_one_race_exxon_99",
-        "exp_speed8_03",
-        "r8_race_01",
-        "pescarolo_c60_lmp1_04",
-        "r390_race_98",
-        "v12_lmr_99",
-        "mclaren_f1_gtr_long_97",
-        "clk_gtr_race_98",
-        "pescarolo_c60_03",
-        "zonda_race_00",
-        "gtr_concept_lm_01",
-        "_350z_lm_us_02",
-        "zz2_00",
-        "corvette_cr5_00",
-        "ford_gt_lm_sp2_04",
-        "ford_gt_concept_gulf_02",
-        "stream_z_04",
-        "cien_dmv_02",
-        "corvette_z06_race_63",
-        "camaro_race_00",
-        "panoz_esperante_race_98",
-        "dodge_viper_gtsr_oreca_00",
-        "delta_s4_wrc_85",
-        "gt40_race_69",
-        "_205_t16_wrc_ev2_86",
-        "amuse_carbonr_04",
-        "rx7_lm_race_00",
-        "xanavi_nismo_gtr_03",
-        "xj220_gt_race_92",
-        "nsx_r_proto_lm_01",
-        "rx8_lm_01",
-        "opel_astra_race_00",
-        "w12_tmv_01",
-        "woodone_supra_03",
-        "clk_race_00",
-        "falcon_xr8_race_00",
-        "mines_r34_00",
-        "saleen_s7_02",
-        "zonda_c12s_gmv_02",
-        "fto_lm_race_00",
-        "calsonic_skyline_gtr_gpa_93",
-        "rs200_rally_85",
-        "motul_pitwork_z_04",
-        "buick_special_62",
-        "a4_dtm_04",
-        "au_supra_01",
-        "castrol_supra_00",
-        "castrol_supra_01",
-        "denso_supra_00",
-        "hks_d1_silvia_04",
-        "c8_laviolette_02",
-        "calsonic_gtr_00",
-        "loctite_gtr_00",
-        "pennzoil_gtr_01",
-        "xanavi_gtr_01",
-        "rsc_tmv_lm_01",
-        "nsx_r_proto_lm_road_01",
-        "penzoil_gtr_99",
-        "lemans_quattro_03",
-        "storm_v12_race_99",
-        "arta_nsx_00",
-        "castrol_nsx_00",
-        "raybrig_nsx_00",
-        "tt_dtm_02",
-        "_155_v6ti_dtm_93",
-        "takata_dome_nsx_03",
-        "opel_calibra_race_94",
-        "ctr_87",
-        "impreza_lm_race_00",
-        "zonda_c12s_00",
-        "blitz_r34_d1_04",
-        "m3_gtr_alms_01",
-        "_5_maxi_turbo_rally_85",
-        "loctite_nsx_01",
-        "mobil_nsx_01",
-        "_190e_evo2_dtm_92",
-        "ford_gt_05",
-        "xj220_gt_road_92",
-        "ctr2_96",
-        "falken_gtr_nur_04",
-        "_205_t16_rally_85",
-        "amuse_s2000_gt1_04",
-        "cizeta_v16t_94",
-        "slr_mclaren_03",
-        "ford_gt_concept_dmv_02",
-        "viper_gtsr_00",
-        "murao_rx7_03",
-        "tuscan_speed6_00",
-        "mines_evo6_00",
-        "viper_srt10_03",
-        "arta_garaiya_03",
-        "btr_86",
-        "zonda_c12_00",
-        "cerbera_speed6_97",
-        "cusco_impreza_03",
-        "stratos_wrc_77",
-        "nismo_fairlady_z_ztune_03",
-        "xsara_wrc_99",
-        "altezza_lm_race_00",
-        "s2000_lm_race_00",
-        "r390_road_98",
-        "spoon_s2000_race_00",
-        "t350c_03",
-        "c12_03",
-        "m5_05",
-        "integra_r_lm_01",
-        "r34_gtr_rtune_99",
-        "r34_gtr_v_gtcolor_01",
-        "motersport_elise_99",
-        "amemiya_aspara_rx7_04",
-        "gtr_concept_tmv_01",
-        "hsr2_concept_89",
-        "viper_gts_99",
-        "zzs_00",
-        "r_gt_00",
-        "starion_4wd_gpb_84",
-        "wedssport_celica_03",
-        "acura_hsc_04",
-        "impreza_wrc_03",
-        "elise_190_98",
-        "m3_gtr_str_03",
-        "mazda6_tmv_n1_01",
-        "v8_vantage_99",
-        "esprit_sport350_00",
-        "corvette_z06_00",
-        "gsx_r_4_tmv_01",
-        "r32_gtr_stune_00",
-        "esprit_v8_gt_98",
-        "mrs_autobacs_00",
-        "series1_sc_03",
-        "delta_hf_integrale_wrc_92",
-        "db9_03",
-        "cz3_tar_wrc_01",
-        "lancer_wrc_03",
-        "spoon_civic_00",
-        "celica_st185_wrc_95",
-        "opera_z_04",
-        "razo_silvia_01",
-        "esprit_v8_02",
-        "esprit_v8_se_98",
-        "m3_csl_03",
-        "chevelle_ss_454_ls6_70",
-        "clio_sport_race_00",
-        "nismo400r_96",
-        "vanquish_04",
-        "trueno_gt_apex_shigeno_00",
-        "mugen_motul_civic_87",
-        "celica_wrc_95",
-        "lancer_evo6_rs_99",
-        "spoon_s2000_00",
-        "trial_celica_ss2_03",
-        "e55_amg_02",
-        "_206_wrc_exxon_99",
-        "_240rs_gpb_rally_85",
-        "evo6_wrc_99",
-        "impreza_wrc_01",
-        "impreza_wrc_prot_01",
-        "accent_wrc_01",
-        "corolla_wrc_98",
-        "escort_wrc_98",
-        "impreza_wrc_99",
-        "silvia_240rs_83",
-        "cuda_440_6_71",
-        "focus_wrc_99",
-        "rs6_02",
-        "roadrunner_superbird_70",
-        "gt350_r_65",
-        "lancer_evo7_rs_01",
-        "rs6_avant_02",
-        "db7_vantage_coupe_00",
-        "corvette_l46_350_69",
-        "_3400s_00",
-        "corvette_zr1_90",
-        "rs4_01",
-        "rx8_concept_01",
-        "rx8_tmv_01",
-        "lancer_evo4_wrc_97",
-        "charger_superbee_426_hemi_71",
-        "pontiac_gto_389_348_64",
-        "lancer_evo6_gsr_99",
-        "lancer_evo6_tommi_gsr_00",
-        "impreza_22b_98",
-        "rx7_rz_00",
-        "rx7_r_br_01",
-        "carlton_90",
-        "clix_concept_01",
-        "v8s_91",
-        "charger_440_rt_70",
-        "infiniti_fx45_dmv_02",
-        "rx7_spiritr_a_02",
-        "lancer_evo8_mr_gsr_04",
-        "_320i_etcc_03",
-        "cougar_xr7_67",
-        "lancer_evo5_gsr_98",
-        "lancer_evo6_tommi_rs_00",
-        "lancer_evo7_gsr_01",
-        "mustang_svt_cobrar_00",
-        "nsx_r_01",
-        "nsx_r_02",
-        "nsx_s_zero_97",
-        "impreza_wrx_sti6_99",
-        "lancer_evo8_gsr_03",
-        "rx7_rs_00",
-        "rx7_rs_98",
-        "xkr_coupe_99",
-        "xkr_rperform_02",
-        "impreza_wrx_sti4_97",
-        "nsx_r_92",
-        "s_type_r_02",
-        "corvette_gs_96",
-        "garaiya_02",
-        "impreza_wrx_sti3_96",
-        "elise_111r_04",
-        "impreza_coupe_wrx_sti6_99",
-        "impreza_wrx_sti5_98",
-        "e_type_coupe_61",
-        "impreza_wg_sti_00",
-        "impreza_wrx_pro_01",
-        "impreza_wrx_sti_00",
-        "impreza_wrx_sti1_94",
-        "m_coupe_98",
-        "m3_04",
-        "impreza_wg_wrx_99",
-        "nsx_s_zero_99",
-        "supra_rz_97",
-        "silverado_sst_02",
-        "nismo270r_94",
-        "rx8_types_03",
-        "camaro_ss_69",
-        "clk55_00",
-        "impreza_wrx_sti2_95",
-        "fpv_gt_04",
-        "r34_gtr_m_01",
-        "r34_gtr_v_99",
-        "r34_gtr_v_gtcolor_pc_01",
-        "r34_gtr_v2_00",
-        "r34_gtr_v2_nur_02",
-        "interceptor_mk3_74",
-        "lancer_evo8_rs_03",
-        "toms_chaser_00",
-        "lancer_evo7_gta_02",
-        "lancer_evo2_gsr_94",
-        "lancer_evo3_gsr_95",
-        "rx7_rz_eu_96",
-        "impreza_wrx_sti_c_04",
-        "camaro_ss_00",
-        "rs200_84",
-        "pontiac_gto_57_coupe_04",
-        "acura_nsx_32l_97",
-        "fairlady_z_aero_02",
-        "nsx_s_01",
-        "nsx_s_97",
-        "nsx_s_99",
-        "focus_rs_02",
-        "acura_dnx_02",
-        "rx7_rz_eu_92",
-        "s4_03",
-        "camaro_z28_302_69",
-        "mm_r_tmv_01",
-        "rx7_rs_eu_96",
-        "rx7_rsr_97",
-        "nsx_01",
-        "r32_gtr_v2_94",
-        "r33_gtr_v_97",
-        "rsc_tmv_01",
-        "rx7_rz_eu_93",
-        "fpv_f6_typhoon_04",
-        "ss_commodore_04",
-        "nsx_90",
-        "nsx_93",
-        "nsx_95",
-        "nsx_97",
-        "nsx_99",
-        "rx7_rz_eu_95",
-        "spoon_integra_r_99",
-        "lancer_evo4_96",
-        "rx7_r_eu_91",
-        "rx7_r_eu_93",
-        "rx7_r_s_eu_95",
-        "s15_specr_aero_99",
-        "ginetta_g4_64",
-        "lancer_evo_gsr_92",
-        "monaro_cv8_04",
-        "legacy_b4_20gt_03",
-        "acura_nsx_32l_04",
-        "gathers_civic_98",
-        "mugen_s2000_00",
-        "opel_speedster_turbo_00",
-        "amuse_s2000_04",
-        "amuse_s2000_circuit_04",
-        "opera_s2000_04",
-        "legacy_wgn_20gt_03",
-        "alpine_a110_16s_73",
-        "legacy_gtb_96",
-        "impreza_wrx_sti_02",
-        "legacy_sdn_20gt_b_03",
-        "mr2_gts_97",
-        "legacy_b4_rsk_98",
-        "r32_skyline_gtr_89",
-        "elise_111s_03",
-        "lancer_1600gsr_rally_74",
-        "sl600_98",
-        "legacy_b4_blitzen_00",
-        "nismo_gtr_lm_95",
-        "_350z_03",
-        "legacy_wgn_20gt_b_03",
-        "stratos_73",
-        "cz3_tar_tmv_01",
-        "fairlady_z_st_02",
-        "mustang_gt_05",
-        "pajero_parisdakar_rally_85",
-        "_3000gt_vr4_us_98",
-        "hcd6_concept_01",
-        "esprit_turbo_hc_87",
-        "clio_sport_v6_00",
-        "r32_skyline_gtr_n1_91",
-        "r32_skyline_gtr_v_n1_93",
-        "integra_r_03",
-        "integra_r_95",
-        "r32_skyline_gtr_91",
-        "cl600_00",
-        "_3000gt_vr4t_us_95",
-        "clio_sport_v6_2_03",
-        "r33_skyline_gtr_95",
-        "r33_skyline_gtr_96",
-        "r33_skyline_gtr_97",
-        "camaro_z28_coupe_97",
-        "integra_r_99",
-        "r32_skyline_gtr_v_93",
-        "integra_r_98",
-        "_300zx_2seat_us_89",
-        "r33_skyline_gtr_n1_95",
-        "r33_skyline_gtr_v_95",
-        "r33_skyline_gtr_v_96",
-        "r33_skyline_gtr_v_lm_96",
-        "corvette_coupe_63",
-        "solstice_dmv_02",
-        "_300zx_2seat_us_98",
-        "_147_gta_02",
-        "infiniti_g35_coupe_03",
-        "civic_r_04",
-        "celica_gt_four_98",
-        "r34_skyline_gtr_00",
-        "r34_skyline_gtr_99",
-        "supra_25gt_ttr_90",
-        "r34_skyline_gtr_sc_mp2_99",
-        "r34_skyline_gtr_sc_mp3_00",
-        "r34_skyline_gtr_v_n1_99",
-        "r34_skyline_v2_n1_00",
-        "civic_r_01",
-        "svt_f150_lightning_03",
-        "concept_s2_03",
-        "dome_zero_78",
-        "sc300_us_97",
-        "r34_skyline_gtr_m_nur_02",
-        "_205_t16_85",
-        "_300zx_2by2_us_98",
-        "legnum_vr4_v_98",
-        "s13_ks_91",
-        "sileighty_xx",
-        "skyline_300gt_01",
-        "europa_special_71",
-        "hommell_rs_berlinetta_99",
-        "beetle_cup_00",
-        "caldina_gt_four_02",
-        "s4_98",
-        "trd_celica_sportm_00",
-        "_190e_evo2_91",
-        "buick_gnx_87",
-        "skyline_350gt8_02",
-        "civic_r_98",
-        "_240sx_silvia_us_96",
-        "fto_gpr_99",
-        "gs300_us_91",
-        "infiniti_g35_03",
-        "accord_euror_00",
-        "mazdaspeed_6_05",
-        "fto_gpr_97",
-        "acura_nsx_91",
-        "opel_speedster_00",
-        "gs300_us_00",
-        "gs300_vertex_us_00",
-        "rx7_a3_eu_90",
-        "srt4_03",
-        "civic_r_97",
-        "r32_gtst_m_91",
-        "r32_skyline_gtst_m_89",
-        "stagea_25t_rs_fours_98",
-        "elise2000_00",
-        "fto_gpx_94",
-        "fto_gpx_97",
-        "fto_gpx_99",
-        "legacy_b4_30r_03",
-        "prelude_sir_s_98",
-        "eclipse_gt_95",
-        "sl500_98",
-        "_330i_05",
-        "_240sx_180_us_96",
-        "_3000gt_mr_98",
-        "acura_cl_types_03",
-        "legacy_wgn_30r_03",
-        "s14_silvia_ks_aero_93",
-        "_3000gt_mr_95",
-        "prelude_si_vtec_91",
-        "_5_turbo_80",
-        "a3_32_quattro_03",
-        "acura_integra_typer_01",
-        "celica_ss2_97",
-        "kusabi_concept_03",
-        "clio_renaultsport_20_02",
-        "_300sl_coupe_54",
-        "mr2_glimited_97",
-        "prelude_s_98",
-        "acura_cl_types_01",
-        "fairlady_z_300zx_83",
-        "prelude_s_96",
-        "stagea_260rs_autech_98",
-        "acura_rsx_s_04",
-        "celica_ss2_99",
-        "golf_r32_3d_03",
-        "rx7_gtx_eu_90",
-        "mirage_cyborg_zr_97",
-        "coupe_turboplus_00",
-        "_3000gt_vr4t_us_96",
-        "accord_coupe_exv6_6_03",
-        "galant_vr4_89",
-        "levin_bzr_98",
-        "trueno_bzr_98",
-        "r30_skyline_ht2000_rsx_tc_84",
-        "runx_z_aero_tourer_02",
-        "crx_sir_90",
-        "r30_skyline_ht2000_turbo_rs_83",
-        "celica_gt_four_rc_91",
-        "elise_type72_01",
-        "tt_00",
-        "civic_sir2_91",
-        "civic_sir2_92",
-        "civic_sir2_95",
-        "rx8_03",
-        "crossfire_04",
-        "tt_coupe_32_03",
-        "_206_rc_03",
-        "s60_t5_sport_03",
-        "civic_sir2_93",
-        "camaro_irocz_88",
-        "airtrek_turbo_02",
-        "will_vs_01",
-        "accord_euro_r_02",
-        "_2002_turbo_73",
-        "rx8_typee_03",
-        "taurus_sho_98",
-        "delta_hf_integrale_evo_91",
-        "quattro_82",
-        "r31_skyline_gtsr_87",
-        "lexus_is200_rs200_98",
-        "dmc12_stage2_04",
-        "supra_szr_97",
-        "fto_gr_97",
-        "ibiza_cupra_r_04",
-        "gtv_30v6_v24_01",
-        "giulia_sprint_gta_65",
-        "delsol_sir_92",
-        "s13_ks_88",
-        "supra_30gt_turbo_a_88",
-        "prelude_sir_96",
-        "primera_20v_us_01",
-        "s800_rsc_68",
-        "beetle_rsi_00",
-        "golf_gti_05",
-        "s3_02",
-        "lexus_is300_sc_us_01",
-        "city_turbo2_83",
-        "_240zg_71",
-        "lupo_cup_00",
-        "tacoma_x_runner_04",
-        "fto_gr_94",
-        "lancer_ex_1800gsr_ic_turbo_83",
-        "mazda_323f_r_93",
-        "starlet_granza_v_97",
-        "kpgc10_skyline_gtr_70",
-        "mini_cooper_s_02",
-        "sunfire_gxp_02",
-        "rx7_gt_lim_eu_85",
-        "ram_1500_hemi_4cab_04",
-        "pontiac_vibe_gt_03",
-        "r32_skyline_gts25_s_91",
-        "storia_x4_98",
-        "_156_25v6_98",
-        "vitz_rs_turbo_02",
-        "celica_2000gt_r_86",
-        "protege_sport20_02",
-        "eclipse_spyder_gts_03",
-        "_3000gt_sl_98",
-        "kpgc110_skyline_gtr_73",
-        "land_range_stormer_04",
-        "_2000_gt_67",
-        "_3000gt_sl_95",
-        "_3000gt_sl_96",
-        "opel_vectra_32v6_jp_03",
-        "focus_st170_jp_03",
-        "s15_silvia_specs_aero_99",
-        "mini_marcos_gt_70",
-        "celica_xx_2800gt_81",
-        "levin_gt_apex_83",
-        "trueno_gt_apex_83",
-        "celica_2000gt_four_86",
-        "mazda6_tmv_01",
-        "c5_v6_exclusive_03",
-        "bluebird_1600sss_rally_69",
-        "s14_silvia_qs_aero_93",
-        "crx_15i_83",
-        "a310_1600ve_73",
-        "golf_gti_76",
-        "lupo_gti_cup_03",
-        "_110s_68",
-        "lancer_1600gsr_73",
-        "celica_gtr_4ws_91",
-        "mr2_1600_glim_sc_86",
-        "_406_coupe_30_98",
-        "bora_v6_4m_01",
-        "s14_silvia_qs_aero_96",
-        "xantia_30i_v6_exclusive_00",
-        "tiburon_gt_v6_01",
-        "infiniti_g20_20te_90",
-        "_206_s16_99",
-        "megane_20_ide_00",
-        "mazda6_sport_23z_03",
-        "galant_gto_mr_70",
-        "_166_25v6_24v_s_98",
-        "spoon_fit_03",
-        "s13_silvia_qs_91",
-        "silvia_varietta_00",
-        "bellett_1600_gtr_69",
-        "celica_1600gt_70",
-        "s13_silvia_qs_88",
-        "_106_s16_03",
-        "civic_1500_25i_3d_83",
-        "lexus_is_us_98",
-        "sera_92",
-        "giulia_sprint_s_63",
-        "pt_cruiser_00",
-        "lupo_gti_01",
-        "punto_hgt_abarth_00",
-        "fairlady_z_280zl_2s_78",
-        "_110s_67",
-        "vitz_rs15_00",
-        "golf_gti_01",
-        "_147_20_twinspark_02",
-        "_106_rally_03",
-        "avantime_30_v6_bvm6_02",
-        "mr2_1600_g_86",
-        "_120d_04",
-        "_117_coupe_68",
-        "skyline_2000gtb_67",
-        "_120i_04",
-        "_307_xsi_04",
-        "piazza_xe_81",
-        "eagle_talon_esi_97",
-        "megane_20_16v_02",
-        "civic_1500_cx_3d_79",
-        "xa_15s_2wd_03",
-        "exa_canopy_las_88",
-        "lupo_14_02",
-        "polo_gti_5d_01",
-        "voltz_s_2wd_02",
-        "_1300_coupe_9s_70",
-        "demio_sport_03",
-        "xb_15z_x_2wd_03",
-        "carina_ed_20x_4ws_89",
-        "demio_glx_99",
-        "vitz_euro_00",
-        "c3_16_02",
-        "mirage_1400glx_78",
-        "element_03",
-        "opel_tigra_16i_99",
-        "mini_cooper_02",
-        "fit_w_ff_01",
-        "a112_abarth_79",
-        "minica_dungun_zz_89",
-        "bluebird_ht_1800sss_79",
-        "accord_coupe_us_88",
-        "micra_12c_5d_03",
-        "colt_15_sportx_02",
-        "march_g_2wd_3dr_99",
-        "odyssey_l_4wd_03",
-        "cappuccino_95",
-        "beetle_20_00",
-        "silvia_65",
-        "cube_ex_2wd_02",
-        "mira_tr_xx_avar_97",
-        "a160_98",
-        "xsara_vtr_03",
-        "altoworks_rsz_97",
-        "altoworks_sport_ltd_97",
-        "cappuccino_91",
-        "spitfire_1500_74",
-        "az1_92",
-        "i_concept_03",
-        "vitz_f_99",
-        "opel_corsa_comf_14_3dr_01",
-        "cube_x_98",
-        "insight_mt_99",
-        "move_srxx_2wd_97",
-        "a2_14_02",
-        "mini_one_02",
-        "copen_detachabletop_02",
-        "wagon_r_rr_98",
-        "move_srxx_4wd_97",
-        "be1_87",
-        "bluebird_1600dx_67",
-        "kei_works_4wd_02",
-        "sports_800_65",
-        "move_cx_2wd_95",
-        "mr_wagon_sport_04",
-        "skyline_1500dx_63",
-        "lapin_turbo_4wd_02",
-        "pao_89",
-        "move_custom_rs_lim_4wd_02",
-        "skyline_sport_coupe_60",
-        "storia_cx_2wd_98",
-        "_240_glt_estate_88",
-        "storia_cx_4wd_98",
-        "n360_67",
-        "ka_01",
-        "prius_g_02",
-        "prius_g_touring_03",
-        "panda_super_ie_90",
-        "z_act_70",
-        "midget2_d_type_98",
-        "today_g_85",
-        "karmann_ghia_type1_1500_68",
-        "life_step_van_72",
-        "_500_f_65",
-        "_360_58",
-        "_1100_standard_type11_49",
-        "carol_360_deluxe_62",
-        "_500_l_69",
-        "_500_r_72",
-        "_2cv_typea_54"
-    ];
+	static enemy_carnum = 713;
+	static enemy_carlist = [
+		"cobra_67",
+		"ac_427_sc_66",
+		"tamora_02",
+		"griffith_500_94",
+		"sl65_amg_04",
+		"sl600_04",
+		"sl55_amg_02",
+		"s2000_us_01",
+		"s2000_a_99",
+		"s2000_us_04",
+		"s2000_typev_us_00",
+		"s2000_typev_us_01",
+		"s2000_typev_03",
+		"_350z_roadster_03",
+		"z4_30i_03",
+		"sl500_02",
+		"elan_s1_62",
+		"lexus_sc430_us_01",
+		"fairlady_2000_68",
+		"miata_rs_00",
+		"alfa_spider_30v6_01",
+		"slk230_komp_98",
+		"mr2_spyder_v_us_02",
+		"mr2_spyder_us_99",
+		"miata_18rs_98",
+		"tf160_03",
+		"mgf_vvc_97",
+		"miata_sspl1_95",
+		"miata_j_lim2_93",
+		"miata_sr_lim_97",
+		"miata_vr_lim_95",
+		"miata_vspl2_93",
+		"ssr_03",
+		"miata_us_89",
+		"miata_j_lim_91",
+		"barchetta_gd_00",
+		"corvette_convertible_54",
+		"spider_duetto_66",
+		"_206cc_20_01",
+		"s800_66",
+		"beat_91",
+		"beat_f_92",
+		"beat_z_93",
+		"s600_64",
+		"copen_activetop_02",
+		"s500_63",
+		"toyota7_70",
+		"vertigo_race_04",
+		"minolta_toyota_88cv_89",
+		"sauber_mercedes_c9_89",
+		"r89c_89",
+		"r92cp_92",
+		"_787b_91",
+		"_905b_evo1_92",
+		"cerbera_speed12_00",
+		"gt_one_race_exxon_99",
+		"gt_one_race_99",
+		"exp_speed8_03",
+		"r8_race_01",
+		"pescarolo_c60_lmp1_04",
+		"r390_race_98",
+		"v12_lmr_99",
+		"mclaren_f1_gtr_long_97",
+		"clk_gtr_race_98",
+		"pescarolo_c60_03",
+		"zonda_race_00",
+		"gtr_concept_lm_01",
+		"_350z_lm_us_02",
+		"zz2_00",
+		"corvette_cr5_00",
+		"ford_gt_lm_sp2_04",
+		"ford_gt_concept_gulf_02",
+		"stream_z_04",
+		"cien_dmv_02",
+		"corvette_z06_race_63",
+		"camaro_race_00",
+		"panoz_esperante_race_98",
+		"dodge_viper_gtsr_oreca_00",
+		"delta_s4_wrc_85",
+		"gt40_race_69",
+		"_205_t16_wrc_ev2_86",
+		"amuse_carbonr_04",
+		"rx7_lm_race_00",
+		"xanavi_nismo_gtr_03",
+		"xj220_gt_race_92",
+		"nsx_r_proto_lm_01",
+		"rx8_lm_01",
+		"opel_astra_race_00",
+		"vauxhall_astra_race_00",
+		"w12_tmv_01",
+		"woodone_supra_03",
+		"esso_supra_01",
+		"clk_race_00",
+		"falcon_xr8_race_00",
+		"mines_r34_00",
+		"saleen_s7_02",
+		"zonda_c12s_gmv_02",
+		"fto_lm_race_00",
+		"calsonic_skyline_gtr_gpa_93",
+		"rs200_rally_85",
+		"motul_pitwork_z_04",
+		"buick_special_62",
+		"a4_dtm_04",
+		"au_supra_01",
+		"castrol_supra_00",
+		"castrol_supra_01",
+		"denso_supra_00",
+		"hks_d1_silvia_04",
+		"c8_laviolette_02",
+		"calsonic_gtr_00",
+		"loctite_gtr_00",
+		"pennzoil_gtr_01",
+		"xanavi_gtr_01",
+		"rsc_tmv_lm_01",
+		"nsx_r_proto_lm_road_01",
+		"penzoil_gtr_99",
+		"lemans_quattro_03",
+		"storm_v12_race_99",
+		"arta_nsx_00",
+		"castrol_nsx_00",
+		"raybrig_nsx_00",
+		"tt_dtm_02",
+		"_155_v6ti_dtm_93",
+		"takata_dome_nsx_03",
+		"opel_calibra_race_94",
+		"vauxhall_calibra_race_94",
+		"ctr_87",
+		"impreza_lm_race_00",
+		"zonda_c12s_00",
+		"blitz_r34_d1_04",
+		"m3_gtr_alms_01",
+		"_5_maxi_turbo_rally_85",
+		"loctite_nsx_01",
+		"mobil_nsx_01",
+		"_190e_evo2_dtm_92",
+		"ford_gt_05",
+		"xj220_gt_road_92",
+		"ctr2_96",
+		"falken_gtr_nur_04",
+		"_205_t16_rally_85",
+		"amuse_s2000_gt1_04",
+		"cizeta_v16t_94",
+		"slr_mclaren_03",
+		"ford_gt_concept_dmv_02",
+		"viper_gtsr_00",
+		"murao_rx7_03",
+		"tuscan_speed6_00",
+		"mines_evo6_00",
+		"viper_srt10_03",
+		"arta_garaiya_03",
+		"btr_86",
+		"zonda_c12_00",
+		"cerbera_speed6_97",
+		"cusco_impreza_03",
+		"stratos_wrc_77",
+		"nismo_fairlady_z_ztune_03",
+		"xsara_wrc_99",
+		"altezza_lm_race_00",
+		"lexus_is200_gt1_race_04",
+		"s2000_lm_race_00",
+		"r390_road_98",
+		"spoon_s2000_race_00",
+		"t350c_03",
+		"c12_03",
+		"m5_05",
+		"integra_r_lm_01",
+		"r34_gtr_rtune_99",
+		"r34_gtr_v_gtcolor_01",
+		"motersport_elise_99",
+		"amemiya_aspara_rx7_04",
+		"gtr_concept_tmv_01",
+		"hsr2_concept_89",
+		"viper_gts_99",
+		"zzs_00",
+		"r_gt_00",
+		"starion_4wd_gpb_84",
+		"wedssport_celica_03",
+		"acura_hsc_04",
+		"impreza_wrc_03",
+		"elise_190_98",
+		"m3_gtr_str_03",
+		"mazda6_tmv_n1_01",
+		"v8_vantage_99",
+		"esprit_sport350_00",
+		"corvette_z06_00",
+		"gsx_r_4_tmv_01",
+		"r32_gtr_stune_00",
+		"esprit_v8_gt_98",
+		"mrs_autobacs_00",
+		"series1_sc_03",
+		"delta_hf_integrale_wrc_92",
+		"db9_03",
+		"cz3_tar_wrc_01",
+		"lancer_wrc_03",
+		"spoon_civic_00",
+		"celica_st185_wrc_95",
+		"opera_z_04",
+		"razo_silvia_01",
+		"esprit_v8_02",
+		"esprit_v8_se_98",
+		"m3_csl_03",
+		"chevelle_ss_454_ls6_70",
+		"clio_sport_race_00",
+		"nismo400r_96",
+		"vanquish_04",
+		"trueno_gt_apex_shigeno_00",
+		"mugen_motul_civic_87",
+		"celica_wrc_95",
+		"lancer_evo6_rs_99",
+		"spoon_s2000_00",
+		"trial_celica_ss2_03",
+		"e55_amg_02",
+		"_206_wrc_exxon_99",
+		"_240rs_gpb_rally_85",
+		"evo6_wrc_99",
+		"impreza_wrc_01",
+		"impreza_wrc_prot_01",
+		"accent_wrc_01",
+		"corolla_wrc_98",
+		"escort_wrc_98",
+		"impreza_wrc_99",
+		"silvia_240rs_83",
+		"cuda_440_6_71",
+		"focus_wrc_99",
+		"rs6_02",
+		"roadrunner_superbird_70",
+		"gt350_r_65",
+		"lancer_evo7_rs_01",
+		"rs6_avant_02",
+		"db7_vantage_coupe_00",
+		"corvette_l46_350_69",
+		"_3400s_00",
+		"corvette_zr1_90",
+		"rs4_01",
+		"rx8_concept_01",
+		"rx8_tmv_01",
+		"lancer_evo4_wrc_97",
+		"charger_superbee_426_hemi_71",
+		"pontiac_gto_389_348_64",
+		"lancer_evo6_gsr_99",
+		"lancer_evo6_tommi_gsr_00",
+		"impreza_22b_98",
+		"rx7_rz_00",
+		"rx7_r_br_01",
+		"carlton_90",
+		"clix_concept_01",
+		"v8s_91",
+		"charger_440_rt_70",
+		"infiniti_fx45_dmv_02",
+		"rx7_spiritr_a_02",
+		"lancer_evo8_mr_gsr_04",
+		"_320i_etcc_03",
+		"cougar_xr7_67",
+		"lancer_evo5_gsr_98",
+		"lancer_evo6_tommi_rs_00",
+		"lancer_evo7_gsr_01",
+		"mustang_svt_cobrar_00",
+		"nsx_r_01",
+		"nsx_r_02",
+		"nsx_s_zero_97",
+		"impreza_wrx_sti6_99",
+		"lancer_evo8_gsr_03",
+		"rx7_rs_00",
+		"rx7_rs_98",
+		"xkr_coupe_99",
+		"xkr_rperform_02",
+		"impreza_wrx_sti4_97",
+		"nsx_r_92",
+		"s_type_r_02",
+		"corvette_gs_96",
+		"garaiya_02",
+		"impreza_wrx_sti3_96",
+		"elise_111r_04",
+		"impreza_coupe_wrx_sti6_99",
+		"impreza_wrx_sti5_98",
+		"e_type_coupe_61",
+		"impreza_wg_sti_00",
+		"impreza_wrx_pro_01",
+		"impreza_wrx_sti_00",
+		"impreza_wrx_sti1_94",
+		"m_coupe_98",
+		"m3_04",
+		"impreza_wg_wrx_99",
+		"nsx_s_zero_99",
+		"supra_rz_97",
+		"silverado_sst_02",
+		"nismo270r_94",
+		"rx8_types_03",
+		"camaro_ss_69",
+		"clk55_00",
+		"impreza_wrx_sti2_95",
+		"fpv_gt_04",
+        "fpv_gt_no_stripe_04",
+		"r34_gtr_m_01",
+		"r34_gtr_v_99",
+		"r34_gtr_v_gtcolor_pc_01",
+		"r34_gtr_v2_00",
+		"r34_gtr_v2_nur_02",
+		"interceptor_mk3_74",
+		"lancer_evo8_rs_03",
+		"toms_chaser_00",
+		"lancer_evo7_gta_02",
+		"lancer_evo2_gsr_94",
+		"lancer_evo3_gsr_95",
+		"rx7_rz_eu_96",
+		"impreza_wrx_sti_c_04",
+		"camaro_ss_00",
+		"rs200_84",
+		"pontiac_gto_57_coupe_04",
+		"acura_nsx_32l_97",
+		"fairlady_z_aero_02",
+		"nsx_s_01",
+		"nsx_s_97",
+		"nsx_s_99",
+		"focus_rs_02",
+		"acura_dnx_02",
+		"rx7_rz_eu_92",
+		"s4_03",
+		"camaro_z28_302_69",
+		"mm_r_tmv_01",
+		"click_r_04",
+		"rx7_rs_eu_96",
+		"rx7_rsr_97",
+		"nsx_01",
+		"r32_gtr_v2_94",
+		"r33_gtr_v_97",
+		"rsc_tmv_01",
+		"rx7_rz_eu_93",
+		"fpv_f6_typhoon_04",
+		"ss_commodore_04",
+		"nsx_90",
+		"nsx_93",
+		"nsx_95",
+		"nsx_97",
+		"nsx_99",
+		"rx7_rz_eu_95",
+		"spoon_integra_r_99",
+		"lancer_evo4_96",
+		"rx7_r_eu_91",
+		"rx7_r_eu_93",
+		"rx7_r_s_eu_95",
+		"s15_specr_aero_99",
+		"ginetta_g4_64",
+		"lancer_evo_gsr_92",
+		"monaro_cv8_04",
+		"legacy_b4_20gt_03",
+		"acura_nsx_32l_04",
+		"gathers_civic_98",
+		"mugen_s2000_00",
+		"opel_speedster_turbo_00",
+		"vauxhall_vx220_turbo_00",
+		"amuse_s2000_04",
+		"amuse_s2000_circuit_04",
+		"opera_s2000_04",
+		"legacy_wgn_20gt_03",
+		"alpine_a110_16s_73",
+		"legacy_gtb_96",
+		"impreza_wrx_sti_02",
+		"legacy_sdn_20gt_b_03",
+		"mr2_gts_97",
+		"legacy_b4_rsk_98",
+		"r32_skyline_gtr_89",
+		"elise_111s_03",
+		"lancer_1600gsr_rally_74",
+		"sl600_98",
+		"legacy_b4_blitzen_00",
+		"nismo_gtr_lm_95",
+		"_350z_03",
+		"legacy_wgn_20gt_b_03",
+		"stratos_73",
+		"cz3_tar_tmv_01",
+		"fairlady_z_st_02",
+		"mustang_gt_05",
+		"pajero_parisdakar_rally_85",
+		"_3000gt_vr4_us_98",
+		"hcd6_concept_01",
+		"esprit_turbo_hc_87",
+		"clio_sport_v6_00",
+		"r32_skyline_gtr_n1_91",
+		"r32_skyline_gtr_v_n1_93",
+		"integra_r_03",
+		"integra_r_95",
+		"r32_skyline_gtr_91",
+		"cl600_00",
+		"_3000gt_vr4t_us_95",
+		"clio_sport_v6_2_03",
+		"r33_skyline_gtr_95",
+		"r33_skyline_gtr_96",
+		"r33_skyline_gtr_97",
+		"camaro_z28_coupe_97",
+		"integra_r_99",
+		"r32_skyline_gtr_v_93",
+		"integra_r_98",
+		"_300zx_2seat_us_89",
+		"r33_skyline_gtr_n1_95",
+		"r33_skyline_gtr_v_95",
+		"r33_skyline_gtr_v_96",
+		"r33_skyline_gtr_v_lm_96",
+		"corvette_coupe_63",
+		"solstice_dmv_02",
+		"_300zx_2seat_us_98",
+		"_147_gta_02",
+		"infiniti_g35_coupe_03",
+		"civic_r_04",
+		"celica_gt_four_98",
+		"r34_skyline_gtr_00",
+		"r34_skyline_gtr_99",
+		"supra_25gt_ttr_90",
+		"r34_skyline_gtr_sc_mp2_99",
+		"r34_skyline_gtr_sc_mp3_00",
+		"r34_skyline_gtr_v_n1_99",
+		"r34_skyline_v2_n1_00",
+		"civic_r_01",
+		"svt_f150_lightning_03",
+		"concept_s2_03",
+		"dome_zero_78",
+		"sc300_us_97",
+		"r34_skyline_gtr_m_nur_02",
+		"_205_t16_85",
+		"_300zx_2by2_us_98",
+		"legnum_vr4_v_98",
+		"s13_ks_91",
+		"sileighty_xx",
+		"skyline_300gt_01",
+		"europa_special_71",
+		"hommell_rs_berlinetta_99",
+		"beetle_cup_00",
+		"caldina_gt_four_02",
+		"s4_98",
+		"trd_celica_sportm_00",
+		"_190e_evo2_91",
+		"buick_gnx_87",
+		"skyline_350gt8_02",
+		"civic_r_98",
+		"_240sx_silvia_us_96",
+		"fto_gpr_99",
+		"gs300_us_91",
+		"infiniti_g35_03",
+		"accord_euror_00",
+		"mazdaspeed_6_05",
+		"fto_gpr_97",
+		"acura_nsx_91",
+		"opel_speedster_00",
+		"vauxhall_vx220_00",
+		"gs300_us_00",
+		"gs300_vertex_us_00",
+		"rx7_a3_eu_90",
+		"srt4_03",
+		"civic_r_97",
+		"r32_gtst_m_91",
+		"r32_skyline_gtst_m_89",
+		"stagea_25t_rs_fours_98",
+		"elise2000_00",
+		"fto_gpx_94",
+		"fto_gpx_97",
+		"fto_gpx_99",
+		"legacy_b4_30r_03",
+		"prelude_sir_s_98",
+		"eclipse_gt_95",
+		"sl500_98",
+		"_330i_05",
+		"_240sx_180_us_96",
+		"_3000gt_mr_98",
+		"acura_cl_types_03",
+		"legacy_wgn_30r_03",
+		"s14_silvia_ks_aero_93",
+		"_3000gt_mr_95",
+		"prelude_si_vtec_91",
+		"_5_turbo_80",
+		"a3_32_quattro_03",
+		"acura_integra_typer_01",
+		"celica_ss2_97",
+		"kusabi_concept_03",
+		"clio_renaultsport_20_02",
+		"_300sl_coupe_54",
+		"mr2_glimited_97",
+		"prelude_s_98",
+		"acura_cl_types_01",
+		"fairlady_z_300zx_83",
+		"prelude_s_96",
+		"stagea_260rs_autech_98",
+		"acura_rsx_s_04",
+		"celica_ss2_99",
+		"golf_r32_3d_03",
+		"rx7_gtx_eu_90",
+		"mirage_cyborg_zr_97",
+		"coupe_turboplus_00",
+		"_3000gt_vr4t_us_96",
+		"accord_coupe_exv6_6_03",
+		"galant_vr4_89",
+		"levin_bzr_98",
+		"trueno_bzr_98",
+		"r30_skyline_ht2000_rsx_tc_84",
+		"runx_z_aero_tourer_02",
+		"crx_sir_90",
+		"r30_skyline_ht2000_turbo_rs_83",
+		"celica_gt_four_rc_91",
+		"elise_type72_01",
+		"tt_00",
+		"civic_sir2_91",
+		"civic_sir2_92",
+		"civic_sir2_95",
+		"rx8_03",
+		"crossfire_04",
+		"tt_coupe_32_03",
+		"_206_rc_03",
+		"s60_t5_sport_03",
+		"civic_sir2_93",
+		"camaro_irocz_88",
+		"airtrek_turbo_02",
+		"will_vs_01",
+		"accord_euro_r_02",
+		"_2002_turbo_73",
+		"rx8_typee_03",
+		"taurus_sho_98",
+		"delta_hf_integrale_evo_91",
+		"quattro_82",
+		"r31_skyline_gtsr_87",
+		"lexus_is200_rs200_98",
+		"altezza_rs200_98",
+		"dmc12_stage2_04",
+		"supra_szr_97",
+		"fto_gr_97",
+		"ibiza_cupra_r_04",
+		"gtv_30v6_v24_01",
+		"giulia_sprint_gta_65",
+		"delsol_sir_92",
+		"s13_ks_88",
+		"supra_30gt_turbo_a_88",
+		"prelude_sir_96",
+		"primera_20v_us_01",
+		"s800_rsc_68",
+		"beetle_rsi_00",
+		"golf_gti_05",
+		"s3_02",
+		"lexus_is300_sc_us_01",
+		"altezza_gita_as300_01",
+		"city_turbo2_83",
+		"_240zg_71",
+		"lupo_cup_00",
+		"tacoma_x_runner_04",
+		"fto_gr_94",
+		"lancer_ex_1800gsr_ic_turbo_83",
+		"mazda_323f_r_93",
+		"starlet_granza_v_97",
+		"kpgc10_skyline_gtr_70",
+		"mini_cooper_s_02",
+		"sunfire_gxp_02",
+		"rx7_gt_lim_eu_85",
+		"ram_1500_hemi_4cab_04",
+		"pontiac_vibe_gt_03",
+		"r32_skyline_gts25_s_91",
+		"storia_x4_98",
+		"_156_25v6_98",
+		"vitz_rs_turbo_02",
+		"celica_2000gt_r_86",
+		"protege_sport20_02",
+		"eclipse_spyder_gts_03",
+		"_3000gt_sl_98",
+		"kpgc110_skyline_gtr_73",
+		"land_range_stormer_04",
+		"_2000_gt_67",
+		"_3000gt_sl_95",
+		"_3000gt_sl_96",
+		"opel_vectra_32v6_jp_03",
+		"vauxhall_vectra_32v6_jp_03",
+		"focus_st170_jp_03",
+		"s15_silvia_specs_aero_99",
+		"mini_marcos_gt_70",
+		"mini_cooper_13i_98",
+		"celica_xx_2800gt_81",
+		"levin_gt_apex_83",
+		"trueno_gt_apex_83",
+		"celica_2000gt_four_86",
+		"mazda6_tmv_01",
+		"c5_v6_exclusive_03",
+		"bluebird_1600sss_rally_69",
+		"s14_silvia_qs_aero_93",
+		"crx_15i_83",
+		"a310_1600ve_73",
+		"golf_gti_76",
+		"lupo_gti_cup_03",
+		"_110s_68",
+		"lancer_1600gsr_73",
+		"celica_gtr_4ws_91",
+		"mr2_1600_glim_sc_86",
+		"_406_coupe_30_98",
+		"bora_v6_4m_01",
+		"s14_silvia_qs_aero_96",
+		"xantia_30i_v6_exclusive_00",
+		"tiburon_gt_v6_01",
+		"tiburon_turbulence_99",
+		"tascani_ccs_03"
+		"infiniti_g20_20te_90",
+		"primera_20te_90",
+		"_206_s16_99",
+		"megane_20_ide_00",
+		"mazda6_sport_23z_03",
+		"galant_gto_mr_70",
+		"_166_25v6_24v_s_98",
+		"spoon_fit_03",
+		"s13_silvia_qs_91",
+		"silvia_varietta_00",
+		"bellett_1600_gtr_69",
+		"celica_1600gt_70",
+		"s13_silvia_qs_88",
+		"_106_s16_03",
+		"civic_1500_25i_3d_83",
+		"lexus_is_us_98",
+		"altezza_as200_98",
+		"sera_92",
+		"giulia_sprint_s_63",
+		"pt_cruiser_00",
+		"lupo_gti_01",
+		"punto_hgt_abarth_00",
+		"fairlady_z_280zl_2s_78",
+		"_110s_67",
+		"vitz_rs15_00",
+		"golf_gti_01",
+		"_147_20_twinspark_02",
+		"_106_rally_03",
+		"avantime_30_v6_bvm6_02",
+		"mr2_1600_g_86",
+		"_120d_04",
+		"_117_coupe_68",
+		"skyline_2000gtb_67",
+		"_120i_04",
+		"_307_xsi_04",
+		"piazza_xe_81",
+		"eagle_talon_esi_97",
+		"megane_20_16v_02",
+		"civic_1500_cx_3d_79",
+		"xa_15s_2wd_03",
+		"exa_canopy_las_88",
+		"lupo_14_02",
+		"polo_gti_5d_01",
+		"voltz_s_2wd_02",
+		"_1300_coupe_9s_70",
+		"demio_sport_03",
+		"xb_15z_x_2wd_03",
+		"carina_ed_20x_4ws_89",
+		"demio_glx_99",
+		"vitz_euro_00",
+		"c3_16_02",
+		"mirage_1400glx_78",
+		"element_03",
+		"opel_tigra_16i_99",
+		"vauxhall_tigra_16i_99",
+		"mini_cooper_02",
+		"fit_w_ff_01",
+		"a112_abarth_79",
+		"minica_dungun_zz_89",
+		"bluebird_ht_1800sss_79",
+		"accord_coupe_us_88",
+		"micra_12c_5d_03",
+		"colt_15_sportx_02",
+		"march_g_2wd_3dr_99",
+		"odyssey_l_4wd_03",
+		"cappuccino_95",
+		"beetle_20_00",
+		"silvia_65",
+		"cube_ex_2wd_02",
+		"mira_tr_xx_avar_97",
+		"a160_98",
+		"xsara_vtr_03",
+		"altoworks_rsz_97",
+		"altoworks_sport_ltd_97",
+		"cappuccino_91",
+		"spitfire_1500_74",
+		"az1_92",
+		"i_concept_03",
+		"vitz_f_99",
+		"opel_corsa_comf_14_3dr_01",
+		"vauxhall_corsa_comf_14_3dr_01",
+		"cube_x_98",
+		"insight_mt_99",
+		"move_srxx_2wd_97",
+		"a2_14_02",
+		"mini_one_02",
+		"copen_detachabletop_02",
+		"wagon_r_rr_98",
+		"move_srxx_4wd_97",
+		"be1_87",
+		"bluebird_1600dx_67",
+		"kei_works_4wd_02",
+		"sports_800_65",
+		"move_cx_2wd_95",
+		"mr_wagon_sport_04",
+		"skyline_1500dx_63",
+		"lapin_turbo_4wd_02",
+		"pao_89",
+		"move_custom_rs_lim_4wd_02",
+		"skyline_sport_coupe_60",
+		"storia_cx_2wd_98",
+		"_240_glt_estate_88",
+		"storia_cx_4wd_98",
+		"n360_67",
+		"ka_01",
+		"prius_g_02",
+		"prius_g_touring_03",
+		"panda_super_ie_90",
+		"z_act_70",
+		"midget2_d_type_98",
+		"today_g_85",
+		"karmann_ghia_type1_1500_68",
+		"life_step_van_72",
+		"_500_f_65",
+		"_360_58",
+		"_1100_standard_type11_49",
+		"carol_360_deluxe_62",
+		"_500_l_69",
+		"_500_r_72",
+		"_2cv_typea_54"	
+	];
 
     static dirt_enemy_carnum = 115;
     static dirt_enemy_carlist = [
@@ -2806,10 +3787,10 @@ module LicenseCarData
         "0",
         "5",
         "0",
+        "3",
         "0",
         "0",
-        "0",
-        "0",
+        "6",
         "0",
         "0",
         "0",
@@ -2850,10 +3831,10 @@ module LicenseCarData
         "0",
         "0",
         "0",
+        "1",
         "0",
-        "0",
-        "0",
-        "0",
+        "3",
+        "5",
         "0",
         "0"
     ];
@@ -2881,14 +3862,14 @@ module LicenseCarData
     static lib_col_carnum = 16;
     static lib_col_carlist = [
         "0",
+        "7",
         "0",
         "0",
         "0",
         "0",
         "0",
         "0",
-        "0",
-        "0",
+        "2",
         "0",
         "0",
         "0",
@@ -2903,7 +3884,7 @@ module LicenseCarData
         "xj220_gt_road_92",
         "alfa_spider_30v6_01",
         "r34_gtr_v2_00",
-        "fpv_gt_04",
+        "fpv_gt_no_stripe_04",
         "ibiza_cupra_r_04",
         "s2000_typev_us_00",
         "ctr_87",
@@ -2922,8 +3903,8 @@ module LicenseCarData
     static lia_col_carlist = [
         "0",
         "0",
-        "0",
-        "0",
+        "5",
+        "1",
         "0",
         "0",
         "0",
@@ -2964,7 +3945,7 @@ module LicenseCarData
         "0",
         "0",
         "0",
-        "0",
+        "5",
         "0",
         "0",
         "0",
@@ -2996,7 +3977,7 @@ module LicenseCarData
         "0"
     ];
 
-    static l0m_carnum = 34;
+    static l0m_carnum = 40;
     static l0m_carlist = [
         "_500_r_72",
         "_330i_05",
@@ -3031,10 +4012,16 @@ module LicenseCarData
         "esprit_v8_02",
         "ford_gt_05",
         "cien_dmv_02",
-        "slr_mclaren_03"
+        "slr_mclaren_03",
+        "delta_hf_integrale_wrc_92",
+        "lancer_evo4_wrc_97",
+        "_205_t16_wrc_ev2_86",
+        "exp_speed8_03",
+        "mclaren_f1_gtr_long_97",
+        "clk_race_00"
     ];
 
-    static l0m_col_carnum = 34;
+    static l0m_col_carnum = 36;
     static l0m_col_carlist = [
         "0",
         "0",
@@ -3069,7 +4056,8 @@ module LicenseCarData
         "0",
         "0",
         "0",
+        "0",
+        "0",
         "0"
     ];
-
 }

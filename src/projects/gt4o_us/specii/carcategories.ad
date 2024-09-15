@@ -1,0 +1,73 @@
+module CarCategories
+{
+    static categories = [
+        "gt300",
+        "gt500",
+        "rally"
+    ];
+
+    static gt300_cars = [
+        "arta_garaiya_03",
+        "cusco_impreza_03",
+        "mrs_autobacs_00",
+        "razo_silvia_01",
+        "amemiya_aspara_rx7_04",
+        "wedssport_celica_03"
+    ];
+
+    static gt500_cars = [
+        "arta_nsx_00",
+        "au_supra_01",
+        "calsonic_gtr_00",
+        "castrol_nsx_00",
+        "castrol_supra_00",
+        "castrol_supra_01",
+        "denso_supra_00",
+        "esso_supra_01",
+        "loctite_gtr_00",
+        "loctite_nsx_01",
+        "mobil_nsx_01",
+        "motul_pitwork_z_04",
+        "penzoil_gtr_99",
+        "pennzoil_gtr_01",
+        "raybrig_nsx_00",
+        "takata_dome_nsx_03",
+        "woodone_supra_03",
+        "xanavi_gtr_01",
+        "xanavi_nismo_gtr_03"
+    ];
+
+    static rally_cars = [
+        "_205_t16_rally_85",
+        "_205_t16_wrc_ev2_86",
+        "_206_wrc_99",
+        "_206_wrc_exxon_99",
+        "_240rs_gpb_rally_85",
+        "_5_maxi_turbo_rally_85",
+        "accent_wrc_01",
+        "bluebird_1600sss_rally_69",
+        "celica_st185_wrc_95",
+        "celica_wrc_95",
+        "corolla_wrc_98",
+        "cz3_tar_wrc_01",
+        "delta_hf_integrale_wrc_92",
+        "delta_s4_wrc_85",
+        "escort_wrc_98",
+        "escudo_pikespeak_98",
+        "evo6_wrc_99",
+        "focus_wrc_99",
+        "impreza_wrc_01",
+        "impreza_wrc_03",
+        "impreza_wrc_99",
+        "impreza_wrc_prot_01",
+        "lancer_1600gsr_rally_74",
+        "lancer_evo4_wrc_97",
+        "lancer_wrc_03",
+        "pajero_evo_sp_03",
+        "pajero_parisdakar_rally_85",
+        "rs200_rally_85",
+        "starion_4wd_gpb_84",
+        "stratos_wrc_77",
+        "xsara_wrc_99"
+    ];
+}

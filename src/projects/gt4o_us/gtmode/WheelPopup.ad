@@ -15,10 +15,22 @@
 #define PARTS_TYPE_FRONTTIRE 25
 #define PARTS_TYPE_REARTIRE 26
 
-module PROJECT::ROOT
+module GTmodeProject::WheelPopup
 {
     Pane.actor = main::menu::MMoveActor(Pane, Pane.x + 640.0, Pane.y);
 
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_SELECT:
+                main::sound.play("ok");
+                QuickMenuPopup::open(context);
+                return EVENTRESULT_FILTER;
+        }
+        return EVENTRESULT_CONTINUE;
+    }
+    
     function get_having_tire(tire)
     {
         var car = main::game.garage.riding_car;
@@ -42,8 +54,8 @@ module PROJECT::ROOT
 
                 if (car.isHavingParts(PARTS_TYPE_FRONTTIRE, 5)) // Sport Soft
                     return 5;
-
                 break;
+                    
             case "racing":
                 if (car.isHavingParts(PARTS_TYPE_FRONTTIRE, 6)) // Super Hard
                     return 6;
@@ -66,10 +78,12 @@ module PROJECT::ROOT
                     return 11;
                 break;
 
+
             case "snow":
                 if (car.isHavingParts(PARTS_TYPE_FRONTTIRE, 12))
                     return 12;
                 break;
+
         }
 
         return nil;
@@ -164,7 +178,7 @@ module PROJECT::ROOT
     }
 }
 
-module PROJECT::ROOT::Pane::Normal
+module GTmodeProject::WheelPopup::Pane::Normal
 {
     function onActivate(context)
     {
@@ -184,7 +198,7 @@ module PROJECT::ROOT::Pane::Normal
     }
 }
 
-module PROJECT::ROOT::Pane::Racing
+module GTmodeProject::WheelPopup::Pane::Racing
 {
     function onActivate(context)
     {
@@ -204,7 +218,7 @@ module PROJECT::ROOT::Pane::Racing
     }
 }
 
-module PROJECT::ROOT::Pane::Dirt
+module GTmodeProject::WheelPopup::Pane::Dirt
 {
     function onActivate(context)
     {
@@ -224,7 +238,7 @@ module PROJECT::ROOT::Pane::Dirt
     }
 }
 
-module PROJECT::ROOT::Pane::Snow
+module GTmodeProject::WheelPopup::Pane::Snow
 {
     function onActivate(context)
     {
