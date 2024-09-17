@@ -261,7 +261,7 @@ module OptionProject::OptionRoot
 
             if (options[i].title == "Language")
             {
-                if (main::UsingLanguages.size <= 1)
+                if (main::UsingLanguages.size <= 1 || main::game.isDuringQuickMenu())
                 {
                     x++;
                     continue;
