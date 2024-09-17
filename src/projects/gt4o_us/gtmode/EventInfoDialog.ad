@@ -361,7 +361,6 @@ module GTmodeProject::EventInfoDialog
 
         if (header_key == "CarsAllowed")
             cars_allowed_row = desc;
-        //print "%{header_key} -> %{desc}";
         return desc;
     }
 
@@ -486,15 +485,13 @@ module GTmodeProject::EventInfoDialog
                 
                 var [achieve, score] = getRaceEventRecordStatistics();
 
-                // This allows you to use illegal cars in races IF you have completed the event already and are over 25% completion
+                // This allows you to use illegal cars in races IF you have completed the event already and are over 20% completion
                 // Does not allow you to skip tire regs as entering dirt/snow tracks with road tires is unknown behaviour
                 // TODO: Uncomment for release
-                //if (wonRace(event.race_code) && achieve > 250.0)
-                //{
+                if (wonRace(event.race_code) && achieve > 200.0)
+                {
                     var code = extractSubRaceCode(event.race_code);
                     var regulation = getViolatedRegulation(main::game.garage.riding_car, code[0]);
-
-                    //logInfo(regulation.tiretype);
 
                     if (regulation.tiretype != nil)
                         return EVENTRESULT_FILTER;
@@ -503,9 +500,9 @@ module GTmodeProject::EventInfoDialog
                     result = true;
                     close(context);
                     return EVENTRESULT_FILTER;
-                //}
-                //else 
-                //    logInfo("Cannot skip event requirements. wonRace(%{event.race_code}) == %{wonRace(event.race_code)}, achieve = %{achieve}");
+                }
+                else 
+                    logInfo("Cannot skip event requirements. wonRace(%{event.race_code}) == %{wonRace(event.race_code)}, achieve = %{achieve}");
         }
 
         return EVENTRESULT_CONTINUE;
