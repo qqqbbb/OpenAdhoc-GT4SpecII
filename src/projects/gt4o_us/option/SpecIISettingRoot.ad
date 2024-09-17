@@ -63,6 +63,67 @@ module OptionProject::SpecIISettingRoot
 
     function apply(context)
     {
+        randomizer_enabled = Pane::Randomizer::OptionMenu.index;
+        global_asmo = Pane::ASMO::OptionMenu.index - 1;
+        global_asmu = Pane::ASMU::OptionMenu.index - 1;
+        global_tcsc = Pane::TCS::OptionMenu.index - 1;
+        show_owned_cars = Pane::HighlightOwned::OptionMenu.index;
+        gauge_mode = Pane::GaugeMode::OptionMenu.index - 1;
+        main::game.toggleGaugeMode(gauge_mode);
+
+        // Camera setting flags
+        var camActive = Pane::BonnetCam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_BONNET_CAM;
+            main::game.toggleBonnetCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_BONNET_CAM;
+            main::game.toggleBonnetCam();
+        }
+
+        camActive = Pane::InteriorCam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_INTERIOR_CAM;
+            main::game.toggleInteriorCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_INTERIOR_CAM;
+            main::game.toggleInteriorCam();
+        }
+
+        camActive = Pane::RoofCam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_ROOF_CAM;
+            main::game.toggleRoofCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_ROOF_CAM;
+            main::game.toggleRoofCam();
+        }
+
+        camActive = Pane::GT3Cam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_GT3_CAM;
+            main::game.toggleGT3Cam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_GT3_CAM;
+            main::game.toggleGT3Cam();
+        }
+
         saveNewSettings(context);
     }
 
@@ -91,128 +152,6 @@ module OptionProject::SpecIISettingRoot::Pane::Randomizer::OptionMenu
     function onFocusEnter(context, event)
     {
         ROOT::ToolTip::tip.value = context.translate(ROOT, "TOOLTIP|Randomizer").format(main::game.username);
-    }
-
-    function onValueChanged(context, index)
-    {
-        randomizer_enabled = index;
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::ASMO::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        global_asmo = index - 1;
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::ASMU::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        global_asmu = index - 1;
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::TCS::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        global_tcsc = index - 1;
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::HighlightOwned::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        show_owned_cars = index;
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::BonnetCam::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_BONNET_CAM;
-            main::game.toggleBonnetCam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_BONNET_CAM;
-            main::game.toggleBonnetCam();
-        }
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::InteriorCam::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_INTERIOR_CAM;
-            main::game.toggleInteriorCam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_INTERIOR_CAM;
-            main::game.toggleInteriorCam();
-        }
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::RoofCam::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_ROOF_CAM;
-            main::game.toggleRoofCam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_ROOF_CAM;
-            main::game.toggleRoofCam();
-        }
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::GT3Cam::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_GT3_CAM;
-            main::game.toggleGT3Cam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_GT3_CAM;
-            main::game.toggleGT3Cam();
-        }
-    }
-}
-
-module OptionProject::SpecIISettingRoot::Pane::GaugeMode::OptionMenu
-{
-    function onValueChanged(context, index)
-    {
-        gauge_mode = index - 1;
-        main::game.toggleGaugeMode(gauge_mode);
     }
 }
 

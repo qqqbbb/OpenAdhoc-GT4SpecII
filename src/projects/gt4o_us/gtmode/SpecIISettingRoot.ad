@@ -55,7 +55,7 @@ module GTmodeProject::SpecIISettingRoot
         Pane.actor.destinationY = 480.0;
         Pane.actor.out = true;
         ROOT.actor.out = true;
-        context.sync(0.25);
+        context.sync(0.15);
 
         context.closePage(ROOT);
     }
@@ -99,9 +99,70 @@ module GTmodeProject::SpecIISettingRoot
 
     function apply(context)
     {
-        saveNewSettings(context, false, true)
+        randomizer_enabled = Pane::Randomizer::OptionMenu.index;
+        global_asmo = Pane::ASMO::OptionMenu.index - 1;
+        global_asmu = Pane::ASMU::OptionMenu.index - 1;
+        global_tcsc = Pane::TCS::OptionMenu.index - 1;
+        show_owned_cars = Pane::HighlightOwned::OptionMenu.index;
+        gauge_mode = Pane::GaugeMode::OptionMenu.index - 1;
+        main::game.toggleGaugeMode(gauge_mode);
+
+        // Camera setting flags
+        var camActive = Pane::BonnetCam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_BONNET_CAM;
+            main::game.toggleBonnetCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_BONNET_CAM;
+            main::game.toggleBonnetCam();
+        }
+
+        camActive = Pane::InteriorCam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_INTERIOR_CAM;
+            main::game.toggleInteriorCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_INTERIOR_CAM;
+            main::game.toggleInteriorCam();
+        }
+
+        camActive = Pane::RoofCam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_ROOF_CAM;
+            main::game.toggleRoofCam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_ROOF_CAM;
+            main::game.toggleRoofCam();
+        }
+
+        camActive = Pane::GT3Cam::OptionMenu.index;
+
+        if (camActive)
+        {
+            cam_flag |= FLAG_GT3_CAM;
+            main::game.toggleGT3Cam(1);
+        }
+        else
+        {
+            cam_flag &= ~FLAG_GT3_CAM;
+            main::game.toggleGT3Cam();
+        }
+
+        saveNewSettings(context, false, true);
         refreshRideCar(TopRoot, context, true);
-     }
+    }
 
     function onInitialize(context)
     {
@@ -130,11 +191,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::Randomizer::OptionMenu
     {
         tip.value = context.translate(ROOT, "TOOLTIP|Randomizer").format(main::game.username);
     }
-
-    function onValueChanged(context, index)
-    {
-        randomizer_enabled = index;
-    }
 }
 
 module GTmodeProject::SpecIISettingRoot::Pane::ASMO::OptionMenu
@@ -142,11 +198,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::ASMO::OptionMenu
     function onFocusEnter(context, event)
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
-    }
-
-    function onValueChanged(context, index)
-    {
-        global_asmo = index - 1;
     }
 }
 
@@ -156,11 +207,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::ASMU::OptionMenu
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
     }
-
-    function onValueChanged(context, index)
-    {
-        global_asmu = index - 1;
-    }
 }
 
 module GTmodeProject::SpecIISettingRoot::Pane::TCS::OptionMenu
@@ -168,11 +214,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::TCS::OptionMenu
     function onFocusEnter(context, event)
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
-    }
-
-    function onValueChanged(context, index)
-    {
-        global_tcsc = index - 1;
     }
 }
 
@@ -182,11 +223,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::HighlightOwned::OptionMenu
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
     }
-
-    function onValueChanged(context, index)
-    {
-        show_owned_cars = index;
-    }
 }
 
 module GTmodeProject::SpecIISettingRoot::Pane::BonnetCam::OptionMenu
@@ -194,22 +230,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::BonnetCam::OptionMenu
     function onFocusEnter(context, event)
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
-    }
-
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_BONNET_CAM;
-            main::game.toggleBonnetCam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_BONNET_CAM;
-            main::game.toggleBonnetCam();
-        }
     }
 }
 
@@ -219,22 +239,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::InteriorCam::OptionMenu
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
     }
-
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_INTERIOR_CAM;
-            main::game.toggleInteriorCam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_INTERIOR_CAM;
-            main::game.toggleInteriorCam();
-        }
-    }
 }
 
 module GTmodeProject::SpecIISettingRoot::Pane::RoofCam::OptionMenu
@@ -242,22 +246,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::RoofCam::OptionMenu
     function onFocusEnter(context, event)
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
-    }
-
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_ROOF_CAM;
-            main::game.toggleRoofCam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_ROOF_CAM;
-            main::game.toggleRoofCam();
-        }
     }
 }
 
@@ -267,22 +255,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::GT3Cam::OptionMenu
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
     }
-
-    function onValueChanged(context, index)
-    {
-        var camActive = index;
-
-        if (camActive)
-        {
-            cam_flag |= FLAG_GT3_CAM;
-            main::game.toggleGT3Cam(1);
-        }
-        else
-        {
-            cam_flag &= ~FLAG_GT3_CAM;
-            main::game.toggleGT3Cam();
-        }
-    }
 }
 
 module GTmodeProject::SpecIISettingRoot::Pane::GaugeMode::OptionMenu
@@ -290,12 +262,6 @@ module GTmodeProject::SpecIISettingRoot::Pane::GaugeMode::OptionMenu
     function onFocusEnter(context, event)
     {
         tip.value = context.translate(ROOT, "TOOLTIP|%{OptionMenu.tooltip_key}");
-    }
-
-    function onValueChanged(context, index)
-    {
-        gauge_mode = index - 1;
-        main::game.toggleGaugeMode(gauge_mode);
     }
 }
 

@@ -61,7 +61,7 @@ module GTmodeProject
 
     static owned_cars = [];
     static is_kaizo = false;
-    static is_debug = true; // TODO: Disable for release
+    static is_debug = false;
     static special_paint_allowed = true;
     
     static discount_tuner;
@@ -116,7 +116,6 @@ module GTmodeProject
         
         if (option.automatic_gear != option.race_display_car_name)
         {
-            print "Transmission setting was not changed by player, resetting...";
             option.automatic_gear = option.race_display_car_name;
         }
         
@@ -127,7 +126,6 @@ module GTmodeProject
         if (is_kaizo && main::game.option.narration == 0)
         {
             var licences = ["l0b", "l0a", "lib", "lia", "l0s"];
-            logInfo("Kaizo initial setup");
             main::game.option.entrance_addr = "r=1;o=0;u=0;t=0;as=1;so=1;vm=1;c=8;g=-1;tm=2";
 
             for (var i = 0; i < licences.size; i++)
@@ -275,7 +273,6 @@ module GTmodeProject
 
     function saveAuto(context, root, end_func, progress)
     {
-        print "SaveAuto called";
         if (progress == nil)
             progress = 1;
 
@@ -373,7 +370,6 @@ module GTmodeProject
                 print curr_car.car_code;
                 if (isCarInCategory(curr_car.car_code, "rally"))
                 {
-                    print "Adding rally tires";
                     curr_car.getParts(25, 11);
                     curr_car.getParts(25, 12);
                     curr_car.getParts(26, 11);
@@ -538,13 +534,9 @@ module GTmodeProject
                         res = categories[i];
                         break;
                     }
-                }
-                else
-                    print "CarCategoryModule::CarCategories[\"%{categories[i]}\"] not defined";                    
+                }                  
             }
         }
-        else
-            print "CarCategories not defined";
 
         CarCategoryModule.clearStatic();
 
@@ -576,7 +568,6 @@ module GTmodeProject
         {
             var event = events[i].race_code;
             var won = wonRace(event);
-            //print "Race %{event} won = %{won}";
 
             if (!won)
             {
@@ -585,16 +576,7 @@ module GTmodeProject
             }
         }
 
-        if (allWon)
-        {
-            print "Event hall %{hall} fully won";
-            return true;
-        }
-        else
-        {
-            print "Event hall %{hall} NOT fully won";
-            return false;
-        }
+        return allWon;
     }
 
     function isCarOwned(car_label)
@@ -795,10 +777,8 @@ module GTmodeProject
                 if (!isPrizeCar)
                     unobtainableCars += "%{main::menu::MCarData::GetCarName(thisCar)} (%{thisCar});";
             }
-
-            //print "\n%{thisCar},%{info}\n";
         }
-        //var opps = TypicalOpponentsData["opponents_%{event}"];
+
         unobtainableCars = unobtainableCars.substr(0, unobtainableCars.size - 1);
         var cars = unobtainableCars.split(";");
         var col1 = "";
@@ -1187,9 +1167,6 @@ module GTmodeProject
 
     function canEntryEndurance()
     {
-        // TODO: Remove this
-        if (is_debug)
-            return true;
         var [achieve, score] = getRaceEventRecordStatistics();
         return achieve >= 200.0;
     }
