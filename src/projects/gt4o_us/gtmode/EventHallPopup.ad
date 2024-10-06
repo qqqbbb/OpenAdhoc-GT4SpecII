@@ -63,7 +63,7 @@ module GTmodeProject::EventHallPopup
 
         setCrossTransition(context);
 
-        context.sync(0.25);
+        context.sync(0.1);
 
         context.closePage(ROOT);
     }
@@ -73,13 +73,42 @@ module GTmodeProject::EventHallPopup
 
     }
 
-    function onFinalize(context) { }
+    function onFinalize(context) {  }
+
+    function onActivate(context)
+    {
+        var w = ROOT.getFocusedWidget();
+        switch (w.name)
+        {
+            case "Close":
+                onCancel(context);
+                return EVENTRESULT_FILTER;
+
+            case "Beginner":
+            case "Professional":
+            case "Extreme":
+                TopRoot::ScrollWindow::clip::space["%{w.name}Hall"].onActivate(context);
+                close(context);
+                return EVENTRESULT_FILTER;
+
+            case "American":
+            case "European":
+            case "Japanese":
+                TopRoot::ScrollWindow::clip::space["Race%{w.name}"].onActivate(context);
+                close(context);
+                return EVENTRESULT_FILTER;
+
+            default:
+                TopRoot::ScrollWindow::clip::space[w.name].onActivate(context);
+                close(context);
+                return EVENTRESULT_FILTER;
+        }
+    }
 
     function onCancel(context, event, item)
     {
         main::sound.play("cancel");
         close(context);
-        QuickMenuPopup::open(context);
         return EVENTRESULT_FILTER;
     }
 
@@ -95,95 +124,3 @@ module GTmodeProject::EventHallPopup
         return EVENTRESULT_CONTINUE;
     }    
 }
-
-
-module GTmodeProject::EventHallPopup::Pane::Close
-{
-    function onActivate(context, event, item)
-    {
-        onCancel(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::Beginner
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::BeginnerHall::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::Professional
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::ProfessionalHall::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::Extreme
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::ExtremeHall::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::Endurance
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::Endurance::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::American
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::RaceAmerican::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::European
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::RaceEuropean::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::Japanese
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::RaceJapanese::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::Rally
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::Rally::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-
-module GTmodeProject::EventHallPopup::Pane::Mission
-{
-    function onActivate(context, event, item)
-    {
-        TopRoot::ScrollWindow::clip::space::Mission::onActivate(context);
-        return EVENTRESULT_FILTER;
-    }
-}
-

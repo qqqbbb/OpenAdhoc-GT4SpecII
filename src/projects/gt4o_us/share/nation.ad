@@ -206,7 +206,7 @@ module NationData
 	static tuner_hall = "TunerCar";
 	
 	static ac = uk_hall;
-	static acura = japan_hall;
+	static acura = usa_hall;
 	static alfaromeo = italy_hall;
 	static alpine = france_hall;
 	static amemiya = tuner_hall;

@@ -15,6 +15,7 @@ module GTmodeProject::CarViewRoot
     static zoom = 1.0;
     static zoom_range = 0.3;
     static camera_view_angle;
+    static orig_camera_view_angle = CarFace.view_angle;
     static watcher = nil;
 
     function setMoveActor(widget, x, y)
@@ -68,11 +69,33 @@ module GTmodeProject::CarViewRoot
         Pane::Info::Power::label.text = "%s : %s".format(context.translate(ROOT, "Power_format"), current_car.getCurrentPs("%d%s/%s%s"));
         Pane::Info::Torque::label.text = "%s : %s".format(context.translate(ROOT, "Torque_format"), current_car.getCurrentTq("%.2t%s/%s%s"));
         Pane::Info::Mileage::label.text = "%s : %s".format(context.translate(ROOT, "Mileage_format"), current_car.getOdometer("%.1t%s"));
+
+        var did = main::menu::MCarData::GetDescriptionID(current_car.car_code);
+        var current_car_desc = "";
+
+        // Appears that missing description IDs are returned as 0, so ignore it unless it's the car actually assigned to 0
+        if (did > 0 || (did == 0 && current_car.car_code == "xb_15z_x_2wd_03"))
+        {
+            current_car_desc = context.getUpdateContext().loadFile("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+            logInfo("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+        }
+
+        if (main::menu::MSystem::GetLanguage() != "US" || current_car_desc.size < 1 || current_car_desc == "")
+            Pane::Description.visible = false;
+        else
+            Pane::Description.visible = true;
     }
 
     function onFinalize(context)
     {
-        watcher.remove();
+        if (watcher != nil)
+        {
+            watcher.remove();
+            watcher = nil;
+        }
+
+        CarFace.view_angle = orig_camera_view_angle;
+        
         ROOT["Common"]["ToolTip"]["tip"].lock = false;
         current_car = nil;
         leavePage(context, ROOT);
@@ -246,6 +269,29 @@ module GTmodeProject::CarViewRoot::Pane::Assessment
                 main::game.calendar.putSellCarEvent(current_car.car_code, current_car.getColorIndex(), price);
                 start_page(context, GarageRoot);
             }
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::CarViewRoot::Pane::Description
+{
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+
+        var car = current_car.car_code;
+        var did = main::menu::MCarData::GetDescriptionID(car);
+
+        // Appears that missing description IDs are returned as 0, so ignore it unless it's the car actually assigned to 0
+        if (did > 0 || (did == 0 && car == "xb_15z_x_2wd_03"))
+        {
+            var desc = context.getUpdateContext().loadFile("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+            logInfo("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
+            CarFace.quality_level = 0;
+            DescriptionPopup::open(context, desc);
+            CarFace.quality_level = 1;
         }
 
         return EVENTRESULT_FILTER;

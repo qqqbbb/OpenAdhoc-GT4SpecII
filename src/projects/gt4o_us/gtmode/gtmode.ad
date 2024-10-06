@@ -61,7 +61,7 @@ module GTmodeProject
 
     static owned_cars = [];
     static is_kaizo = false;
-    static is_debug = false;
+    static is_debug = true;
     static special_paint_allowed = true;
     
     static discount_tuner;
@@ -201,7 +201,12 @@ module GTmodeProject
 
         var present_list = PresentRoot::makeEntitledPresentListByProject();
 
-        checkASpecPoints(context, present_list); // Checked here as cars are pushed to the present list as necessary
+        //checkASpecPoints(context, present_list); // Checked here as cars are pushed to the present list as necessary
+
+        for (var i = 0; i < present_list.size; i++)
+        {
+            print present_list[i];
+        }
         
         var page = nil;
 
@@ -632,19 +637,19 @@ module GTmodeProject
 
         for (var i = 1; i < 33; i++)
         {
+            var equippedLevel = from_car.getEquipedParts(i);
+
+            if (equippedLevel > -1)
+                fittedParts.push([i, equippedLevel]);
+
             for (var j = 0; j < from_car.getPartsTypeMax(i); j++)
             {
                 if (from_car.isHavingParts(i, j))
                 {
                     ownedParts.push([i, j]);
-
-                    if (from_car.getEquipedParts(i, j))
-                        fittedParts.push([i, j]);
                 }
             }
         }
-
-        logInfo(fittedParts);
 
         var manager = checkGameData(context, 0, nil);
         if (manager != nil)
@@ -664,6 +669,8 @@ module GTmodeProject
 
                 for (var i = 0; i < fittedParts.size; i++)
                 {
+                    if (fittedParts[i][0] == 13 || fittedParts[i][0] == 14 || fittedParts[i][0] == 28)
+                        print("Engine Tune part found: %{fittedParts[i][0]}: %{fittedParts[i][1]}");
                     new_car.setParts(fittedParts[i][0], fittedParts[i][1]);
                 }
 
@@ -1015,9 +1022,6 @@ module GTmodeProject
 
         var cg = main::game.garage.riding_car;
         var open_model_type = main::menu::MCarData::GetOpenModelType(cg.car_code);
-
-        if (cg.car_code == "formula_gran_turismo_04")
-            return true;
 
         if (cg.isStrange())
         {

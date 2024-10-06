@@ -6,8 +6,7 @@
 module InitData
 {
     static car_carnum = 240;
-    
-    static car_list = [
+    static car_carlist = [
         "ac_427_sc_66",
         "acura_integra_typer_01",
         "acura_cl_types_03",
@@ -299,7 +298,7 @@ module InitData
 
     static favorite_car_carnum = 0;
     static favorite_car_carlist = [];
-    static favorite_coure_carnum = 6;
+    static favorite_course_carnum = 6;
     static favorite_course_carlist = [
         "fisco",
         "midfield",
@@ -1032,5 +1031,5 @@ module InitData
         "pikespeak_quattro_03",
         "spirra_46_v8_04",
         "eclipse_gt_06",
-    ],
+    ];
 }

@@ -21,7 +21,7 @@ module BootProject
     #include "../share/course_define.ad";
 
     // Loads "<region>_carlist.adc"
-    //BootProject.load(main::game.option.game_zone + "_carlist");
+    BootProject.load(main::game.option.game_zone + "_carlist");
 
     function logInfo(msg)
     {
@@ -67,7 +67,7 @@ module BootProject
     }
 
     function initFavorite()
-    {
+    {        
         if (main::game.favorite_car.getSize() <= 0)
         {
             main::game.favorite_car.clear();
@@ -134,14 +134,14 @@ module BootProject
         LanguageRoot::onLoad(render_context);
 
         // No real need to do these anymore as everything is always available in arcade + favourites will be set up by the player
-        /*
+        
         if (main::game.last_sequence == "boot")
         {
             initCourse();
             initAvailable();
             initFavorite();
         }
-        */
+        
 
         if (main::game.next_menu_arg == "")
             render_context.startPage(LoadRoot)
@@ -204,7 +204,6 @@ module BootProject
 
                 case "c":
                     var val = v.toInt();
-                    //print "Saved camera flags == %{val}";
                     var bonnetCamActive = val & FLAG_BONNET_CAM;
                     var interiorCamActive = val & FLAG_INTERIOR_CAM;
                     var gt3CamActive = val & FLAG_GT3_CAM;
@@ -219,18 +218,14 @@ module BootProject
                     break;
 
                 case "g":
-                    print "Setting gauge mode to %{v}";
                     main::game.toggleGaugeMode(v.toInt());
                     break;
 
                 case "tm":
-                    print "Setting transmission volume to %{v}";
                     main::game.setTransmissionVolume(v.toInt());
                     break;
             }
         }
-
-        print "made it here";
 
         if (main::game.major_menu_project == "gtmode")
         {

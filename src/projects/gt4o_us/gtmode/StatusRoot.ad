@@ -190,6 +190,7 @@ module GTmodeProject::StatusRoot
 
             case PS2_PAD_CTRL_SELECT:
                 main::sound.play("ok");
+                QuickMenuPopup::should_hide_cursor = true;
                 QuickMenuPopup::open(context);
                 return EVENTRESULT_FILTER;
         }

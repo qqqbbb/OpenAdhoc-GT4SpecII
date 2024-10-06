@@ -431,7 +431,7 @@ module GTmodeProject::BuyCarRoot
             else 
                 discount_price = price;
             
-            var available = is_available(context, current_car); // Calling this first so we can see the print output, even if NotForSell below is true
+            var available = is_available(current_car); // Calling this first so we can see the print output, even if NotForSell below is true
 
             if (main::menu::MCarData::NotForSell(current_car) && !available)
             {
@@ -571,7 +571,7 @@ module GTmodeProject::BuyCarRoot
     }
 
     // Check if the event responsible for a car unlock has been completed, or if the car is in the user's garage, and unlock it for sale
-    function is_available(context, current_car)
+    function is_available(current_car)
     {
         if (isCarOwned(current_car))
         {
@@ -602,6 +602,7 @@ module GTmodeProject::BuyCarRoot
             var event = PresentData::detail_carlist[idx];
             var isLicence = false;
             var isMission = event.split(",").size > 1;
+            var pts = getRaceEventRecordStatistics()[1];
             criteria = PresentData::condition_carlist[idx];
 
             switch (event)
@@ -631,7 +632,7 @@ module GTmodeProject::BuyCarRoot
                 }
             }
 
-            if (!isLicence && !isMission && criteria != "aspec")
+            if (!isLicence && !isMission && !criteria.beginWith("aspec"))
             {
                 criteriaMet = wonRace(event);
             }
@@ -642,20 +643,19 @@ module GTmodeProject::BuyCarRoot
                     criteriaMet = achievement > (event.toFloat()) * 10;
                     break;
 
-                case "aspec":
+                case "aspec_1":
                     event = "A-Spec points milestone";
-                    switch (criteria)
-                    {
-                        case 1:
-                            criteriaMet = pts >= 10000;
-                            break;
-                        case 2:
-                            criteriaMet = pts >= 15000;
-                            break;
-                        case 3:
-                            criteriaMet = pts >= 20000;
-                            break;
-                    }
+                    criteriaMet = pts >= 10000;
+                    break;
+
+                case "aspec_2":
+                    event = "A-Spec points milestone";
+                    criteriaMet = pts >= 15000;
+                    break;
+
+                case "aspec_3":
+                    event = "A-Spec points milestone";
+                    criteriaMet = pts >= 20000;
                     break;
 
                 case "license":
@@ -843,7 +843,9 @@ module GTmodeProject::BuyCarRoot::Pane::Description
     {
         main::sound.play("ok");
 
+        CarFace.quality_level = 0;
         DescriptionPopup::open(context, current_car_desc);
+        CarFace.quality_level = 1;
 
         return EVENTRESULT_FILTER;
     }
@@ -891,6 +893,12 @@ module GTmodeProject::BuyCarRoot::Pane::Buy
                 main::game.calendar.putBuyUsedCarEvent(current_car, current_col);
                 main::game.used_car.set(current_week, current_idx);
             }
+
+            print "Price = %{price}";
+            print "Discounted = %{discount_price}";
+
+            if (discount_price != nil)
+                price = discount_price;
 
             main::game.setCarAvailable(current_car);
             GetCarRoot::open(context, current_car, current_col, current_gcar, debug_free != nil ? 0 : price, idx);

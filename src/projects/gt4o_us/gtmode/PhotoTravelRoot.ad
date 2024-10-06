@@ -126,8 +126,6 @@ module GTmodeProject::PhotoTravelRoot
         {
             var code = course_list[i][0];
             var nation = course_list[i][1];
-            if (code != nil && !main::game.isCourseAvailable(code))
-                code = nil;
 
             if (code != nil)
                 add_course(context, composite, code, nation);

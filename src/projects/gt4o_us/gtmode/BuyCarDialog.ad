@@ -148,6 +148,8 @@ module GTmodeProject::BuyCarDialog
 
         if (!sell)
         {
+            if (discounted_price != nil)
+                price = discounted_price;
             var enough = main::game.isEnoughMoney(price);
             var can_buy = false;
             if (!showroom && enough) // In UCD and can afford
@@ -184,6 +186,7 @@ module GTmodeProject::BuyCarDialog
             showroommode = false;
 
         discounted_price = discount_price == nil ? nil : discount_price;
+        BuyCarRoot::discount_price = discounted_price;
 
         sell = sellmode;
         catalog = catalogmode;

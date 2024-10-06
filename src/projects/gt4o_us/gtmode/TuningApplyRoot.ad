@@ -333,6 +333,29 @@ module GTmodeProject::TuningApplyRoot
             item["none"].visible = !exist;
             item["yet"].visible = exist && !have && !allowed;
         }
+
+        if (is_others)
+        {
+            var exist = true;
+            var have = current_car.odometer == 0;
+            var allowed = true;
+            var scaled_price = (main::menu::MCarData::GetPrice(current_car.car_code) / 20).toInt() * 10;
+            var price = 0;
+            if (scaled_price > 250000)
+                price = 250000;
+            else
+                price = scaled_price;
+            
+            var restore = ScrollBox::SelectBox.last;
+            restore.defineStatic("exist", exist);
+            restore.defineStatic("have", have);
+            restore.defineStatic("allowed", allowed);
+            restore.defineStatic("price", price);
+            
+            restore["done"].visible = exist && have;
+            restore["none"].visible = !exist;
+            restore["yet"].visible = exist && !have && !allowed;
+        }
     }
 
     function set_parts_consistent(car_garage, type, category)
@@ -346,6 +369,7 @@ module GTmodeProject::TuningApplyRoot
                 car_garage.syncWheel();
                 break;
 
+            // Will remove these when we have the settings project reversed
             case PARTS_TYPE_NATUNE:
                 car_garage.setParts(PARTS_TYPE_TURBINEKIT, PARTS_CATEGORY_NONE);
                 car_garage.setParts(PARTS_TYPE_SUPERCHARGER, PARTS_CATEGORY_NONE);

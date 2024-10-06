@@ -21,7 +21,7 @@ module GTmodeProject::GarageRoot
     static page_ = 0;
     static column_ = 4;
     static item0_ = 1;
-    static item1_ = 8;
+    static item1_ = 9;
     static sortUp_ = true;
     static nation_ = "all";
     static tuner_ = "all";
@@ -48,7 +48,7 @@ module GTmodeProject::GarageRoot
         page_ = 0;
         column_ = 4;
         item0_ = 1;
-        item1_ = 8;
+        item1_ = 9;
         sortUp_ = true;
         nation_ = "all";
         tuner_ = "all";
@@ -319,24 +319,26 @@ module GTmodeProject::GarageRoot
                     case 4:
                         main::menu::MCarGarage::sortByPrice(list_, sortUp_); break;
                     case 5:
-                        main::menu::MCarGarage::sortByDriveTrain(list_, sortUp_); break;
+                        main::menu::MCarGarage::sortByPrice(list_, sortUp_); break;
                     case 6:
-                        main::menu::MCarGarage::sortByCountry(list_, sortUp_); break;
+                        main::menu::MCarGarage::sortByDriveTrain(list_, sortUp_); break;
                     case 7:
-                        main::menu::MCarGarage::sortByTuner(list_, sortUp_); break;
+                        main::menu::MCarGarage::sortByCountry(list_, sortUp_); break;
                     case 8:
-                        main::menu::MCarGarage::sortByRideHistory(list_, sortUp_); break;
+                        main::menu::MCarGarage::sortByTuner(list_, sortUp_); break;
                     case 9:
+                        main::menu::MCarGarage::sortByRideHistory(list_, sortUp_); break;
+                    case 10:
                         main::menu::MCarGarage::sortByAspiration(list_, !sortUp_); break;
                     // These are sloooow with big garages
                     // But I think I'd rather have them than not
-                    case 10:
+                    case 11:
                         sortByCustom(context, "length", sortUp_);
                         break;
-                    case 11:
+                    case 12:
                         sortByCustom(context, "displacement", sortUp_); 
                         break;
-                    case 12:
+                    case 13:
                         sortByCustom(context, "enginetype", sortUp_);
                         break;
                 }
@@ -478,7 +480,7 @@ module GTmodeProject::GarageRoot
 
     static dispItem_ = [
         "acquire date", "power", "weight", "power weight ratio",
-        "price", "drive train", "nation", "tuner", "ride history",
+        "baseprice", "price", "drive train", "nation", "tuner", "ride history",
         "aspiration", "length", "displacement", "enginetype"
     ];
 
@@ -534,6 +536,13 @@ module GTmodeProject::GarageRoot
 
     function getItemText(context, car, item)
     {
+        var manager = nil;
+        manager = checkGameData(context, 0, manager);
+        if (manager != nil)
+        {
+            garage_.popGarageCar(car.getGarageIndex(), car, manager);
+        }
+
         switch (item)
         {
             case 0:
@@ -554,37 +563,40 @@ module GTmodeProject::GarageRoot
                 return car.getCurrentPWR("%.3t");
 
             case 4:
+                return main::menu::MUtility::GetMoneyString(main::menu::MCarData::GetPrice(car.car_code));
+
+            case 5:
                 if (trade_mode_)
                     return main::menu::MUtility::GetMoneyString(car.getUsedPrice());
                 else
                     return main::menu::MUtility::GetMoneyString(car.getUsedSellPrice());
 
-            case 5:
+            case 6:
                 return context.translate(ROOT, "DriveTrainName", car.getDTrainType());
 
-            case 6:
+            case 7:
                 return context.translate(ROOT, "NATION|" + main::menu::MCarData::GetCountry(car.getCarLabel()));
 
-            case 7:
+            case 8:
                 return context.translate(ROOT, "TunerName", main::menu::MCarData::GetTuner(car.getCarLabel()));
 
-            case 8:
+            case 9:
                 var n = car.rideHistory;
                 if (n < 1023)
                     return (n + 1).toString();
                     
                 return "---";
 
-            case 9:
+            case 10:
                 return context.translate(ROOT, aspirationStr_[car.getAspiration()]);
 
-            case 10:
+            case 11:
                 return car.getCatLength() + "mm";
 
-            case 11:
+            case 12:
                 return car.getCatDisplacement();
 
-            case 12:
+            case 13:
                 return car.getCatEngineType();
         }
     }
@@ -663,7 +675,89 @@ module GTmodeProject::GarageRoot
 
     function pickupCars(context)
     {
+        var swappedCars = [];
+        var newList = [];
+        
+
         list_ = garage_.pickup(nation_, tuner_, dtrain_);
+
+        print dtrain_;
+        if (dtrain_ != "all")
+        {
+            module DrivetrainSwapModule { }
+            DrivetrainSwapModule.load("/projects/specii/DrivetrainSwapCars");
+
+            if (DrivetrainSwapModule::DrivetrainSwapCars.defined("carlist"))
+            {
+                var cars = DrivetrainSwapModule::DrivetrainSwapCars["carlist"];
+                var manager = nil;
+                var car = nil;
+                manager = checkGameData(context, 0, manager);
+                if (manager != nil)
+                {
+                    var tmpList = garage_.pickup("all", "all", "all");
+                    var oldDTrain, newDTrain;
+                    for (var i = 0; i < tmpList.size; i++)
+                    {
+                        car = tmpList[i];
+                        var carNation = main::menu::MCarData::GetCountry(car.car_code);
+                        var carTuner = main::menu::MCarData::GetTuner(car.car_code);
+
+                        // If it doesn't match the other filters then we can skip the heavy work
+                        if ((nation_ != "all" && nation_ != carNation) || (tuner_ != "all" && tuner_ != carTuner))
+                            continue;
+
+                        // If the car's pre-garage pop drivetrain matches, check if it's a potential swap car, then decide whether or not to add it
+                        if (car.getDTrainType() == dtrain_)
+                        {
+                            // If it is a potential swap car we need to load its data and see if it *is* swapped
+                            if (cars.bsearch(car.car_code) != -1)
+                            {
+                                oldDTrain = car.getDTrainType();
+                                garage_.popGarageCar(tmpList[i].getGarageIndex(), car, manager);
+                                newDTrain = car.getDTrainType();
+
+                                if (newDTrain != oldDTrain && newDTrain == dtrain_)
+                                {
+                                    print "Pushed car as drivetrain is swapped AND matches the current filter";
+                                    newList.push(car);
+                                    continue;
+                                }
+                                else
+                                {
+                                    print "Old drivetrain matched current filter but new one did not";
+                                    continue;
+                                }
+                            }
+                            newList.push(car);
+                            continue;
+                        }
+                        
+                        // If the pre-pop drivetrain doesn't match but it's not in a swap list, again skip
+                        if (cars.bsearch(car.car_code) == -1)
+                            continue;
+
+                        oldDTrain = car.getDTrainType();
+                        garage_.popGarageCar(tmpList[i].getGarageIndex(), car, manager);
+                        newDTrain = car.getDTrainType();
+                        
+                        // At this point we have a car where its stock drivetrain didn't match the current filter, but new one does - add it
+                        if (oldDTrain != newDTrain)
+                        {
+                            if (newDTrain == dtrain_)
+                            {
+                                newList.push(car);
+                            }
+                        }
+                        //print car.getDTrainType();
+                        
+                        //print tmpList[i];
+                    }
+                }
+            }
+            list_ = newList;
+            DrivetrainSwapModule.clearStatic();
+        }
     }
 
     function setCarNameToToolTip(i)
@@ -883,7 +977,7 @@ module GTmodeProject::GarageRoot::List::Cars
                             openConfirmDialog(context, 2, context.translate(TopRoot, "NoOpenModelCar").format(car.name));
                             return;
                         }
-                        if (car.isStrange())
+                        if (car.isStrange() && car.car_code != "formula_gran_turismo_04" && car.car_code != "midget_mp5_63")
                         {
                             main::sound.play("disable");
                             openConfirmDialog(context, 2, context.translate(TopRoot, "NoStrangeCar").format(car.name));

@@ -22,7 +22,6 @@ module BootProject::CheckRoot
 
     function onInitialize(context)
     {
-        print "CheckRoot start";
         if (DEMO)
             CheckRoot.visible = false;
 
@@ -35,8 +34,6 @@ module BootProject::CheckRoot
 
         watcher.append();
         datasize = manager.getNewFile().size;
-
-        print "CheckRoot init done";
     }
 
     function onFinalize(context)
@@ -47,7 +44,6 @@ module BootProject::CheckRoot
 
     function exitToCreateData(context)
     {
-        print "exitToCreateData";
         start_page(context, EntryRoot);
     }
 
@@ -148,7 +144,6 @@ module BootProject::CheckRoot
                 }
             }
 
-            print "newmode = %{newMode}\n";
             mode = newMode;
             switch (mode)
             {

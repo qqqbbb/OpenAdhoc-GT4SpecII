@@ -422,8 +422,8 @@ module GTmodeProject::DebugMenuRoot
             "jp_isuzu_0000",
             "jp_mazda_rotary_0000",
             "jp_mazda_roadster_0500",
-            "jp_mazda_rx8_0500",
-            "jp_mitsubishi_mirage_0500",
+            "jp_mazda_rx8_0300",
+            "jp_mitsubishi_mirage_0300",
             "jp_mitsubishi_evo_0000",
             "jp_nissan_gtr_0000",
             "jp_nissan_march_0000",
@@ -686,7 +686,6 @@ module GTmodeProject::DebugMenuRoot
 
             for (var j = 0; j < detail_carlist_orig.size; j++)
             {
-                //print "%{events[i]} -> %{detail_carlist_orig[j]}";
                 if (events[i] == detail_carlist_orig[j])
                 {
                     //print "Match: %{events[i]} -> %{detail_carlist_orig[j]}";
@@ -725,6 +724,13 @@ module GTmodeProject::DebugMenuRoot
         main::game.option.applyRaceDisplayMode();
     }
 
+    function setNewCar(context)
+    {
+        var cg = main::game.garage.riding_car;
+        print cg;
+        //cg.makeNew();
+    }
+
     static buttons = [
         DebugOption("Clear garage", clearGarage, ["test"]),
         DebugOption("Set credits to 0", adjustCredits, [0, true]),
@@ -742,12 +748,13 @@ module GTmodeProject::DebugMenuRoot
         DebugOption("Compare prize lists", comparePrizeLists),
         DebugOption("Check duplicate prizes >>", checkDuplicatePrizes, viewDuplicateOccurrences),
         DebugOption("Check Event Hall completion >>", openHallsMenu, checkHallComplete),
+        DebugOption("Set current garage car to new", setNewCar),
         //DebugOption("Copy garage car test", copyGarageCar),
         //DebugOption("Show current wheel info", getCurrentWheel),
         //DebugOption("Show current wing info", getCurrentWing),
         //DebugOption("CarPaintRoot", goToPaintCar),
         //DebugOption("Force interlaced", changeScreenMode, ["normal"]),
-        //DebugOption("Force 480p", changeScreenMode, ["480p"]),
+        DebugOption("Force 480p", changeScreenMode, ["480p"]),
         //DebugOption("Force 1080i", changeScreenMode, ["1080i"])
     ];
 

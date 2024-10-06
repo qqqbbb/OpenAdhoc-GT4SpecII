@@ -39,9 +39,9 @@ module CursorProject::ConfirmDialog
         context.pushPage(ConfirmDialog);
         Dialog.actor.out = 0;
         ConfirmDialog.actor.out = 0;
-        context.sync(0.1);
+        context.sync(0.0);
         Dialog::Message::caution.x = Dialog::Message.w - Dialog::Message::caution.w - 3;
-        context.sync(0.4);
+        context.sync(0.0);
     }
 
     function close_motion(context)
@@ -57,7 +57,7 @@ module CursorProject::ConfirmDialog
 
         Dialog.actor.out = true;
         ConfirmDialog.actor.out = true;
-        context.sync(0.5);
+        context.sync(0.1);
         context.closePage(ConfirmDialog);
     }
 

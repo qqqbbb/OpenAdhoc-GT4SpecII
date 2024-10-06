@@ -267,13 +267,13 @@ module NewCarData
         "rx8_03",
         "rx8_typee_03",
         "rx8_types_03",
+        "mazdaspeed_6_05",
         "rx7_spiritr_a_02",
         "murao_rx7_03",
         "kusabi_concept_03",
         "rx8_concept_01",
         "rx8_tmv_01",
         "mazda6_tmv_01",
-        "mazdaspeed_6_05",
         "mazda_suv_concept_05",
         "mazda6_tmv_n1_01",
         "rx7_lm_race_00",
@@ -1919,9 +1919,9 @@ module PresentData
         "win", // am_fourcyl_0000
         "win", // am_sixcyl_0000
         "win", // us_ford_mustang_0000
-        "aspec",
-        "aspec",
-        "aspec",
+        "aspec_1",
+        "aspec_2",
+        "aspec_3",
         "win", // Beat the Beat
         "win", // Clubman Race Series
         "win", // Rally Homologation Heroes
@@ -1967,7 +1967,7 @@ module PresentData
         "ex_dream_0800",
         "ex_polyphony_0800",
         "ex_wind_0000",
-        "ex_formula_1500",
+        "ex_formula_1200",
         "ex_real_circuit_0000",
         "ex_premium_0000",
         "ex_roadgoing_0000",
@@ -1994,7 +1994,7 @@ module PresentData
         "euritaly_0000",
         "eurfrench_0500",
         "eureuro_classic_0500",
-        "eureuro_hatch_0500",
+        "eureuro_hatch_0400",
         "eur1000mile_0400",
         "eurschvartz_a_0000",
         "eurschvartz_b_0000",
@@ -2034,7 +2034,7 @@ module PresentData
         "fr_citroen_2cv_0000",
         "fr_peugeot_206_0000",
         "fr_renault_clio_0500",
-        "fr_renault_megane_0500",
+        "fr_renault_megane_0300",
         "fr_renault_alpine_0300",
         "jp_daihatsu_copen_0000",
         "jp_daihatsu_midget2_0000",
@@ -2044,7 +2044,7 @@ module PresentData
         "jp_mazda_rotary_0000",
         "jp_mazda_roadster_0500",
         "jp_mazda_rx8_0000",
-        "jp_mitsubishi_mirage_0500",
+        "jp_mitsubishi_mirage_0300",
         "jp_mitsubishi_evo_0000",
         "jp_nissan_gtr_0000",
         "jp_nissan_march_0000",

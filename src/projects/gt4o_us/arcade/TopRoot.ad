@@ -324,13 +324,6 @@ module ArcadeProject::TopRoot
             }
         }
 
-        switch (event.keysym)
-        {
-            case PS2_PAD_CTRL_SELECT:
-                OptionPopup::open(context);
-                return EVENTRESULT_FILTER;
-        }
-
         return false;
     }
 
@@ -578,8 +571,6 @@ module ArcadeProject::TopRoot::hidden::Save
         context.cursor_visible = true;
         timeout_enable = false;
         var valid = main::menu::MMemoryCardManager::getExistValidGameData();
-
-        print "valid = %{valid}\n";
 
         if (!valid)
         {

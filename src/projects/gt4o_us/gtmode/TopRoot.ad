@@ -1520,8 +1520,8 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::ExtremeHall
         if (!sureNoSuspended(context, true))
             return EVENTRESULT_FILTER;
             
-         if (!sureNoOpenModel(context))
-            return EVENTRESULT_FILTER;
+        /*if (!sureNoOpenModel(context))
+            return EVENTRESULT_FILTER;*/
 
         if (!sureNoTestCar(context))
             return EVENTRESULT_FILTER;
@@ -1529,7 +1529,7 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::ExtremeHall
         if (!canEntryExtreme())
         {
             main::sound.play("disable");
-            openConfirmDialog(context, 2, context.translate(ROOT, "NeedLicense_ia"));
+            openConfirmDialog(context, 2, context.translate(ROOT, "NeedLicense_ib"));
             return EVENTRESULT_FILTER;
         }
 
@@ -1883,8 +1883,13 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::GTAuto
         if (!sureRiding(context))
             return EVENTRESULT_FILTER;
 
-        if (!sureNoStrange(context))
-            return EVENTRESULT_FILTER;
+        // These are classed as strange cars, but we want to make an exception to let them into GT Auto for repainting
+        var cg = main::game.garage.riding_car;
+        if (cg.car_code != "formula_gran_turismo_04" && cg.car_code != "midget_mp5_63")
+        {
+            if (!sureNoStrange(context))
+                return EVENTRESULT_FILTER;
+        }
 
         main::sound.play("ok");
         start_page(context, GTAutoRoot);
@@ -1987,7 +1992,7 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
         if (!main::game.garage.hasRidingCar())
         {
             main::sound.play("disable");
-            openConfirmDialog(context, 2, "Please get in a car.");
+            openConfirmDialog(context, 2, context.translate(TopRoot, "PleaseRideACar"));
             return;
         }
 

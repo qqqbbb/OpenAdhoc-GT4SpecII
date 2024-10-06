@@ -36,10 +36,19 @@ module GTmodeProject::WheelMakerRoot
                 else
                     tuner = "mitsubishi";
                 break;
+
             case "nismo":
                 tuner = "nissan";
                 break;
+
+            case "spoon":
+                tuner = "honda";
+                break;
         }
+
+        // Specific exception for the Sileighty
+        if (car.car_code == "sileighty_xx")
+            tuner = "nissan";
 
         Pane::maker.defineStatic("tuner", tuner);
         Pane::maker.label.text = context.translate(ROOT, "Maker Wheels").format(context.translate(ROOT, "TunerName", tuner));
@@ -63,6 +72,10 @@ module GTmodeProject::WheelMakerRoot
             Pane::maker.used_header_disabled.visible = true;
             Pane::maker.insensitive = true;
             WheelShopRoot::current_list = nil;
+
+            // If we hovered over the maker wheels pane with the previous car, and the current one can't go into that menu, move away
+            if (ROOT.getFocusedWidget() == Pane::maker)
+                ROOT.setFocus(Pane::bridgestone);
         }
 
         if (ROOT.defined("MakerWheelData"))
@@ -92,12 +105,17 @@ module GTmodeProject::WheelMakerRoot
 
     function onActivate(context, event)
     {
-        main::sound.play("ok");
-
         if (event.widget.defined("tuner"))
         {
             WheelShopRoot::current_wheel_maker = event.widget.tuner;
             WheelShopRoot::is_maker_wheels = true;
+
+            // If input still ended up on this button somehow
+            if (Pane::maker.insensitive)
+            {
+                main::sound.play("disable");
+                return EVENTRESULT_FILTER;
+            }
         }
         else
         {
@@ -105,6 +123,7 @@ module GTmodeProject::WheelMakerRoot
             WheelShopRoot::is_maker_wheels = false
         }
 
+        main::sound.play("ok");
         start_page(context, WheelShopRoot);
         return EVENTRESULT_FILTER;
     }

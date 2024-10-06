@@ -51,9 +51,9 @@ module OptionProject::AlbumRoot
         var option = main::game.option;
 
         option.album_slide_effect = 1 - Pane::Effect::OptionMenu.index;
-        option.album_slide_play_time = 1 - Pane::PlayTime::slider.index;
+        option.album_slide_play_time = Pane::PlayTime::slider.index;
         option.album_slide_transition_time = Pane::TransitionTime::slider.index;
-        option.album_memory_card_slot = Pane::McSlot::slider.index;
+        option.album_memory_card_slot = Pane::McSlot::OptionMenu.index;
         option.photo_quality = QualityTypeString[Pane::Quality::OptionMenu.index];
         option.ustorage_photo_quality = QualityTypeString[Pane::UsbQuality::OptionMenu.index];
 

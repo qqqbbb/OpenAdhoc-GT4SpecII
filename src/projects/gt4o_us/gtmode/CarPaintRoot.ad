@@ -4,6 +4,7 @@ module GTmodeProject::CarPaintRoot
     static camera_view_angle;
     static zoom = 1.0;
     static zoom_range = 0.3;
+    static orig_camera_view_angle = CarFace.view_angle;
     static from_debug = false;
     static riding_car;
     static current_price;
@@ -80,6 +81,13 @@ module GTmodeProject::CarPaintRoot
 
     function onFinalize(context)
     {
+        if (watcher != nil)
+        {
+            watcher.remove();
+            watcher = nil;
+        }
+
+        CarFace.view_angle = orig_camera_view_angle;
     }
     
     function onCancel(context, event)
@@ -92,12 +100,6 @@ module GTmodeProject::CarPaintRoot
             start_page(context, GTAutoRoot);
 
         from_debug = false;
-
-        if (watcher != nil)
-        {
-            watcher.remove();
-            watcher = nil;
-        }
 
         return EVENTRESULT_FILTER
     }

@@ -267,7 +267,6 @@ module ArcadeProject::SettingPopup
         else
         {
             main::game.option.race_display_car_name = main::game.option.automatic_gear;
-            print "Saved temp TransmissionChoice as %{main::game.option.race_display_car_name}";
 
             Pane::Mission::OptionMenu.setIndex(context, 0);
             Pane::Mission::OptionMenu.insensitive = true;

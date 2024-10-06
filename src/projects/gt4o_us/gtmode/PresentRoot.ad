@@ -134,6 +134,63 @@ module GTmodeProject::PresentRoot
         return isHallComplete(hall);
     }
 
+    function aspec_1(id, column)
+    {
+        if (main::game.present.getByRace(id))
+        {
+            logInfo("aspec_1 criteria already met, checking if prize was missed...");
+            var available = BuyCarRoot::is_available("lemans_quattro_03");
+
+            if (available)
+            {
+                logInfo("car is already available, prize was not missed");
+                return false;
+            }
+            
+        }
+
+        var pts = getRaceEventRecordStatistics()[1]; 
+        return pts >= 10000;
+    }
+
+    function aspec_2(id, column)
+    {
+        if (main::game.present.getByRace(id))
+        {
+            logInfo("aspec_2 criteria already met, checking if prize was missed...");
+            var available = BuyCarRoot::is_available("calsonic_skyline_gtr_gpa_93");
+
+            if (available)
+            {
+                logInfo("car is already available, prize was not missed");
+                return false;
+            }
+            
+        }
+
+        var pts = getRaceEventRecordStatistics()[1]; 
+        return pts >= 15000;
+    }
+
+    function aspec_3(id, column)
+    {
+        if (main::game.present.getByRace(id))
+        {
+            logInfo("aspec_3 criteria already met, checking if prize was missed...");
+            var available = BuyCarRoot::is_available("sauber_mercedes_c9_89");
+
+            if (available)
+            {
+                logInfo("car is already available, prize was not missed");
+                return false;
+            }
+            
+        }
+
+        var pts = getRaceEventRecordStatistics()[1]; 
+        return pts >= 20000;
+    }
+
     function mission_1st(id, column)
     {
         if (main::game.present.getByRace(id))
@@ -272,6 +329,7 @@ module GTmodeProject::PresentRoot
     setFadeActor(Veil);
     setFadeActor(CarPane::Name);
     setMoveActor(PaperPane::Paper);
+    setFadeActor(CarPane::ColourName::label);
 
     function onInitialize(context)
     {
@@ -418,21 +476,27 @@ module GTmodeProject::PresentRoot::CarPane
         Name.actor.warp();
         ToolTip::tip.value = "";
         Veil.actor.out = true;
+        Veil.actor.warp();
 
-        context.sync(4.0);
-        Name.actor.out = false;
+        ColourName::label.actor.out = true;
+        ColourName::label.actor.warp();
+
         if (PresentData.defined("allcars_carnum"))
         {
             if (randomizer_enabled == 1)
             {
                 car = PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carnum-1, fnv1a(main::game.username + race + func))];
                 col = "-";
+                Shuffle.visible = true;
             }
         }
+
+        context.sync(4.0);
+
         Name::label.text = main::menu::MCarData::GetCarName(car);
         Name::label.adjustScale();
 
-        context.sync(1.0);
+        //context.sync(1.0);
 
         ending = nil;
 
@@ -471,6 +535,7 @@ module GTmodeProject::PresentRoot::CarPane
         CarFace.visible = true;
         CarFace.car_code = car;
         CarFace.setColorIndex(col);
+        var colname = CarFace.car_data.getColorName(col);
         CarFace::move_car(0, 1);
 
         switch (func)
@@ -524,8 +589,10 @@ module GTmodeProject::PresentRoot::CarPane
                 ToolTip::tip.value = str;
                 break;
 
-            case "aspec":
-                var str = context.translate(ROOT, func + "_" + race);
+            case "aspec_1":
+            case "aspec_2":
+            case "aspec_3":
+                var str = context.translate(ROOT, func);
                 str = str + no_get;
                 ToolTip::tip.value = str;
                 break;
@@ -535,7 +602,11 @@ module GTmodeProject::PresentRoot::CarPane
                 break;
         }
 
-        //context.sync(3.0); // Only existed to time the appearance of OK with the music drop
+        ColourName::label.text = colname;
+
+        context.sync(2.0); // Only existed to time the appearance of OK with the music drop
+        ColourName::label.actor.out = false;
+        Name.actor.out = false;
         OK.visible = true;
         context.cursor_visible = true;
 

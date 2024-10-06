@@ -16,6 +16,7 @@ module SpecialPaintCars
     static mgf_vvc_97 = 0;
     static r390_race_98 = 1;
     static r92cp_92 = 1;
+    static slr_mclaren_03 = 0;
     static spitfire_1500_74 = 0;
     static storia_x4_98 = 0;
     static vitz_rs15_00 = 0;

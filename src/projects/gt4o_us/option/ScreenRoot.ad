@@ -57,10 +57,12 @@ module OptionProject::ScreenRoot
 
         option.wide_mode = Pane::Wide::OptionMenu.index;
         option.screen_adjust_v = Pane::Vertical::slider.index;
+        print option.screen_adjust_v;
         option.screen_adjust_h = Pane::Horizontal::slider.index;
         option.race_display_mode = ModeString[Pane::HiVision::OptionMenu.index];
         // Save display res as a Spec II option
         video_mode = Pane::HiVision::OptionMenu.index;
+        option.apply(context);
         saveNewSettings(context);
     }
 

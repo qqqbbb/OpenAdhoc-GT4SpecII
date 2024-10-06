@@ -81,7 +81,6 @@ module BootProject::LoadRoot
     
             for (var i = 0; i < brake_list.size; i++)
             {
-                print "brake_list[%{i}] == %{brake_list[i]}";
                 if (brake_list[i] == "L2" || brake_list[i] == "R2")
                 {
                     brake_is_trigger = true;
@@ -91,7 +90,6 @@ module BootProject::LoadRoot
     
             if (accel_is_trigger || brake_is_trigger)
             {
-                //print "At least one of accel/brake is bound to a trigger, enabling sensitivity patch";
                 main::game.toggleTriggerSensitivity(1);
             }
             // No else block here as if it wasn't true then the code was never patched to begin with

@@ -1,0 +1,12 @@
+module DrivetrainSwapCars 
+{
+    static carlist = [
+        "beetle_20_00",
+        "focus_rs_02",
+        "focus_st170_jp_03",
+        "golf_gti_01",
+        "golf_gti_05",
+        "nismo_gtr_lm_95",
+        "s60_t5_sport_03"
+    ]
+}

@@ -131,12 +131,6 @@ module GTmodeProject::UsedCarRoot
             last_focus = nil;
         }
 
-        if (main::game.used_car.week != week)
-        {
-            delayOpenConfirmDialog(context, context.translate(ROOT, "used cars updated"));
-            last_focus = nil;
-        }
-
         ScrollBox::SelectBox.visible = true;
         ScrollBox::SelectBox.actor.out = false;
         
@@ -170,6 +164,12 @@ module GTmodeProject::UsedCarRoot
         var col_list = UsedCarModule::UsedCarData["color_" + shop_name + "_carlist"];
         var seed = (week + 11) * 100 + ShopTable[current_region + "_seed"];
         var id_offset = ShopTable[current_region + "_offset"];
+
+        if (main::game.used_car.week != week)
+        {
+            delayOpenConfirmDialog(context, context.translate(ROOT, "used cars updated"));
+            last_focus = nil;
+        }
 
         // Moved this to another thread so you aren't stuck on a black screen while the UCD populates
         // It's no faster but it gives the impression of being more responsive

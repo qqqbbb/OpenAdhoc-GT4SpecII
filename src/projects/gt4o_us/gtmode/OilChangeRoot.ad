@@ -114,7 +114,7 @@ module GTmodeProject::OilChangeRoot::Change
         var pal = main::menu::MSystem::GetVideoSystem() == "PAL";
         var diff_ratio = 1.0;
         if (pal)
-            diff_ratio *= 1.2;
+            diff_ratio *= 1.0;
 
         main::game.incMoney(-OIL_CHANGE_PRICE);
         refreshMoney(ROOT);

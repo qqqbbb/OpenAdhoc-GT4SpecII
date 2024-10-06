@@ -158,28 +158,28 @@ module GTmodeProject::CarWashRoot::Wash
         var pal = main::menu::MSystem::GetVideoSystem() == "PAL";
         if (pal)
         {
-            context.sync(0.5);
+            context.sync(0.8);
             Gauge::Drop5.active = true;
 
-            context.sync(0.5);
+            context.sync(0.8);
             Gauge::Drop6.active = true;
 
-            context.sync(0.5);
+            context.sync(0.8);
             Gauge::Drop7.active = true;
 
-            context.sync(0.5);
+            context.sync(0.8);
             Gauge::Drop8.active = true;
 
-            context.sync(0.5);
+            context.sync(0.7);
             Gauge::Drop9.active = true;
 
-            context.sync(0.4);
+            context.sync(0.6);
             Gauge::Drop10.active = true;
 
-            context.sync(0.3);
+            context.sync(0.5);
             Gauge::Drop11.active = true;
 
-            context.sync(0.3);
+            context.sync(0.4);
             Gauge::Done.active = true;
         }
         else

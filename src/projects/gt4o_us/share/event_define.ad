@@ -453,8 +453,8 @@ module EventData
 	
 	static toyotaEvents = [
 		"Race_toyota",
-		EventInfo("jp_toyota_altezza_0000"),
-		EventInfo("jp_toyota_vitz_0000")
+		EventInfo("jp_toyota_vitz_0000"),
+		EventInfo("jp_toyota_altezza_0000")
 	];
 	
 	static triumphEvents = [
@@ -622,20 +622,20 @@ module EventData
 		
 		
 		// Dirt and Snow
-		["grandcanyon", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_grandcanyon", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["icerace", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_icerace", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["nursnow", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_nursnow", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["smtsouth", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_smtsouth", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["tahiti_maze", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_tahiti_maze", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["yosemite_dirt", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_yosemite_dirt", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["yosemite_dirt_short", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
-		["r_yosemite_dirt_short", EventInfo("freerun", 5), nil, nil, EventInfo("photo_drive", 3)],
+		["grandcanyon", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_grandcanyon", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["icerace", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_icerace", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["nursnow", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_nursnow", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["smtsouth", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_smtsouth", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["tahiti_maze", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_tahiti_maze", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["yosemite_dirt", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_yosemite_dirt", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["yosemite_dirt_short", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
+		["r_yosemite_dirt_short", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), nil, EventInfo("photo_drive", 3)],
 		
 		// Driving Park
 		["kashiwa", EventInfo("freerun", 5), EventInfo("eventgen_0000", 0), EventInfo("practice", 5), EventInfo("photo_drive", 3)],
@@ -837,7 +837,7 @@ function getRaceEventRecordStatistics()
 	}
 	
 	cached_achievement = win * 1000 / total;
-	cached_aspec_score = race_score + mission_score + eventgen_0000_score;
+	cached_aspec_score = race_score + mission_score; //+ eventgen_0000_score;
 	
 	return [cached_achievement, cached_aspec_score];
 }

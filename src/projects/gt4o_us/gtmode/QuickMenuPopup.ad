@@ -12,6 +12,8 @@
 
 module GTmodeProject::QuickMenuPopup
 {
+    static should_hide_cursor = false;
+    static from_page;
     #define MENU_POP_COUNT 16
 
     function clearMenuRefs(context)
@@ -40,6 +42,7 @@ module GTmodeProject::QuickMenuPopup
 
     function open(context)
     {
+        from_page = context.getCurrentPage().name;
         ROOT.setFocus(nil);
         Pane.actor.destinationY = 480.0;
         Pane.actor.out = true;
@@ -51,6 +54,7 @@ module GTmodeProject::QuickMenuPopup
         context.pushPage(ROOT);
         Pane.actor.out = false;
         ROOT.actor.out = false;
+        context.cursor_visible = true;
         ROOT.setFocus(Pane::Close);
     }
 
@@ -61,9 +65,13 @@ module GTmodeProject::QuickMenuPopup
         Pane.actor.out = true;
         ROOT.actor.out = true;
 
-        setCrossTransition(context);
+        context.sync(0.1);
 
-        context.sync(0.25);
+        if (should_hide_cursor)
+        {
+            context.cursor_visible = false;
+            should_hide_cursor = false;
+        }
 
         context.closePage(ROOT);
     }
@@ -113,8 +121,11 @@ module GTmodeProject::QuickMenuPopup::Pane::Map
 
         clearMenuRefs(context);
 
+        setCrossTransition(context);
+
         close(context);
-        start_page(context, TopRoot);
+        if (from_page != "TopRoot")
+            start_page(context, TopRoot);
         return EVENTRESULT_FILTER;
     }
 }
@@ -128,7 +139,8 @@ module GTmodeProject::QuickMenuPopup::Pane::Home
         clearMenuRefs(context);
 
         close(context);
-        HomeRoot::open(context);
+        if (from_page != "HomeRoot")
+            HomeRoot::open(context);
         return EVENTRESULT_FILTER;
     }
 }
@@ -139,7 +151,7 @@ module GTmodeProject::QuickMenuPopup::Pane::EventHall
     {
         main::sound.play("ok");
 
-        close(context);
+        //close(context);
         EventHallPopup::open(context);
         return EVENTRESULT_FILTER;
     }
@@ -149,7 +161,7 @@ module GTmodeProject::QuickMenuPopup::Pane::Setting
 {
     function onActivate(context, event, item)
     {
-        if (main::game.garage.hasRidingCar() && !main::game.isSuspended())
+        if (main::game.garage.hasRidingCar())
         {
             main::sound.play("ok");
 
@@ -162,8 +174,14 @@ module GTmodeProject::QuickMenuPopup::Pane::Setting
             main::game.race_code = "";
             main::game.course_code = "";
             main::game.major_menu_widget = "";
-            return EVENTRESULT_FILTER;
         }
+        else
+        {
+            main::sound.play("disable");
+            openConfirmDialog(context, 2, context.translate(TopRoot, "PleaseRideACar"));
+        }
+
+        return EVENTRESULT_FILTER;
     }
 }
 

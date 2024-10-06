@@ -1,6 +1,5 @@
 module ArcadeProject
 {
-    print "arcade start";
     static wide = main::game.option.wide_mode;
 
     
@@ -26,7 +25,6 @@ module ArcadeProject
 
         if (option.automatic_gear != option.race_display_car_name)
         {
-            print "Transmission setting was not changed by player, resetting...";
             option.automatic_gear = option.race_display_car_name;
         }
 

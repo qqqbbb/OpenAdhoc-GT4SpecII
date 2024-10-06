@@ -90,24 +90,8 @@ module GTmodeProject::NationRoot
         var dealers = NationData[nation + "_dealers"];
         var usbcamera_connected = false;
 
-        if (nation == "usa")
-        {
-            var camera = main::menu::MEyetoy();
-            camera.initialize();
-            camera.start_camera();
-            context.sync();
-            camera.update_camera();
-            context.sync();
-
-            if (camera.connected)
-                usbcamera_connected = true;
-
-            camera.stop_camera();
-            camera.finalize();
-        }
-
         var nike_enabled = true;//usbcamera_connected || main::game.isCarAvailable("nike_one_04");
-        var pd_enabled = wonRace("pr_gtworld_1000");
+        var pd_enabled = wonRace("pr_gtworld_1000") || isCarOwned("formula_gran_turismo_04");
         var available_num = 0;
 
         for (var i = 0; i < dealers.size; i++)
@@ -306,34 +290,16 @@ module GTmodeProject::NationRoot::ScrollWindow::clip::space
     function onActivate(context, event)
     {
         var dealer = event.widget["dealer"];
-        if (dealer == "nike" && !main::game.isCarAvailable("nike_one_04"))
+        main::sound.play("ok");
+        if (main::game.menuRef() == "tuners")
         {
-            main::sound.play("ok");
-            if (openProcessDialog(context, context.translate(ROOT, "now checking USB Camera"), check_camera))
-            {
-                openConfirmDialog(context, 0, context.translate(ROOT, "USB Camera found. Go to next phase"));
-                main::game.menuPush(dealer);
-                start_page(context, EyetoyRoot);
-            }
-            else
-            {
-                main::sound.play("disable");
-                openConfirmDialog(context, 2, context.translate(ROOT, "no USB Camera"));
-            }
+            main::game.menuPush(dealer);
+            start_page(context, TuningRoot);
         }
         else
         {
-            main::sound.play("ok");
-            if (main::game.menuRef() == "tuners")
-            {
-                main::game.menuPush(dealer);
-                start_page(context, TuningRoot);
-            }
-            else
-            {
-                main::game.menuPush(dealer);
-                start_page(context, DealerRoot);
-            }
+            main::game.menuPush(dealer);
+            start_page(context, DealerRoot);
         }
 
         return EVENTRESULT_FILTER;

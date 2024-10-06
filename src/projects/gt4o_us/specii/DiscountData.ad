@@ -5,6 +5,7 @@ module DiscountData
     static discount_week10 = ["ford", 85];
     static discount_week14 = ["jaguar", 85];
     static discount_week17 = ["fiat", 90];
+    static discount_week18 = ["mercedes", 90];
     static discount_week20 = ["bmw", 90];
     static discount_week24 = ["hyundai", 90];
     static discount_week27 = ["volkswagen", 85];

@@ -22,6 +22,12 @@ module GTmodeProject::EventCourseRoot
     static preview_enable;
     static last_focus_race_widget = nil;
     static last_focus_mode_widget = nil;
+
+    static zoom = 1.0;
+    static zoom_range = 0.2;
+    static orig_camera_view_angle = Car::CarFace.view_angle;
+    static camera_view_angle;
+    static watcher = nil;
     
     function onLoad(context)
     {
@@ -249,10 +255,42 @@ module GTmodeProject::EventCourseRoot
         Car.visible = true;
         setFadeActor(TypicalOpponents["bgf"]);
         context.cursor_visible = true;
+
+        camera_view_angle = Car::CarFace.view_angle;
+        watcher = main::menu::MScriptWatcher(context, onTick);
+        watcher.interval = 1;
+        watcher.append();
+    }
+
+    function onTick(context)
+    {
+        var update_context = context.getUpdateContext();
+        var ry = update_context.getPadAnalogChannel(0, 1) * -1;
+        var target = 1.0;
+        
+        if (ry > 0.0)
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+        else 
+        {
+            var z = (ry) * (1.0 / 0.75);
+
+            target = 1.0 - (z * zoom_range);
+        }
+
+        zoom.value += (target - zoom) * 0.1;
+        var fovy = (Math::atan(Math::tan(camera_view_angle * 0.5 * 3.1415927 / 180.0) * zoom)) * 2.0;
+        Car::CarFace.view_angle = (fovy * 180.0) / 3.1415927;
     }
 
     function onFinalize(context)
     {
+        watcher.remove();
+        Car::CarFace.view_angle = orig_camera_view_angle;  
+
         ROOT.setFocus(nil);
 
         RaceSelect::ScrollBox.actor = nil;
@@ -842,6 +880,8 @@ module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
                 if (!sureNoGarageFull(context))
                     return EVENTRESULT_FILTER;
 
+                print getSeriesRaceCount(last_select_race);
+                print isSpotRaceCompleted(last_select_race);
                 if (getSeriesRaceCount(last_select_race) == 0 && isSpotRaceCompleted(last_select_race))
                 {
                     main::sound.play("ok");

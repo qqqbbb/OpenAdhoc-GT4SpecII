@@ -488,7 +488,7 @@ module GTmodeProject::EventInfoDialog
                 // This allows you to use illegal cars in races IF you have completed the event already and are over 20% completion
                 // Does not allow you to skip tire regs as entering dirt/snow tracks with road tires is unknown behaviour
                 // TODO: Uncomment for release
-                if (wonRace(event.race_code) && achieve > 200.0)
+                if (wonRace(event.race_code) && achieve >= 200.0)
                 {
                     var code = extractSubRaceCode(event.race_code);
                     var regulation = getViolatedRegulation(main::game.garage.riding_car, code[0]);
@@ -516,7 +516,9 @@ module GTmodeProject::EventInfoDialog
         var race = main::menu::MRaceData(code[0]);
 
         var carlist = race.getAllowedCarList();
-        print carlist;
+        
+        if (carlist != nil && carlist.size <= 5)
+            return EVENTRESULT_CONTINUE;
 
         var max_num = list_expanded ? 64 : 5;
         var cars_allowed;
