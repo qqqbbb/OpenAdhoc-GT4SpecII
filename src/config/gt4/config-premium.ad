@@ -43,10 +43,6 @@ switch (main::menu::MSystem::GetRegionCode())
     case "us":
         main::network.language = "US";
         UsingLanguages.push("US");
-        //UsingLanguages.push("FR");
-        //UsingLanguages.push("DE");
-        //UsingLanguages.push("IT");
-        //UsingLanguages.push("ES");
         break;
 
     case "tw":
