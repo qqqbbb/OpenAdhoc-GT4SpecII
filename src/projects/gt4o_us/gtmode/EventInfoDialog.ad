@@ -130,6 +130,26 @@ module GTmodeProject::EventInfoDialog
                     custom_category_event = true;
                     stat_to_compare = main::menu::MCarData::GetCategory(riding_car.car_code);
                     [text, val] = ["CarTypeSpec", context.translate(ROOT, "CarTypeSpec_4")];
+
+                    // Custom edge case that will only be used for tuning champ for now, clean up later
+                    if (reg_direction == "InList")
+                    {
+                        var allowed_configs = reg_value.split(",");
+                        comparison = true;
+
+                        for (var j = 0; j < allowed_configs.size; j++)
+                        {
+                            var carType = allowed_configs[j];
+                            
+                            if (stat_to_compare == carType)
+                            {
+                                comparison = false;
+                                break;
+                            }
+                        }
+
+                        [text, val] = ["CarTypeSpec", context.translate(ROOT, "CarTypeSpec_6")];
+                    }
                 }
 
                 if (reg_category == "Price")
@@ -151,7 +171,7 @@ module GTmodeProject::EventInfoDialog
 
                 if (reg_category == "Power")
                 {
-                    stat_to_compare = riding_car.getCurrentPowerUnitPS();
+                    stat_to_compare = riding_car.getCurrentPowerUnitPS().toInt();
 
                     var ps_string = "%d %s".format(main::menu::MUnit::GetPowerForDisplay(reg_value).toInt(), main::menu::MUnit::GetUnitOfPower());
 
@@ -220,7 +240,7 @@ module GTmodeProject::EventInfoDialog
 
                     case "below":
                     case "under":
-                        comparison = stat_to_compare >= reg_value_int;
+                        comparison = stat_to_compare > reg_value_int;
                         break;
 
                     case "equalstext":

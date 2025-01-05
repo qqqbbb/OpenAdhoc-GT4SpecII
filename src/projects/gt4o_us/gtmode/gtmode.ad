@@ -15,6 +15,9 @@
 #define FLAG_GT3_CAM (1 << 2);
 #define FLAG_ROOF_CAM (1 << 3);
 
+#define FLAG_PRIZE_RANDOMIZER (1);
+#define FLAG_TRACK_RANDOMIZER (1 << 1);
+
 module GTmodeProject
 {
     PROJECT.load(main::game.option.game_zone + "_carlist");
@@ -48,7 +51,7 @@ module GTmodeProject
     static wide = main::game.option.wide_mode;
 
     static last_dealer_img = nil;
-    static randomizer_enabled = -1;
+    static randomizer_flag = 0;
     static global_asmo = -1;
     static global_asmu = -1;
     static global_tcsc = -1;
@@ -112,6 +115,10 @@ module GTmodeProject
     {
         main::sound.load();
 
+        // Unset "persistent" vars set by event synth so they don't apply to normal events
+        main::game.overrideLaps(-1); 
+        main::game.toggleMultiCategoryAI(false);
+
         var option = main::game.option;
         
         if (option.automatic_gear != option.race_display_car_name)
@@ -148,7 +155,7 @@ module GTmodeProject
             switch (k)
             {
                 case "r":
-                    randomizer_enabled = v.toInt();
+                    randomizer_flag = v.toInt();
                     break; 
 
                 case "o":
@@ -263,6 +270,71 @@ module GTmodeProject
 
     static restart_flg = false;
 
+    function fnv1a(str)
+    {
+        var result = 0x811c9dc5;
+        var prime = 16777619;
+        for (var i = 0; i < str.size; i++)
+        {
+            result ^= str.at(i);
+            result *= prime;
+        }
+
+        return result;
+    }
+
+    function getRandomCourse(context, race_name, use_seed)
+    {
+        module EventSynthModule { }
+        EventSynthModule.load("/projects/specii/EventSynthCourses");
+        var course_array = [];
+        var select_type = "";
+
+        // Grab the original data so we can check which type of track list we're pulling from
+        var race = main::menu::MRaceData(race_name);
+        
+        switch (race.getNeedTire())
+        {
+            case 3:
+                select_type = "rally_dirt_courses";
+                break;
+
+            case 4:
+                select_type = "rally_snow_courses";
+                break;
+
+            default:
+                if (race.entry_num < 6)
+                    select_type = "rally_road_courses";
+                else
+                    select_type = "six_car_courses";
+                break;
+        }
+
+        print "select_type == %{select_type}";
+
+        if (EventSynthModule::EventSynthCourses.defined(select_type))
+            course_array = EventSynthModule::EventSynthCourses[select_type];
+
+        EventSynthModule.clearStatic();
+
+        if (course_array.size == 0)
+        {
+            openConfirmDialog(context, 1, "Track randomizer is active but no match was found for %{select_type}");
+            return "";
+        }
+        else
+        {
+            var rnd = -1;
+            if (use_seed)
+                rnd = main::menu::MRandom::GetValue(0, course_array.size - 1, fnv1a(main::game.username + race_name));
+            else 
+                rnd = main::menu::MRandom::GetValue(0, course_array.size - 1);
+                
+            return course_array[rnd];
+        }
+    }
+
     function onUnload(context)
     {
         Common = nil;
@@ -366,10 +438,8 @@ module GTmodeProject
                 }
             }
 
-            if (isUserTriggered != nil && isUserTriggered)
-            {
-                var opt = main::game.option;
-
+            //if (isUserTriggered != nil && isUserTriggered)
+            //{
                 // Seems there's no clean way to do this on car purchase, so checking on manual car change instead
                 // Safe to do if they already exist as it does nothing
                 print curr_car.car_code;
@@ -380,7 +450,7 @@ module GTmodeProject
                     curr_car.getParts(26, 11);
                     curr_car.getParts(26, 12);
                 }
-            }
+            //}
 
             car["chip"].setData(garage.riding_car);
             car["chip"].doInitialize(context);
@@ -584,6 +654,40 @@ module GTmodeProject
         return allWon;
     }
 
+    function printHallPrizes(context, hall)
+    {
+        var events = EventData[hall];
+        print hall;
+        
+        for (var i = 1; i < events.size; i++)
+        {
+            var event = events[i].race_code;
+
+            var idx = -1;
+            var code = event;
+
+            if (event.endWith("1"))
+                code = event.substr(0, event.size - 1) + "0";
+
+            for (var j = 0; j < PresentData::detail_carlist.size; j++)
+            {
+                if (PresentData::detail_carlist[j] == code)
+                {
+                    idx = j;
+                }
+            }
+
+            if (idx > -1)
+            {
+                if (PresentData::content_carlist[idx] != nil)
+                {
+                    //logInfo("%{callingItem}: %{code}, prize = %{main::menu::MCarData::GetCarName(PresentData::content_carlist[idx])}");
+                    print "%{context.translate(EventHallRoot, "EventName", code.substr(0, code.size - 5))} - %{main::menu::MCarData::GetCarName(PresentData::content_carlist[idx])}";
+                }
+            }
+        }
+    }
+
     function isCarOwned(car_label)
     {
         var current_code = main::menu::MCarData::GetCarNumericCode(car_label);
@@ -664,6 +768,7 @@ module GTmodeProject
                     new_car.getParts(ownedParts[i][0], ownedParts[i][1]);
                 }
 
+                from_car.updateCurrentStatus();
                 new_car.updateCurrentStatus();
                 new_car.loadPartsInfo();
 
@@ -681,7 +786,9 @@ module GTmodeProject
                 new_car.setDriveTrainSetting(from_car.getDriveTrainSetting());
                 new_car.setRacingModifySetting(from_car.getRacingModifySetting());
                 new_car.setLSDSetting(from_car.getLSDSetting());
-                new_car.setSuspensionSetting(from_car.getSuspensionSetting());
+                //print "Old suspension setting = %{from_car.getSuspensionSetting()}";
+                //print "New suspension setting = %{new_car.getSuspensionSetting()}";
+                //new_car.setSuspensionSetting(from_car.getSuspensionSetting());
                 new_car.setTCSCSetting(from_car.getTCSCSetting());
                 new_car.setASCCSetting(from_car.getASCCSetting());
                 new_car.setBallastSetting(from_car.getBallastSetting());
@@ -813,13 +920,15 @@ module GTmodeProject
 
     function saveNewSettings(context, refreshCar, doMcSave)
     {
-        main::game.option.entrance_addr = "r=%{randomizer_enabled};o=%{global_asmo};u=%{global_asmu};t=%{global_tcsc};as=%{aspec_reward};so=%{show_owned_cars};vm=%{video_mode};c=%{cam_flag};g=%{gauge_mode};tm=%{transmission_volume}";
-        
+        main::game.option.entrance_addr = "r=%{randomizer_flag};o=%{global_asmo};u=%{global_asmu};t=%{global_tcsc};as=%{aspec_reward};so=%{show_owned_cars};vm=%{video_mode};c=%{cam_flag};g=%{gauge_mode};tm=%{transmission_volume}";
+        print main::game.option.entrance_addr;
         if (refreshCar)
             PROJECT.refreshRideCar(TopRoot, context, true);
 
         if (doMcSave)
             PROJECT.saveAuto(context, TopRoot, nil, false);
+        else
+            main::game.setNeedSave();
     }
 
     function checkRegulation(race_code, result_array)
@@ -1072,6 +1181,20 @@ module GTmodeProject
         {
             return true;
         }
+    }
+
+    function isOpenOrTestCar(context)
+    {
+        if (!main::game.garage.hasRidingCar())
+            return true;
+
+        var cg = main::game.garage.riding_car;
+        var open_model_type = main::menu::MCarData::GetOpenModelType(cg.car_code);
+        var test_car = main::menu::MCarData::IsTestCar(cg.car_code);
+        if (open_model_type == 2 || test_car)
+            return true;    
+        
+        return false;
     }
 
     function sureNoSuspended(context, event_hall)

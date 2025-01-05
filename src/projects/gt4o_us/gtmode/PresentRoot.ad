@@ -439,19 +439,6 @@ module GTmodeProject::PresentRoot
 
 module GTmodeProject::PresentRoot::CarPane
 {
-    function fnv1a(str)
-    {
-        var result = 0x811c9dc5;
-        var prime = 16777619;
-        for (var i = 0; i < str.size; i++)
-        {
-            result ^= str.at(i);
-            result *= prime;
-        }
-
-        return result;
-    }
-
     function djb33_hash(str)
     {
         var h = 5381;
@@ -483,7 +470,8 @@ module GTmodeProject::PresentRoot::CarPane
 
         if (PresentData.defined("allcars_carnum"))
         {
-            if (randomizer_enabled == 1)
+            var prize_rand = randomizer_flag & FLAG_PRIZE_RANDOMIZER
+            if (prize_rand)
             {
                 car = PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carnum-1, fnv1a(main::game.username + race + func))];
                 col = "-";

@@ -830,20 +830,6 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
         if (!sureRiding(context))
             return EVENTRESULT_FILTER;
 
-        if (!sureNoOpenModel(context))
-            return EVENTRESULT_FILTER;
-
-        if (!sureNoTestCar(context))
-            return EVENTRESULT_FILTER;
-
-        var price = event_info.entrance_fee;
-
-        if (!sureEnoughMoney(context, price))
-            return EVENTRESULT_FILTER;
-
-        if (!checkEntryTire(context, event_info.race_code, main::game.course_code))
-            return EVENTRESULT_FILTER;
-
         main::sound.play("ok");
         SettingPopup::open(context, doRaceEvent);
 
@@ -859,13 +845,23 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
         widget.actor.warp();
     }
 
-    function doRaceEvent(context, level)
+    function doRaceEvent(context, level, laps, allCategories)
     {
+        main::game.toggleMultiCategoryAI(allCategories);
+
         var price = event_info.entrance_fee;
         main::game.incMoney(-price); 
         main::game.race_code = "eventgen_0000";
         if (main::game.course_code == "nurburgring" || main::game.course_code.beginWith("sarthe"))
             main::game.race_code = "eventgenlong_0000";
+
+        if (isOpenOrTestCar(context))
+            main::game.race_code = "eventgen_2car_0000";
+
+        if (!checkEntryTire(context, main::game.race_code, main::game.course_code))
+            return EVENTRESULT_FILTER;
+
+        main::sound.play("next");
 
         var ctype = main::menu::MCourseData::GetType(main::game.course_code);
         var dirt = ctype == "dirt" || ctype == "snow";
@@ -887,6 +883,8 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
 
         main::game.major_menu_project = "gtmode";
         main::game.major_menu_page = ROOT.name;
+
+        main::game.overrideLaps(laps);
 
         var veil_bg = ROOT["Common"]["Veil"]["bg"];
         var veil_title = ROOT["Common"]["Veil"]["Title"];

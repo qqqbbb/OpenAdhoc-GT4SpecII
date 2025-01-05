@@ -80,10 +80,13 @@ module GTmodeProject::CarViewRoot
             logInfo("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
         }
 
-        if (main::menu::MSystem::GetLanguage() != "US" || current_car_desc.size < 1 || current_car_desc == "")
+        if (/*main::menu::MSystem::GetLanguage() != "US" || */current_car_desc.size < 1 || current_car_desc == "")
             Pane::Description.visible = false;
         else
             Pane::Description.visible = true;
+
+        if (ROOT.getFocusedWidget() == Pane::Description && Pane::Description.visible == false)
+            ROOT.setFocus(Pane::Change);
     }
 
     function onFinalize(context)

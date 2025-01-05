@@ -1520,8 +1520,8 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::ExtremeHall
         if (!sureNoSuspended(context, true))
             return EVENTRESULT_FILTER;
             
-        /*if (!sureNoOpenModel(context))
-            return EVENTRESULT_FILTER;*/
+        if (!sureNoOpenModel(context))
+            return EVENTRESULT_FILTER;
 
         if (!sureNoTestCar(context))
             return EVENTRESULT_FILTER;
@@ -1813,6 +1813,10 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::ReplayTheater
             return EVENTRESULT_FILTER;
 
         main::sound.play("ok");
+
+        if (!openConfirmDialog(context, 4, "Open Replay Theater?"))
+            return EVENTRESULT_FILTER;
+
         main::game.major_menu_project = "gtmode";
         main::game.major_menu_page = ROOT.name;
         main::game.major_menu_widget = "ReplayTheater";
@@ -1918,6 +1922,8 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::GTAuto
 
 module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
 {
+    static entry_num = 6;
+    // TODO: Deprecate and make it work using getRandomCourse
     static two_car_courses = [
         "assisi",
         "capri",
@@ -1996,12 +2002,6 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
             return;
         }
 
-        if (!sureNoOpenModel(context))
-            return EVENTRESULT_FILTER;
-
-        if (!sureNoTestCar(context))
-            return EVENTRESULT_FILTER;
-
         main::sound.play("ok");
         SettingPopup::open(context, doEventGen);
         //doEventGen(context);
@@ -2025,10 +2025,12 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
         return true;
     }
 
-    function doEventGen(context, level)
+    function doEventGen(context, level, laps, allCategories)
     {
         import main::game;
         import main::network;
+
+        main::game.toggleMultiCategoryAI(allCategories);
 
         var offset = (level - 3).toFloat() * 0.01;
         var garage = game.garage;
@@ -2051,6 +2053,14 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
         game.race_code = "eventgen_0000";
         if (game.course_code == "nurburgring" || game.course_code.beginWith("sarthe"))
             game.race_code = "eventgenlong_0000";
+
+        if (isOpenOrTestCar(context))
+            game.race_code = "eventgen_2car_0000";
+
+        if (!checkEntryTire(context, game.race_code, main::game.course_code))
+            return EVENTRESULT_FILTER;
+
+        main::sound.play("next");
         
         var list = main::menu::MCarData::PickUpEnemyCars(main::game.garage.riding_car, 
             EnemyCarData::enemy_carlist,
@@ -2062,6 +2072,8 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
             game.setEntryCarCode(i + 1, list[i][0], list[i][1]);
 
         game.overwrite_enemy_num = list.size;
+
+        game.overrideLaps(laps);
 
         setFadeActor2(Common::Veil::bg);
         setFadeActor2(Common::Veil::Title);

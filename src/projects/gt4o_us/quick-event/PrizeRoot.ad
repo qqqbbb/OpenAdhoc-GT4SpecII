@@ -15,6 +15,7 @@
 module RaceEventProject::PrizeRoot
 {
     static prize_amount = nil;
+    static roulette_prize = false;
 
     /*static model_files = [
         "1st.mdl",
@@ -105,12 +106,20 @@ module RaceEventProject::PrizeRoot
 
         prize_amount = quick_work.prize;
 
+        if (race_code.beginWith("eventgen"))
+        {
+            var finishPos = order + 1;
+            print "finishPos: %{finishPos}";
+            var distanceDriven = (quick_work.CourseLength.toFloat() / 1000.0) * main::game.overrideLaps();
+            prize_amount = calcPrize(distanceDriven, finishPos);
+        }
+
         context.pushEvent(main::menu::MScriptEvent(context, ROOT, "doAction"));
     }
 
     function onFinalize(context)
     {
-        Info::label.text = nil;
+        Info::label.text = nil; 
         prize_amount = nil;
         var quick_work = main::menu::MQuickWork();
         quick_work.prize = 0;
@@ -131,10 +140,37 @@ module RaceEventProject::PrizeRoot
         prize_action(context, ROOT, prize_amount, Prize, Money::label, OK, rank);
     }
 
+    function calcPrize(totalDistance, finishPos)
+    {
+        var weightPos = 10000;
+        var weightDist = 2000;
+        var mult = 1;
+        var finishPosDiv = finishPos == 1 ? 1 : (finishPos.toFloat() + 2.0) / 2.0;
+        
+        var multPos = (6.0 - (finishPos).toFloat()) / 6.0;
+        var prize = ((((multPos * weightPos) + (totalDistance * weightDist)) * mult) / 10 / finishPosDiv).toInt() * 10; // Quick and dirty way to turn any ending value to 0
+        if (prize > 1500000)
+            prize = 1500000;
+
+        return prize;
+    }
+
+    function pow(base, exponent)
+    {
+        var res = 1;
+        for (var i = 0; i < exponent; i++)
+            res *= base;
+
+        return res;
+    }
+
     function onCancel(context)
     {
         main::sound.play("cancel");
-        start_page(context, AfterRoot);
+        if (roulette_prize)
+            start_page(context, RaffleRoot);
+        else
+            start_page(context, AfterRoot);
         return STATE_YIELD;
     }
 }
@@ -144,7 +180,10 @@ module RaceEventProject::PrizeRoot::OK
     function onActivate(context)
     {
         main::sound.play("ok");
-        start_page(context, AfterRoot);
+        if (roulette_prize)
+            start_page(context, RaffleRoot);
+        else
+            start_page(context, AfterRoot);
         return STATE_YIELD;
     }
 }

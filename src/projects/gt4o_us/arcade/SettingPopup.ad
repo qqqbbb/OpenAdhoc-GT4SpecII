@@ -330,7 +330,7 @@ module ArcadeProject::SettingPopup
 
         if (GameRoot::current_game != "TimeTrial" && GameRoot::current_game != "PhotoMode")
         {
-            Pane::Laps::slider.range = [1, 50];
+            Pane::Laps::slider.range = [1, 99];
             Pane::Laps::slider.index = main::game.option.race_laps;
 
             setupSlider(Pane::Laps::slider);
@@ -360,7 +360,7 @@ module ArcadeProject::SettingPopup
             }
             else
             {
-                Pane::Difficulty::slider.range = [-10, 10];
+                Pane::Difficulty::slider.range = [-15, 15];
                 Pane::Difficulty::slider.index = main::game.enemy_level;
             }
             setupSlider(Pane::Difficulty::slider);

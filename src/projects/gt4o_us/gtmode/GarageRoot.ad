@@ -36,6 +36,7 @@ module GTmodeProject::GarageRoot
     static is_from_event = false;
     static event_based_filter_category;
     static event_based_filters;
+    static manager = nil;
 
     function onLoad(context)
     {
@@ -96,6 +97,7 @@ module GTmodeProject::GarageRoot
     function onInitialize(context)
     {
         enterPage(context, ROOT, trade_mode_ ? "Trade" : "Garage");
+        manager = checkGameData(context, 0, manager);
         
         date_format = context.translate(ROOT, "date_format");
         init(context);
@@ -536,8 +538,6 @@ module GTmodeProject::GarageRoot
 
     function getItemText(context, car, item)
     {
-        var manager = nil;
-        manager = checkGameData(context, 0, manager);
         if (manager != nil)
         {
             garage_.popGarageCar(car.getGarageIndex(), car, manager);

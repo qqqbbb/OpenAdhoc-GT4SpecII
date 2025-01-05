@@ -1,0 +1,146 @@
+module RaceEventProject::RaffleRoot
+{
+    // This is the Enthusia-inspired prize car draw, inactive and currently unfinished
+    // May revisit this once I have better ideas to flesh it out but in the meantime who cares, have a look around if you want
+    static prize_amount = nil;
+    static roulette_prize = false;
+    static highlight_colour = main::menu::MColorObject(0.902, 0.525, 0.0, 1.0);
+    static wait_time = 0.05;
+    static tick_counter = 0;
+    static tick_limit = 100;
+    static idx = 0;
+    static quick_work;
+    
+    function onInitialize(context)
+    {
+        context.cursor_visible = false;
+        quick_work = main::menu::MQuickWork();
+
+        for (var i = 0; i < quick_work.numberOfEntries; i++)
+        {
+            ROOT["Grid" + (i + 1)]["CarName"].text = quick_work.getGridCarName(i);
+            ROOT["Grid" + (i + 1)]["CarName"].abbreviate();
+            //ROOT["Grid" + (i + 1)]["ColorChip"].setColor(quick_work.getColorChipInfo(i));
+        }
+
+        idx = main::menu::MRandom::GetValue(0, quick_work.numberOfEntries);
+        if (idx == quick_work.playerGridNumber)
+        {
+            idx++
+            print "idx matched player grid number, skipping ahead by 1";
+        }
+
+        //highlight(context, ROOT["Grid" + (idx + 1)]["CarName"]);
+
+        context.pushEvent(main::menu::MScriptEvent(context, ROOT, "runRoulette"));
+
+        //return;
+        
+    }
+
+    function runRoulette(context)
+    {
+        while (tick_counter <= tick_limit)
+        {
+            if (idx == 6)
+                idx = 0;
+            /*if (idx == quick_work.playerGridNumber)
+            {
+                idx++
+                print "idx matched player grid number, skipping ahead by 1";
+            }*/
+
+            if (tick_counter == 65)
+                wait_time *= 2;
+
+            if (tick_counter == 92)
+                wait_time *= 2;
+
+            if (tick_counter == 96)
+                wait_time *= 2;
+
+            if (tick_counter == 99)
+                wait_time *= 2;
+
+            print "idx == %{idx}\ntick_counter == %{tick_counter}";
+            idx++;
+            if (idx == 6)
+            {
+                rouletteNoHighlight(context);
+            }
+            else
+                rouletteHighlight(context, ROOT["Grid" + (idx + 1)]["CarName"]);
+        }
+
+        context.sync(0.25);
+        main::sound.play("next");
+
+        context.sync(1.2);
+        if (idx == 6)
+        {
+            Unlock.text = context.translate(ROOT, "No Cars Unlocked...");
+            main::sound.play("next");
+        }
+        else
+        {
+            Unlock.text = context.translate(ROOT, "Car Unlocked!");
+            main::sound.play("old_buy");
+        }
+
+        Unlock.visible = true;
+
+        ROOT.setFocus(OK);
+        context.sync(1);
+        OK.visible = true;
+        context.cursor_visible = true;
+    }
+
+    function rouletteNoHighlight(context)
+    {
+        main::sound.play("cursor");
+        context.sync(wait_time);
+        tick_counter++;
+    }
+
+    function rouletteHighlight(context, widget)
+    {
+        var orig_colour = widget.text_color;
+        main::sound.play("cursor");
+        widget.text_color = highlight_colour;
+
+        if (tick_counter == 0)
+            context.sync(wait_time * 2);
+        else
+            context.sync(wait_time);
+
+        if (tick_counter < tick_limit)
+            widget.text_color = orig_colour;
+
+        tick_counter++;
+    }
+
+    function onFinalize(context)
+    {
+        //Info::label.text = nil; 
+        //prize_amount = nil;
+        var quick_work = main::menu::MQuickWork();
+        quick_work.prize = 0;
+    }
+
+    function onCancel(context)
+    {
+        main::sound.play("cancel");
+        start_page(context, AfterRoot);
+        return STATE_YIELD;
+    }
+}
+
+/*module RaceEventProject::RouletteRoot::OK
+{
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+        start_page(context, AfterRoot);
+        return STATE_YIELD;
+    }
+}*/

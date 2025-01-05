@@ -728,7 +728,72 @@ module GTmodeProject::DebugMenuRoot
     {
         var cg = main::game.garage.riding_car;
         print cg;
-        //cg.makeNew();
+        cg.makeNew();
+    }
+
+    function printSuspSetting(context)
+    {
+        var cg = main::game.garage.riding_car;
+        cg.updateCurrentStatus();
+        cg.loadPartsInfo();
+        print cg.getSuspensionSetting();
+    }
+
+    function printHalls(context)
+    {
+        var events = [
+            "BeginnerHallEvents",
+            "ProfessionalHallEvents",
+            "ExtremeHallEvents",
+            "JapaneseRaceEvents",
+            "AmericanRaceEvents",
+            "EuropeanRaceEvents",
+            "RallyEvents",
+            "EnduranceEvents",
+            "alfaromeoEvents",
+            "astonmartinEvents",
+            "audiEvents",
+            "bmwEvents",
+            "chevroletEvents",
+            "chryslerEvents",
+            "citroenEvents",
+            "daihatsuEvents",
+            "dodgeEvents",
+            "fordEvents",
+            "hondaEvents",
+            "hyundaiEvents",
+            "isuzuEvents",
+            "jaguarEvents",
+            "lotusEvents",
+            "mazdaEvents",
+            "mercedesEvents",
+            "mg_miniEvents",
+            "miniEvents",
+            "mitsubishiEvents",
+            "nissanEvents",
+            "opelEvents",
+            "peugeotEvents",
+            "renaultEvents",
+            "alpineEvents",
+            "subaruEvents",
+            "suzukiEvents",
+            "toyotaEvents",
+            "triumphEvents",
+            "tvrEvents",
+            "volkswagenEvents",
+            "saleenEvents",
+            "shelbyEvents"
+        ];
+
+        for (var i = 0; i < events.size; i++)
+        {
+            printHallPrizes(context, events[i]);
+        }
+    }
+
+    function setLaps(context)
+    {
+        main::game.overrideLaps(123);
     }
 
     static buttons = [
@@ -754,8 +819,8 @@ module GTmodeProject::DebugMenuRoot
         //DebugOption("Show current wing info", getCurrentWing),
         //DebugOption("CarPaintRoot", goToPaintCar),
         //DebugOption("Force interlaced", changeScreenMode, ["normal"]),
-        DebugOption("Force 480p", changeScreenMode, ["480p"]),
-        //DebugOption("Force 1080i", changeScreenMode, ["1080i"])
+        DebugOption("Override Laps to 123", setLaps),
+        DebugOption("Print prizes by hall", printHalls)
     ];
 
     function setCarFace(cg)

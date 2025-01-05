@@ -48,9 +48,9 @@ module GTmodeProject::CarPaintRoot
 
             // Cars can have one special paint at most, for simplicity's sake these will always go on the end
             if (i == num - 1 && GTAutoRoot::has_special_paint)
-                chip.defineStatic("price", (car_price.toFloat() / 80.0).toInt() * 10);
+                chip.defineStatic("price", (car_price.toFloat() / 80.0).toInt() * 5);
             else
-                chip.defineStatic("price", (car_price.toFloat() / 100.0).toInt() * 10);
+                chip.defineStatic("price", (car_price.toFloat() / 100.0).toInt() * 5);
 
             ColScroll::SelectBox.appendChild(context, chip);
 
@@ -63,7 +63,7 @@ module GTmodeProject::CarPaintRoot
         watcher.interval = 1;
         watcher.append();
 
-        Price::label.text = main::menu::MUtility::GetMoneyString((car_price.toFloat() / 100.0).toInt() * 10);
+        Price::label.text = main::menu::MUtility::GetMoneyString((car_price.toFloat() / 100.0).toInt() * 5);
 
         ROOT.setFocus(ColScroll::SelectBox.first);
 
@@ -185,9 +185,9 @@ module GTmodeProject::CarPaintRoot::ColScroll::SelectBox
         var dialogText;
 
         if (ColScroll::Name.text == "" || ColScroll::Name.text.beginWith(" "))
-            dialogText = "Purchase this car paint?\nAny installed rims or wings will be removed.";
+            dialogText = "Apply this colour\nAny installed rims or wings will be removed.";
         else
-            dialogText = "Purchase the following car paint:\n%{CarFace.car_data.getColorName(index)}\nAny installed rims or wings will be removed."
+            dialogText = "Apply the following colour:\n%{CarFace.car_data.getColorName(index)}\nAny installed rims or wings will be removed."
 
         if (openConfirmDialog(context, 1, dialogText, "Confirm Purchase", "Buy"))
         {

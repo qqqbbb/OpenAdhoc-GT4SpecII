@@ -26,8 +26,8 @@ module OptionProject::SpecIISettingRoot
 
     function reflect(context)
     {
-        if (randomizer_enabled == nil)
-            randomizer_enabled = 0;
+        if (randomizer_flag == nil)
+            randomizer_flag = 0;
         if (global_asmo == nil)
             global_asmo = -1;
         if (global_asmu == nil)
@@ -42,7 +42,11 @@ module OptionProject::SpecIISettingRoot
             gauge_mode = -1;
 
         var option = main::game.option;
-        Pane::Randomizer::OptionMenu.setIndex(context, randomizer_enabled);
+
+        var car_rand_active = randomizer_flag & FLAG_PRIZE_RANDOMIZER;
+        var track_rand_active = randomizer_flag & FLAG_TRACK_RANDOMIZER;
+        Pane::Randomizer::OptionMenu.setIndex(context, car_rand_active ? 1 : 0);
+        Pane::TrackRandomizer::OptionMenu.setIndex(context, track_rand_active ? 1 : 0);
         Pane::ASMO::OptionMenu.setIndex(context, global_asmo + 1);
         Pane::ASMU::OptionMenu.setIndex(context, global_asmu + 1);
         Pane::TCS::OptionMenu.setIndex(context, global_tcsc + 1);
@@ -63,13 +67,35 @@ module OptionProject::SpecIISettingRoot
 
     function apply(context)
     {
-        randomizer_enabled = Pane::Randomizer::OptionMenu.index;
+        //randomizer_flag = Pane::Randomizer::OptionMenu.index;
         global_asmo = Pane::ASMO::OptionMenu.index - 1;
         global_asmu = Pane::ASMU::OptionMenu.index - 1;
         global_tcsc = Pane::TCS::OptionMenu.index - 1;
         show_owned_cars = Pane::HighlightOwned::OptionMenu.index;
         gauge_mode = Pane::GaugeMode::OptionMenu.index - 1;
         main::game.toggleGaugeMode(gauge_mode);
+
+        var randActive = Pane::Randomizer::OptionMenu.index;
+        
+        if (randActive)
+        {
+            randomizer_flag |= FLAG_PRIZE_RANDOMIZER;
+        }
+        else
+        {
+            randomizer_flag &= ~FLAG_PRIZE_RANDOMIZER;
+        }
+
+        randActive = Pane::TrackRandomizer::OptionMenu.index;
+        
+        if (randActive)
+        {
+            randomizer_flag |= FLAG_TRACK_RANDOMIZER;
+        }
+        else
+        {
+            randomizer_flag &= ~FLAG_TRACK_RANDOMIZER;
+        }
 
         // Camera setting flags
         var camActive = Pane::BonnetCam::OptionMenu.index;
@@ -152,6 +178,14 @@ module OptionProject::SpecIISettingRoot::Pane::Randomizer::OptionMenu
     function onFocusEnter(context, event)
     {
         ROOT::ToolTip::tip.value = context.translate(ROOT, "TOOLTIP|Randomizer").format(main::game.username);
+    }
+}
+
+module OptionProject::SpecIISettingRoot::Pane::TrackRandomizer::OptionMenu
+{
+    function onFocusEnter(context, event)
+    {
+        ROOT::ToolTip::tip.value = context.translate(ROOT, "TOOLTIP|TrackRandomizer").format(main::game.username);
     }
 }
 

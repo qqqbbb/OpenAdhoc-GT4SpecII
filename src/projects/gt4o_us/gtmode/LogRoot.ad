@@ -257,7 +257,10 @@ module GTmodeProject::LogRoot
                             if (event[2] != nil && event[2] != "")
                                 result = context.translate(ROOT, "RaceResult_" + event[2]);
 
-                            record.push(context.translate(ROOT, "RunRaceFormat1").build(racename, result));
+                            if (racename.beginWith("eventgen"))
+                                record.push(context.translate(ROOT, "RunRaceEventGenFormat").build(result));
+                            else
+                                record.push(context.translate(ROOT, "RunRaceFormat1").build(racename, result));
                             print "RUN_RACE: result=%{result}, event2=%{event[2]}\n";
                         }
                         else

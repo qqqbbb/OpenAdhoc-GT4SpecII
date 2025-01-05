@@ -22,6 +22,9 @@ module GTmodeProject::EventCourseRoot
     static preview_enable;
     static last_focus_race_widget = nil;
     static last_focus_mode_widget = nil;
+    static track_rand_active = false;
+    static show_aspec = false;
+    static fg_idx;
 
     static zoom = 1.0;
     static zoom_range = 0.2;
@@ -36,7 +39,7 @@ module GTmodeProject::EventCourseRoot
 
     function onInitialize(context)
     {
-        // Some really awful bug kept adding variables to the menuRef stac which would cause the game to crash in this function
+        // Some really awful bug kept adding variables to the menuRef stack which would cause the game to crash in this function
         // Never figured out what it was, but since the string for the SWF file is always at index 2, just keep popping from the stack until it aligns again
         while (!main::game.menuRef(2).endWith(".swf"))
         {   
@@ -108,9 +111,6 @@ module GTmodeProject::EventCourseRoot
                 break;
         }
 
-        print large_flyer_image;
-        print small_flyer_image;
-
         if (large_flyer_image != nil)
         {
             var flyer = FG1::flyer;
@@ -144,6 +144,7 @@ module GTmodeProject::EventCourseRoot
             label.adjustScale();
             FG1.visible = true;
             FG2.visible = false;
+            fg_idx = 1;
         }
         else
         {
@@ -211,6 +212,7 @@ module GTmodeProject::EventCourseRoot
 
             FG1.visible = false;
             FG2.visible = true;
+            fg_idx = 2;
         }
 
         RaceSelect.visible = false;
@@ -251,10 +253,16 @@ module GTmodeProject::EventCourseRoot
             Car::CarFace.car_model.ry = 120.0;
             Car::CarFace.car_model.warp();
         }
+
+        track_rand_active = randomizer_flag & FLAG_TRACK_RANDOMIZER;
         
         Car.visible = true;
         setFadeActor(TypicalOpponents["bgf"]);
         context.cursor_visible = true;
+
+        show_aspec = false;
+        FG1::score.visible = false;
+        FG1::spec.visible = true;
 
         camera_view_angle = Car::CarFace.view_angle;
         watcher = main::menu::MScriptWatcher(context, onTick);
@@ -489,6 +497,7 @@ module GTmodeProject::EventCourseRoot
         trophy.h = trophy.h * scale;
 
         var event_name = getEventNameByRaceCode(context, ROOT, racecode);
+        var unit = main::game.race_record.getUnit(racecode);
         var series_count = getSeriesRaceCount(racecode);
         var format_string = context.translate(ROOT, "EntrySeriesRaceFormat");
 
@@ -502,6 +511,7 @@ module GTmodeProject::EventCourseRoot
         {
             var prize_text = main::menu::MUtility::GetMoneyString(prize_gc);
             item.defineStatic("event_spec", context.translate(ROOT, "ChampionShipPrizeFormat").format(prize_text));
+            item.defineStatic("is_championship", true);
         }
 
         return item;
@@ -590,6 +600,7 @@ module GTmodeProject::EventCourseRoot
         }
 
         var racedata = main::menu::MRaceData(racecode);
+        var unit = main::game.race_record.getUnit(racecode);
         var lapstext = nil;
         var timetext = nil;
 
@@ -608,6 +619,8 @@ module GTmodeProject::EventCourseRoot
             item.defineStatic("event_spec", lapstext);
         else if (timetext != nil)
             item.defineStatic("event_spec", timetext);
+
+        item.defineStatic("event_score", unit.best_score);
 
         return item;
     }
@@ -728,6 +741,20 @@ module GTmodeProject::EventCourseRoot
         ROOT.setFocus(entry);
     }
 
+    function toggleScoreDisplay(context)
+    {
+        var widget = ROOT["FG%{fg_idx}"];
+        show_aspec = !show_aspec;
+
+        print last_focus_race_widget["event_score"];
+        // Since otherwise it wouldn't update until the focused event changes
+        widget.score.text = context.translate(ROOT, "BestScore").format(last_focus_race_widget["event_score"]);
+
+        widget.spec.visible = !show_aspec;
+        widget.score.visible = show_aspec;
+        main::sound.play("ok");
+    }
+
     function onActivate(context, event, object)
     {
         var item = object.getFocusedWidget();
@@ -766,6 +793,19 @@ module GTmodeProject::EventCourseRoot
             }
         }
         return EVENTRESULT_FILTER;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_START:
+                if (!last_focus_race_widget.defined("is_championship"))
+                    toggleScoreDisplay(context);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_CONTINUE;
     }
 }
 
@@ -831,6 +871,26 @@ module GTmodeProject::EventCourseRoot::RaceSelect::ScrollBox::SelectBox
     {
         var item = object.getFocusedWidget();
 
+        if (item.name == "CourseItem")
+        {
+            var racedata = main::menu::MRaceData(item["racecode"]);
+
+            if (item.defined("is_championship") && track_rand_active)
+            {    
+                main::sound.play("disable");
+                openConfirmDialog(context, 2, context.translate(ROOT, "ChampTrackRand"));
+
+                if (!openConfirmDialog(context, 4, context.translate(ROOT, "ChampDisableRand")))
+                    return EVENTRESULT_FILTER;
+                else
+                {
+                    randomizer_flag &= ~FLAG_TRACK_RANDOMIZER
+                    track_rand_active = false;
+                    saveNewSettings(context, false, false);
+                }
+            }
+        }
+
         if (item == nil || !item.defined("racecode"))
         {
             main::sound.play("disable");
@@ -868,6 +928,11 @@ module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
             return EVENTRESULT_FILTER;
         }
 
+        if (track_rand_active)
+        {
+            
+        }
+
         switch (item["id"])
         {
             case "entry":
@@ -880,8 +945,6 @@ module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
                 if (!sureNoGarageFull(context))
                     return EVENTRESULT_FILTER;
 
-                print getSeriesRaceCount(last_select_race);
-                print isSpotRaceCompleted(last_select_race);
                 if (getSeriesRaceCount(last_select_race) == 0 && isSpotRaceCompleted(last_select_race))
                 {
                     main::sound.play("ok");
@@ -905,10 +968,17 @@ module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
 
                 //clearFixedGpbs(context);
 
+                // Check again here in case it was disabled within this menu
+                track_rand_active = randomizer_flag & FLAG_TRACK_RANDOMIZER;
+
                 main::sound.play("next");
                 main::game.overwrite_enemy_num = 0;
                 main::game.course_code = "";
                 main::game.race_code = last_select_race;
+                if (track_rand_active)
+                {
+                    main::game.course_code = getRandomCourse(context, last_select_race, true);
+                }
                 main::game.major_menu_project = "gtmode";
                 main::game.major_menu_page = ROOT.name;
                 main::game.saveMenuStack();
@@ -924,6 +994,11 @@ module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
                 main::game.overwrite_enemy_num = 0;
                 main::game.course_code = "";
                 main::game.race_code = last_select_race;
+                if (track_rand_active)
+                {
+                    main::game.course_code = getRandomCourse(context, last_select_race, true);
+                    //break;
+                }
                 main::game.major_menu_project = "gtmode";
                 main::game.major_menu_page = ROOT.name;
                 main::game.saveMenuStack();
@@ -1012,13 +1087,27 @@ module GTmodeProject::EventCourseRoot::hidden::CourseItem
             if (widget.defined("event_spec"))
                 spec = widget["event_spec"];
 
+            var score = "";
+            if (widget.defined("event_score"))
+                score = widget["event_score"];
+
             if (FG1.visible)
                 FG1::spec.text = spec;
+
+            if (show_aspec && !widget.defined("is_championship"))
+            {
+                FG1::score.text = context.translate(ROOT, "BestScore").format(score);
+                FG2::score.text = context.translate(ROOT, "BestScore").format(score);
+            }
+            else
+            {
+                FG1::score.text = widget["event_spec"];
+                FG2::score.text = widget["event_spec"];
+            }
 
             if (FG2.visible)
                 FG2::spec.text = spec;
         }
-        logInfo(ROOT.getFocusedWidget());
         return 0;
     }
 }

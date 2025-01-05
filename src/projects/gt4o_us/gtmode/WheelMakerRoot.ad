@@ -26,6 +26,13 @@ module GTmodeProject::WheelMakerRoot
         // For tuner-built cars we want to override with their base manufacturer
         switch (tuner)
         {
+            case "amuse":
+                if (car.car_code == "amuse_carbonr_04")
+                    tuner = "nissan";
+                else
+                    tuner = "honda";
+                break;
+
             case "fpv":
                 tuner = "ford";
                 break;

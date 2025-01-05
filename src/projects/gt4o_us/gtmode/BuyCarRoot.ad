@@ -255,7 +255,7 @@ module GTmodeProject::BuyCarRoot
             logInfo("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
         }
 
-        if (main::menu::MSystem::GetLanguage() != "US" || current_car_desc.size < 1 || current_car_desc == "")
+        if (/*main::menu::MSystem::GetLanguage() != "US" || */current_car_desc.size < 1 || current_car_desc == "")
         {
             Pane::Description.visible = false;
             // Move this back to the middle if we're not in an English locale or no description exists
@@ -765,7 +765,7 @@ module GTmodeProject::BuyCarRoot::CarScroll::SelectBox
             logInfo("textdata/raw/CarDescriptions/%{"%08d".format(did)}.txt");
         }
 
-        if (main::menu::MSystem::GetLanguage() != "US" || current_car_desc.size < 1 || current_car_desc == "")
+        if (/*main::menu::MSystem::GetLanguage() != "US" || */current_car_desc.size < 1 || current_car_desc == "")
         {
             Pane::Description.visible = false;
             // Move this back to the middle if we're not in an English locale or no description exists

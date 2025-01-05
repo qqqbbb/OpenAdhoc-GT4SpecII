@@ -3,6 +3,9 @@
 #define FLAG_GT3_CAM (1 << 2);
 #define FLAG_ROOF_CAM (1 << 3);
 
+#define FLAG_PRIZE_RANDOMIZER (1);
+#define FLAG_TRACK_RANDOMIZER (1 << 1);
+
 module OptionProject::MComponent::SetupPanel::SetupWindow
 {
     method doColorize()
@@ -110,7 +113,7 @@ module OptionProject::MComponent::SetupPanel::Buttons::CancelOK::Yes::bgf
 module OptionProject
 {
     // Spec II options to save
-    static randomizer_enabled = -1;
+    static randomizer_flag = -1;
     static global_asmo = -1;
     static global_asmu = -1;
     static global_tcsc = -1;
@@ -147,7 +150,7 @@ module OptionProject
             switch (k)
             {
                 case "r":
-                    randomizer_enabled = v.toInt();
+                    randomizer_flag = v.toInt();
                     break; 
 
                 case "o":
@@ -236,7 +239,8 @@ module OptionProject
 
     function saveNewSettings(context)
     {
-        main::game.option.entrance_addr = "r=%{randomizer_enabled};o=%{global_asmo};u=%{global_asmu};t=%{global_tcsc};as=%{aspec_reward};so=%{show_owned_cars};vm=%{video_mode};c=%{cam_flag};g=%{gauge_mode};tm=%{transmission_volume}";
+        main::game.option.entrance_addr = "r=%{randomizer_flag};o=%{global_asmo};u=%{global_asmu};t=%{global_tcsc};as=%{aspec_reward};so=%{show_owned_cars};vm=%{video_mode};c=%{cam_flag};g=%{gauge_mode};tm=%{transmission_volume}";
+        print main::game.option.entrance_addr;
         main::game.setNeedSave();
     }
 }

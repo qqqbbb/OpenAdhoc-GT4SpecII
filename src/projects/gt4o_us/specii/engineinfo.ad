@@ -199,7 +199,7 @@ module CarEngineNames
     static corvette_z06_00_eng = "Chevrolet LS6";
     static corvette_z06_race_63_eng = "Chevrolet L84";
     static corvette_zr1_90_eng = "Chevrolet LT5";
-    static cougar_xr7_67_eng = "Ford FE 427";
+    static cougar_xr7_67_eng = "Ford FE 390";
     static coupe_turboplus_00_eng = "Fiat Pratola Serra C";
     static crossfire_04_eng = "Mercedes-Benz M112";
     static crx_15i_83_eng = "Honda EW5";
@@ -432,7 +432,7 @@ module CarEngineNames
     static minolta_toyota_88cv_89_eng = "Toyota R32V";
     static mira_tr_xx_avar_97_eng = "Daihatsu JB-JL";
     static mirage_1400glx_78_eng = "Mitsubishi 4G12";
-    static mirage_cyborg_zr_97_eng = "Mitsubishi 4G61T";
+    static mirage_cyborg_zr_97_eng = "Mitsubishi 4G92";
     static mm_r_tmv_01_eng = "Nissan CR12DE";
     static mobil_nsx_01_eng = "";
     static model_t_tourer_15_eng = "";

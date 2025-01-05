@@ -1,20 +1,18 @@
-project_name: RaceEventProject
+project_name: MissionProject
 project_folder: ..
 
 base_include_folder: ../../../../
 
-output_name: quick-event
+output_name: quick-mission
 
 version: 7
 
 files_to_compile: 
-  - name: quick-event.ad
+  - name: quick-mission.ad
     is_main: true
-  - name: RaceEventRoot.ad
-    is_main: true
-  - name: AfterRoot.ad
+  - name: MissionRoot.ad
     is_main: true
   - name: PrizeRoot.ad
     is_main: true
-  - name: RaffleRoot.ad
+  - name: AfterRoot.ad
     is_main: true

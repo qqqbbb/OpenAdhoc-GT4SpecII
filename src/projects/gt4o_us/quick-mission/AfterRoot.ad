@@ -12,7 +12,7 @@
 
 
 
-module RaceEventProject::RaceEventRoot
+module MissionProject::AfterRoot
 {
     #include "../quick-share/icon.ad";
 
@@ -32,6 +32,7 @@ module RaceEventProject::RaceEventRoot
             ROOT["Grid" + (i + 1)]["CarName"].text = quick_work.getGridCarName(i);
             ROOT["Grid" + (i + 1)]["CarName"].abbreviate();
             ROOT["Grid" + (i + 1)]["ColorChip"].setColor(quick_work.getColorChipInfo(i));
+            ROOT["Grid" + (i + 1)]["Time"].text = main::menu::MUtility::GetTimeString(quick_work.getGridTime(i));
         }
 
         for (var i = 1; i <= quick_work.numberOfEntries; i++)
@@ -50,53 +51,7 @@ module RaceEventProject::RaceEventRoot
             var gnum = quick_work.playerGridNumber + 1;
             ROOT["Grid" + gnum]["CarName"].color = ROOT::Hidden::MyGridColor.color;
             ROOT["Grid" + gnum]["GridNumber"].color = ROOT::Hidden::MyGridColor.color;
-        }
-
-        var race_code = main::menu::MQuickWork().raceLabel;
-
-        if (race_code == "family")
-            GridTitle_text.text = context.translate(ROOT, "EventName", race_code);
-        else
-            GridTitle_text.text = getEventNameByRaceCode(context, ROOT, race_code);
-
-        GridTitle_text.adjustScale();
-
-        var unit = main::game.race_record.getUnit(race_code);
-
-        Score.text = context.translate(ROOT, "BestScore").format(unit.best_score);
-        Score.adjustScale();
-
-        var course_label = quick_work.courseLabel;
-        Title.text = context.translate(ROOT, "CourseName", course_label);
-
-        if (quick_work.Laps > 0)
-            ROOT::ToolTip_Upper::CourseLength.text = context.translate(ROOT, "course_length").format(main::menu::MUnit::GetCourseLengthString(quick_work.CourseLength)) + " (Total Length: %{main::menu::MUnit::GetCourseLengthString(quick_work.CourseLength * quick_work.Laps)})";
-        else
-            ROOT::ToolTip_Upper::CourseLength.text = context.translate(ROOT, "course_length").format(main::menu::MUnit::GetCourseLengthString(quick_work.CourseLength));
-
-        if (quick_work.Laps != 1)
-        {
-            if (quick_work.Laps == 0)
-                ROOT::ToolTip_Upper::Laps.text = "Timed Race";
-            else 
-            {
-                ROOT::ToolTip_Upper::Laps.text = quick_work.Laps;
-                ROOT::ToolTip_Upper::Laps.text += context.translate(ROOT, "laps");
-            }
-        }
-        else 
-        {
-            ROOT::ToolTip_Upper::Laps.text = quick_work.Laps;
-            ROOT::ToolTip_Upper::Laps.text += context.translate(ROOT, "lap");
-        }
-
-        // If we're in event gen then get the hacky overridden lap count instead
-        if (race_code.beginWith("eventgen"))
-        {
-            var laps = main::game.overrideLaps();
-            ROOT::ToolTip_Upper::Laps.text = laps
-            ROOT::ToolTip_Upper::Laps.text += context.translate(ROOT, "laps");
-            ROOT::ToolTip_Upper::CourseLength.text = context.translate(ROOT, "course_length").format(main::menu::MUnit::GetCourseLengthString(quick_work.CourseLength)) + " (Total Length: %{main::menu::MUnit::GetCourseLengthString(quick_work.CourseLength * laps)})";
+            ROOT["Grid" + gnum]["Time"].color = ROOT::Hidden::MyGridColor.color;
         }
 
         main::sound.startStreamEx("pcm", "default_quick", -1, 1, main::game.option.menu_bgm_volume);
@@ -111,8 +66,8 @@ module RaceEventProject::RaceEventRoot
 
     static icon_name_tbl = [
         "Start",
-        "Spectator",
-        "Setting",
+        "Replay",
+        "SaveReplay",
         "Option",
         "Exit"
     ];
@@ -149,9 +104,6 @@ module RaceEventProject::RaceEventRoot
     {
         main::sound.play("cancel");
 
-        if (!openConfirmDialog(context, 1, context.translate(ROOT, "do you abandon this race?")))
-            return STATE_YIELD;
-
         main::sound.stopStream();
         var quick_work = main::menu::MQuickWork();
         quick_work.selectedCommand = "COMMAND_EXIT";
@@ -165,22 +117,16 @@ module RaceEventProject::RaceEventRoot
     }
 }
 
-module RaceEventProject::RaceEventRoot::Buttons::Start
+module MissionProject::AfterRoot::Buttons::Start
 {
     function onActivate(context)
-    {        
-        var quick_work = main::menu::MQuickWork();
-        if (!quick_work.IsASpec)
-        {
-            main::sound.play("disable");
-            openConfirmDialog(context, 2, context.translate(ROOT, "no race since you donot have license"));
-            return STATE_YIELD;
-        }
-
+    {
         main::sound.play("ok");
         main::sound.stopStream();
+
+        var quick_work = main::menu::MQuickWork();
         quick_work.selectedCommand = "COMMAND_START";
-        quick_work.cursorPosition = 0;
+        quick_work.cursorPosition = getIconIndex(context, "Start");
 
         context.transition.panOut(context);
         context.transition.syncOut(context);
@@ -190,34 +136,7 @@ module RaceEventProject::RaceEventRoot::Buttons::Start
     }
 }
 
-module RaceEventProject::RaceEventRoot::Buttons::Spectator
-{
-    function onActivate(context)
-    {
-        var quick_work = main::menu::MQuickWork();
-
-        if (quick_work.raceLabel.substr(0, 3) == "rh_")
-        {
-            main::sound.play("disable");
-            openConfirmDialog(context, 2, context.translate(ROOT, "no BSpec for this race"));
-            return STATE_YIELD;
-        }
-
-        main::sound.play("ok");
-        main::sound.stopStream();
-        quick_work.selectedCommand = "COMMAND_SPECTATOR";
-        quick_work.cursorPosition = 0;
-
-        context.transition.panOut(context);
-        context.transition.syncOut(context);
-        set_next_start_project();
-        context.finish();
-
-        return STATE_YIELD;
-    }
-}
-
-module RaceEventProject::RaceEventRoot::Buttons::Setting
+module MissionProject::AfterRoot::Buttons::Replay
 {
     function onActivate(context)
     {
@@ -225,19 +144,37 @@ module RaceEventProject::RaceEventRoot::Buttons::Setting
         main::sound.stopStream();
 
         var quick_work = main::menu::MQuickWork();
-        quick_work.selectedCommand = "COMMAND_SETTINGS";
-        quick_work.cursorPosition = getIconIndex(context, "Setting");
+        quick_work.selectedCommand = "COMMAND_REPLAY";
+        quick_work.cursorPosition = getIconIndex(context, "Replay");
 
         context.transition.panOut(context);
         context.transition.syncOut(context);
-        set_next_start_project();
         context.finish();
 
         return STATE_YIELD;
     }
 }
 
-module RaceEventProject::RaceEventRoot::Buttons::Option
+module MissionProject::AfterRoot::Buttons::SaveReplay
+{
+    function onActivate(context)
+    {
+        main::sound.play("ok");
+        main::sound.stopStream();
+
+        var quick_work = main::menu::MQuickWork();
+        quick_work.selectedCommand = "COMMAND_SAVE_REPLAY";
+        quick_work.cursorPosition = getIconIndex(context, "SaveReplay");
+
+        context.transition.panOut(context);
+        context.transition.syncOut(context);
+        context.finish();
+
+        return STATE_YIELD;
+    }
+}
+
+module MissionProject::AfterRoot::Buttons::Option
 {
     function onActivate(context)
     {
@@ -250,23 +187,19 @@ module RaceEventProject::RaceEventRoot::Buttons::Option
 
         context.transition.panOut(context);
         context.transition.syncOut(context);
-        set_next_start_project();
         context.finish();
 
         return STATE_YIELD;
     }
 }
 
-module RaceEventProject::RaceEventRoot::Buttons::Exit
+module MissionProject::AfterRoot::Buttons::Exit
 {
     function onActivate(context)
     {
         main::sound.play("ok");
-
-        if (!openConfirmDialog(context, 1, context.translate(ROOT, "do you abandon this race?")))
-            return STATE_YIELD;
-
         main::sound.stopStream();
+
         var quick_work = main::menu::MQuickWork();
         quick_work.selectedCommand = "COMMAND_EXIT";
         

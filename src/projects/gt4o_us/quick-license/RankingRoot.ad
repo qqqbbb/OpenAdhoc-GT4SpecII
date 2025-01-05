@@ -1,0 +1,159 @@
+module LicenseProject::RankingRoot
+{
+    function setMoveActor(widget)
+    {
+        var actor = main::menu::MMoveActor(widget, widget.x, 480.0);
+        widget.actor = actor;
+        widget.actor.ratio = 0.2;
+    }
+
+    function setFadeActorRoot()
+    {
+        var actor = main::menu::MFadeActor(ROOT, 1.0);
+        actor.repeat = false;
+        actor.period = 0.5;
+        ROOT.actor = actor;
+    }
+
+    setMoveActor(Head);
+    setMoveActor(ScrollBox);
+    setFadeActorRoot();
+
+    function open(context)
+    {
+        //tip = TopRoot["Common"]["ToolTip"]["tip"];
+        Head.actor.destinationY = 61.0;
+        Head.actor.out = false;
+        Head.actor.warp();
+
+        ScrollBox.actor.destinationY = 480.0;
+        ScrollBox.actor.out = true;
+        ScrollBox.actor.warp();
+
+        ROOT.actor.out = true;
+        ROOT.actor.warp();
+
+        context.pushPage(ROOT);
+        ScrollBox.actor.out = false;
+        Head.actor.out = true;
+        ROOT.actor.out = false;
+    }
+
+    function close(context)
+    {
+        ROOT.setFocus(nil);
+        Head.actor.destinationY = 480.0;
+        Head.actor.out = true;
+        ScrollBox.actor.destinationY = 480.0;
+        ScrollBox.actor.out = true;
+        ROOT.actor.out = true;
+
+        LicenseRoot.bg_dim.actor.out = true;
+
+        context.sync(0.15);
+
+        context.closePage(ROOT);
+    }
+
+    static current_unit = nil;
+    function onInitialize(context)
+    {
+        hidden.visible = false;
+
+        var quick_work = main::menu::MQuickWork();
+        var license_code = quick_work.raceLabel;
+        var unit = main::game.license_record.getUnit(license_code);
+
+        if (unit == nil)
+            return;
+
+        current_unit = unit;
+        Title::cat.text = context.translate(ROOT, "LicenseName", license_code.substr(0, 3) + "0000");
+        Title::cat.adjustScale();
+        Title::det.text = context.translate(ROOT, "LicenseName", license_code);
+        Title::det.adjustScale();
+
+        refresh(context);
+    }
+
+    function onFinalize(context)
+    {
+        ScrollBox::SelectBox.clearWindow(context);
+
+        current_unit = nil;
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_START:
+                main::sound.play("return");
+                PasscodePopup::open(context, current_unit, ScrollBox::SelectBox.index);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_CONTINUE;
+    }
+
+    function onCancel(context, event, item)
+    {
+        main::sound.play("cancel");
+        //start_page(context, LicenseRoot);
+        close(context);
+
+        return EVENTRESULT_FILTER;
+    }
+
+    function refresh(context)
+    {
+        var unit = current_unit;
+        var rank_num = unit.getRankNum();
+
+        ScrollBox::SelectBox.clearWindow(context);
+
+        for (var i = 0; i < 10; i++)
+        {
+            var item = i % 2 == 0 ? hidden::Item0.doCopy() : hidden::Item1.doCopy();
+            item["rank"].text = (i + 1).toString();
+
+            if (i < rank_num)
+            {
+                var result = unit.getResult(i);
+                if (result != "NONE")
+                    item["result"].image_path = "image/gtmode/license/" + result + ".png";
+
+                item["date"].text = unit.getDate(i);
+                item["time"].text = unit.getBestTime(i);
+            }
+
+            ScrollBox::SelectBox.appendChild(context, item);
+        }
+    }
+
+    function onValueChanged(context, index) {   }
+
+    function onActivate(context, event)
+    {
+        var unit = current_unit;
+        var rank_num = unit.getRankNum();
+        var index = ScrollBox::SelectBox.index;
+
+        if (index >= rank_num) 
+            return EVENTRESULT_FILTER;
+        
+        main::sound.play("ok");
+
+        if (openConfirmDialog(context, 4, context.translate(ROOT, "do you remove?")))
+        {
+            current_unit.deleteEntry(ScrollBox::SelectBox.index);
+            ROOT.visible = false;
+            ScrollBox::SelectBox.outFocus(ROOT);
+            refresh(context);
+            ScrollBox::SelectBox.callFocus(ROOT);
+            ROOT.visible = true;
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+}

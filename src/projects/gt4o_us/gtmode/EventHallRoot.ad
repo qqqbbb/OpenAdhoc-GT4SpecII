@@ -695,7 +695,8 @@ module GTmodeProject::EventHallRoot
         {
             if (PresentData::content_carlist[idx] != nil)
             {
-                logInfo("%{callingItem}: %{code}, prize = %{PresentData::content_carlist[idx]}");
+                //logInfo("%{callingItem}: %{code}, prize = %{main::menu::MCarData::GetCarName(PresentData::content_carlist[idx])}");
+                print "%{context.translate(ROOT, "EventName", code.substr(0, code.size - 5))} - %{main::menu::MCarData::GetCarName(PresentData::content_carlist[idx])}";
                 return;
             }
         }
