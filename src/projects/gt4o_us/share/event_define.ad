@@ -156,6 +156,7 @@ module EventData
 		EventInfo("pr_boxer_0000"),
 		EventInfo("pr_na_0000"),
 		EventInfo("pr_turbo_0000"),
+		EventInfo("pr_concept_0000"),
 		EventInfo("pr_compact_0500"),
 		EventInfo("pr_city_0000"),
 		EventInfo("pr_classic_0500"),
@@ -454,7 +455,8 @@ module EventData
 	static toyotaEvents = [
 		"Race_toyota",
 		EventInfo("jp_toyota_vitz_0000"),
-		EventInfo("jp_toyota_altezza_0000")
+		EventInfo("jp_toyota_altezza_0000"),
+		EventInfo("jp_toyota_sports_0000")
 	];
 	
 	static triumphEvents = [
@@ -651,7 +653,7 @@ module EventData
 	
 	
 		["testcourse", EventInfo("mt400_testcourse", 5), nil, EventInfo("mt1000_testcourse", 5), EventInfo("mtmax_testcourse", 5)],
-		["lasvegas", EventInfo("mt400_lasvegas", 5), nil, nil, nil]
+		["lasvegas", EventInfo("mt400_lasvegas", 5), EventInfo("eventgen_0000", 0), nil, nil]
 	];
 	
 }

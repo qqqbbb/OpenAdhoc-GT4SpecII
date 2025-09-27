@@ -11,6 +11,7 @@ module ChampionshipProject::ChampionshipRoot
 
     function onInitialize(context)
     {
+        print "Override lap mult == " + main::game.option.LAN_auto_machine_num;
         var quick_work = main::menu::MQuickWork();
 
         for (var i = 0; i < quick_work.numberOfEntries; i++)
@@ -61,6 +62,21 @@ module ChampionshipProject::ChampionshipRoot
         {
             ROOT::ToolTip_Upper::Laps.text = quick_work.Laps;
             ROOT::ToolTip_Upper::Laps.text += context.translate(ROOT, "lap");
+        }
+
+        var overrideLapMult = main::game.option.LAN_auto_machine_num;
+        print "OverrideLapMult is set to %{overrideLapMult}";
+        // If the laps have been overridden in any way, get the hack lap count instead
+        // No eventgen check in championships
+        if (main::game.overrideLaps() != -1 || overrideLapMult > 1)
+        {
+            // If the LAN one was true then we want to re-override the laps just to ensure the count is correct for this event
+            if (overrideLapMult > 1)
+                main::game.overrideLaps(quick_work.Laps * overrideLapMult);
+            var laps = main::game.overrideLaps();
+            ROOT::ToolTip_Upper::Laps.text = laps
+            ROOT::ToolTip_Upper::Laps.text += context.translate(ROOT, "laps");
+            ROOT::ToolTip_Upper::CourseLength.text = context.translate(ROOT, "course_length").format(main::menu::MUnit::GetCourseLengthString(quick_work.CourseLength)) + " (Total Length: %{main::menu::MUnit::GetCourseLengthString(quick_work.CourseLength * laps)})";
         }
 
         var race_code = main::menu::MQuickWork().raceLabel;

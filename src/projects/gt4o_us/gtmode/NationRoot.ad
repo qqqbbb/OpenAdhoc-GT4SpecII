@@ -91,7 +91,8 @@ module GTmodeProject::NationRoot
         var usbcamera_connected = false;
 
         var nike_enabled = true;//usbcamera_connected || main::game.isCarAvailable("nike_one_04");
-        var pd_enabled = wonRace("pr_gtworld_1000") || isCarOwned("formula_gran_turismo_04");
+        var [achieve, score] = getRaceEventRecordStatistics();
+        var pd_enabled = achieve == 1000.0 || haveWonMissionSequence(35, 40) || wonRace("en_nur24h_0001") || wonRace("ex_formula_1200") || wonRace("pr_gtworld_1000") || isCarOwned("formula_gran_turismo_04");
         var available_num = 0;
 
         for (var i = 0; i < dealers.size; i++)
@@ -103,7 +104,7 @@ module GTmodeProject::NationRoot
             if (dealer == "polyphony" && !pd_enabled)
                 continue;
 
-            var listname = dealer + "_carnum";
+            var listname = dealer + "_carlist";
             if (!NewCarData.defined(listname) && !LegendCarData.defined(listname) && !CompleteCarData.defined(listname))
                 continue;
 
@@ -127,7 +128,7 @@ module GTmodeProject::NationRoot
             if (dealer == "polyphony" && !pd_enabled)
                 continue;
 
-            var listname = dealer + "_carnum";
+            var listname = dealer + "_carlist";
             if (!NewCarData.defined(listname) && !LegendCarData.defined(listname) && !CompleteCarData.defined(listname))
                 continue;
 

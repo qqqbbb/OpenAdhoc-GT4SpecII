@@ -92,6 +92,14 @@ module ArcadeProject::SettingPopup
     tire_normal_options.push("tire_type_3");
     tire_normal_options.push("tire_type_4");
     tire_normal_options.push("tire_type_5");
+    // Disabled until quick-arcade is reversed as we want the tire options to remain consistent between this menu and Quick Tune-up
+    /*
+    tire_normal_options.push("tire_type_6");
+    tire_normal_options.push("tire_type_7");
+    tire_normal_options.push("tire_type_8");
+    tire_normal_options.push("tire_type_9");
+    tire_normal_options.push("tire_type_10");
+    */
 
     static tire_racing_options = [];
     tire_racing_options.push("tire_type_6");
@@ -331,7 +339,11 @@ module ArcadeProject::SettingPopup
         if (GameRoot::current_game != "TimeTrial" && GameRoot::current_game != "PhotoMode")
         {
             Pane::Laps::slider.range = [1, 99];
-            Pane::Laps::slider.index = main::game.option.race_laps;
+
+            if (GameRoot::current_game == "SplitBattle")
+                Pane::Laps::slider.index = main::game.option.split_race_laps;
+            else
+                Pane::Laps::slider.index = main::game.option.race_laps;
 
             setupSlider(Pane::Laps::slider);
             Pane::Laps.visible = true;
@@ -441,7 +453,11 @@ module ArcadeProject::SettingPopup::Pane::Laps::slider
     function onValueChanged(context) 
     { 
         setupSlider(slider);
-        main::game.option.race_laps = slider.index;
+
+        if (GameRoot::current_game == "SplitBattle")
+            main::game.option.split_race_laps = slider.index;
+        else
+            main::game.option.race_laps = slider.index;
     }
 }
 

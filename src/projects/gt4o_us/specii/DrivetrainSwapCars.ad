@@ -2,11 +2,19 @@ module DrivetrainSwapCars
 {
     static carlist = [
         "beetle_20_00",
+        "celica_2000gt_r_86",
+        "celica_gtr_4ws_91",
+        "eagle_talon_esi_97",
+        "eclipse_gt_06",
+        "eclipse_gt_95",
+        "eclipse_spyder_gts_03",
         "focus_rs_02",
         "focus_st170_jp_03",
         "golf_gti_01",
         "golf_gti_05",
+        "interceptor_mk3_74",
         "nismo_gtr_lm_95",
+        "panda_super_ie_90",
         "s60_t5_sport_03"
     ]
 }

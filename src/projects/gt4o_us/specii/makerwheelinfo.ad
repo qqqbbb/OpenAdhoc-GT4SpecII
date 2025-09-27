@@ -516,6 +516,22 @@ module MakerWheels
         "peug0012",
         "peug0013"
     ];
+
+    static renault_carlist = [
+        "re__0001",
+        "re__0002",
+        "re__0003",
+        "re__0004",
+        //"re__0005",
+        "re__0006",
+        "re__0007",
+        "re__0008",
+        //"re__0009",
+        //"re__0010",
+        "re__0011",
+        "re__0012",
+        "re__0013"
+    ]
     
     static ruf_carlist = [
         "ruf_0001",
@@ -549,6 +565,20 @@ module MakerWheels
         "subr0029",
         "subr0030"
     ];
+
+    static suzuki_carlist = [
+        "suzk0001",
+        "suzk0002",
+        "suzk0003",
+        "suzk0004",
+        "suzk0005",
+        "suzk0006",
+        "suzk0007",
+        "suzk0008",
+        "suzk0009",
+        "suzk0010",
+        //"suzk0011"
+    ]
 
     static toyota_carlist = [
         "toyt0001",

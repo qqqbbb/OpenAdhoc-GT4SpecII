@@ -62,7 +62,7 @@ switch (main::menu::MSystem::GetRegionCode())
 }
 
 static UsingLanguageNum = UsingLanguages.size; // Picked by engine
-static modver = "1.08";
+static modver = "1.10";
 
 #include "bgmplaylist.h"
 

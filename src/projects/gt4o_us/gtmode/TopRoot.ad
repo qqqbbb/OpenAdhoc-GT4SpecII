@@ -1617,13 +1617,14 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::Rally
             return EVENTRESULT_FILTER;
 
         main::sound.play("ok");
+
         main::game.menuPush(ROOT.name);
         main::game.menuPush("Rally");
         main::game.menuPush("rally.swf");
         main::game.menuPush("RallyEvents");
-
+        
         start_page(context, EventHallRoot);
-
+        
         return EVENTRESULT_FILTER;
     }
 
@@ -1705,11 +1706,14 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::Endurance
         if (!sureNoTestCar(context))
             return EVENTRESULT_FILTER;
 
-        if (!canEntryEndurance())
+        if (!is_debug)
         {
-            main::sound.play("disable");
-            openConfirmDialog(context, 2, context.translate(ROOT, "you cannot play Endurance yet"));
-            return EVENTRESULT_FILTER;
+            if (!canEntryEndurance())
+            {
+                main::sound.play("disable");
+                openConfirmDialog(context, 2, context.translate(ROOT, "you cannot play Endurance yet"));
+                return EVENTRESULT_FILTER;
+            }
         }
 
         main::sound.play("ok");
@@ -2003,7 +2007,7 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
         }
 
         main::sound.play("ok");
-        SettingPopup::open(context, doEventGen);
+        SettingPopup::open(context, doEventGen, false);
         //doEventGen(context);
         
         return EVENTRESULT_FILTER;
@@ -2051,8 +2055,6 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
         game.max_entry = max_entry;
 
         game.race_code = "eventgen_0000";
-        if (game.course_code == "nurburgring" || game.course_code.beginWith("sarthe"))
-            game.race_code = "eventgenlong_0000";
 
         if (isOpenOrTestCar(context))
             game.race_code = "eventgen_2car_0000";

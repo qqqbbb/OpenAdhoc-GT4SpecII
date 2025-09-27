@@ -12,7 +12,10 @@
 
 module GTmodeProject::SettingPopup
 {
+    static initial_open_page;
+    static racedata;
     static tip;
+
     function setMoveActor(widget)
     {
         var actor = main::menu::MMoveActor(widget, widget.x, 480.0);
@@ -33,22 +36,31 @@ module GTmodeProject::SettingPopup
 
     static go_func;
 
-    function open(context, func)
+    function open(context, func, isEvent)
     {
         var from_page = context.getCurrentPage().name;
-        print from_page;
-        switch (from_page)
+        
+        // Make this stick, as open -> close -> open causes from_page to become SettingPopup and break things
+        if (from_page != "SettingPopup")
+            initial_open_page = from_page;
+
+        switch (initial_open_page)
         {
             case "CourseEntryRoot":
                 tip = CourseEntryRoot["Common"]["ToolTip"]["tip"];
                 break;
+            case "EventCourseRoot":
+                tip = EventCourseRoot["Common"]["ToolTip"]["tip"];
+                racedata = main::menu::MRaceData(EventCourseRoot::last_select_race);
+                break;
             case "TopRoot":
             default:
-                tip = TopRoot["Common"]["ToolTip"]["tip"]; 
+                tip = nil; 
                 break;
         }
 
-        go_func = func;
+        if (func != nil)
+            go_func = func;
 
         ROOT.setFocus(nil);
         Pane.actor.destinationY = 480.0;
@@ -61,7 +73,26 @@ module GTmodeProject::SettingPopup
         context.pushPage(ROOT);
         Pane.actor.out = false;
         ROOT.actor.out = false;
-        ROOT.setFocus(Pane::Difficulty::slider);
+
+        if (isEvent)
+        {
+            Pane::Difficulty.visible = false;
+            Pane::Laps.visible = false;
+            Pane::AllCategories.visible = false;
+            Pane::LengthMult.visible = true;
+            ROOT.setFocus(Pane::LengthMult::slider);
+        }
+        else
+        {
+            Pane::Difficulty.visible = true;
+            Pane::Laps.visible = true;
+            Pane::AllCategories.visible = true;
+            Pane::LengthMult.visible = false;
+            ROOT.setFocus(Pane::Difficulty::slider);
+        }
+
+        if (main::game.course_code == "lasvegas")
+            Pane::Laps.visible = false;
     }
 
     function close(context)
@@ -78,10 +109,19 @@ module GTmodeProject::SettingPopup
 
     function setupSlider(slider)
     {
-        slider["label"].text = slider.index;
-
         var popup = slider["popup"];
-        popup["pinch"]["value"].text = slider.index;
+
+        if (slider == Pane::LengthMult::slider)
+        {
+            slider["label"].text = "x%{slider.index}";
+            popup["pinch"]["value"].text = "x%{slider.index}";
+        }
+        else
+        {
+            slider["label"].text = slider.index;
+            popup["pinch"]["value"].text = slider.index;
+        }
+
         popup["min"].adjustScale();
         popup["max"].adjustScale();
     }
@@ -96,6 +136,10 @@ module GTmodeProject::SettingPopup
         Pane::Laps::slider.range = [1, 99];
         Pane::Laps::slider.index = 2;
         setupSlider(Pane::Laps::slider);
+
+        Pane::LengthMult::slider.range = [1, 10];
+        Pane::LengthMult::slider.index = 1;
+        setupSlider(Pane::LengthMult::slider);
     }
 
     function onFinalize(context) { }
@@ -103,6 +147,15 @@ module GTmodeProject::SettingPopup
     function onCancel(context, event, item)
     {
         main::sound.play("cancel");
+
+        if (Pane::LengthMult.visible && racedata != nil)
+        {
+            if (getSeriesRaceCount(EventCourseRoot::last_select_race) > 0)
+                EventCourseRoot::FG1::spec.text = context.translate(EventCourseRoot, "ChampionShipPrizeFormat").format(main::menu::MUtility::GetMoneyString(racedata.getPrizeGC()));
+            else
+                EventCourseRoot::FG1::spec.text = context.translate(EventCourseRoot, "RaceLapsFormat").format(racedata.getNumberOfLaps());
+        }
+
         close(context);
         return EVENTRESULT_FILTER;
     }
@@ -112,7 +165,8 @@ module GTmodeProject::SettingPopup::Pane::Difficulty::slider
 {
     function onFocusEnter(context)
     {
-        tip.value = context.translate(ROOT, "TOOLTIP|Difficulty");
+        if (tip != nil)
+            tip.value = context.translate(ROOT, "TOOLTIP|Difficulty");
     }
 
     function onValueChanged(context)
@@ -125,7 +179,8 @@ module GTmodeProject::SettingPopup::Pane::Laps::slider
 {
     function onFocusEnter(context)
     {
-        tip.value = context.translate(ROOT, "TOOLTIP|Laps");
+        if (tip != nil)
+            tip.value = context.translate(ROOT, "TOOLTIP|Laps");
     }
 
     function onValueChanged(context)
@@ -134,11 +189,41 @@ module GTmodeProject::SettingPopup::Pane::Laps::slider
     }
 }
 
+module GTmodeProject::SettingPopup::Pane::LengthMult::slider
+{
+    function onFocusEnter(context)
+    {
+        if (tip != nil)
+            tip.value = context.translate(ROOT, "TOOLTIP|LengthMult");
+    }
+
+    function onValueChanged(context)
+    {
+        setupSlider(slider);
+
+        // This option is only used when on EventCourseRoot so we're okay to access it directly
+        if (EventCourseRoot::FG1.visible)
+        {
+            EventCourseRoot::FG1::spec.text = context.translate(EventCourseRoot, "RaceLapsFormat").format(racedata.getNumberOfLaps() * slider.index);
+        }
+        else
+        {
+            // No idea why FG2 duplicates it into spec and score, but hey ho
+            EventCourseRoot::FG2::spec.text = context.translate(EventCourseRoot, "RaceLapsFormat").format(racedata.getNumberOfLaps() * slider.index);
+            EventCourseRoot::FG2::score.text = context.translate(EventCourseRoot, "RaceLapsFormat").format(racedata.getNumberOfLaps() * slider.index);
+        }
+
+        // Hijacking another options field to use as a cross-project variable
+        main::game.option.LAN_auto_machine_num = slider.index;
+    }
+}
+
 module GTmodeProject::SettingPopup::Pane::AllCategories::OptionMenu
 {
     function onFocusEnter(context)
     {
-        tip.value = context.translate(ROOT, "TOOLTIP|Categories");
+        if (tip != nil)
+            tip.value = context.translate(ROOT, "TOOLTIP|Categories");
     }
 }
 
@@ -146,7 +231,8 @@ module GTmodeProject::SettingPopup::Pane::Button::OK
 {
     function onFocusEnter(context)
     {
-        tip.value = "";
+        if (tip != nil)
+            tip.value = "";
     }
 
     function onActivate(context, event, item)

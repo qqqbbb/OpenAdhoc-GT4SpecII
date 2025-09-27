@@ -451,64 +451,88 @@ module GTmodeProject::TuningApplyRoot::ScrollBox::SelectBox
         }
 
         var price = widget["price"];
-        main::sound.play("ok");
         
         print "Category %{category}";
-        var res = TuningDialog::open(context, type, category, price);
-        if (res)
-        {
-            main::game.incMoney(-price);
-            refreshMoney(ROOT);
-            main::game.setNeedSave();
 
-            if (category == 33)
+        if (category == 33)
+        {
+            if (main::game.garage.isFull())
             {
-                current_car.dirtiness = 0;
-                current_car.refreshBody();
-                current_car.replaceOil();
-                current_car.odometer = 0;
+                main::sound.play("disable");
+                openConfirmDialog(context, 2, context.translate(BuyCarRoot, "garage full"));
+                return EVENTRESULT_FILTER;
+            }
+            
+            if (!main::game.isEnoughMoney(price))
+            {
+                main::sound.play("disable");
+                openConfirmDialog(context, 2, context.translate(TopRoot, "NotEnoughMoney"));
+                return false;
             }
 
-            if (type < PARTS_TYPE_TUNE_MAX)
+            main::sound.play("ok");
+
+            if (openConfirmDialog(context, 1, context.translate(ROOT, "RestoreConfirm"), "Confirm Purchase", "Buy"))
             {
-                current_car.getParts(type, category);
+                main::sound.play("buy");
+                copyGarageCar(context, current_car.getColorIndex(), true);
+                main::game.incMoney(-price);
+                refreshRideCar(ROOT, context, true);
 
-                if (type == PARTS_TYPE_FRONTTIRE)
-                    current_car.getParts(PARTS_TYPE_REARTIRE, category);
+                main::game.setNeedSave();
+            }
+        }
+        else 
+        {
+            main::sound.play("ok");
+            var res = TuningDialog::open(context, type, category, price);
+            if (res)
+            {
+                main::game.incMoney(-price);
+                refreshMoney(ROOT);
+                main::game.setNeedSave();
 
-                var reversibility = current_car.isReversibilityType(type);
-                if (reversibility)
+                if (type < PARTS_TYPE_TUNE_MAX)
                 {
-                    res = openConfirmDialog(context, 4, context.translate(ROOT, "You bought it. Do you equip this parts now?"));
-                    if (res)
+                    current_car.getParts(type, category);
+
+                    if (type == PARTS_TYPE_FRONTTIRE)
+                        current_car.getParts(PARTS_TYPE_REARTIRE, category);
+
+                    var reversibility = current_car.isReversibilityType(type);
+                    if (reversibility)
                     {
-                        //dummyProgress(context, 300.0);
+                        res = openConfirmDialog(context, 4, context.translate(ROOT, "You bought it. Do you equip this parts now?"));
+                        if (res)
+                        {
+                            //dummyProgress(context, 300.0);
+                            set_parts_consistent(current_car, type, category);
+                            openConfirmDialog(context, 0, context.translate(ROOT, "You have equipped this parts."));
+                        }
+                    }
+                    else
+                    {
+                        //dummyProgress(context, 1000.0);
                         set_parts_consistent(current_car, type, category);
-                        openConfirmDialog(context, 0, context.translate(ROOT, "You have equipped this parts."));
+                        openConfirmDialog(context, 0, context.translate(ROOT, "You have done this."));
                     }
                 }
                 else
                 {
                     //dummyProgress(context, 1000.0);
-                    set_parts_consistent(current_car, type, category);
+                    switch (type)
+                    {
+                        case 32:
+                            current_car.refreshBody();
+                            break;
+                    }
+
                     openConfirmDialog(context, 0, context.translate(ROOT, "You have done this."));
                 }
             }
-            else
-            {
-                //dummyProgress(context, 1000.0);
-                switch (type)
-                {
-                    case 32:
-                        current_car.refreshBody();
-                        break;
-                }
-
-                openConfirmDialog(context, 0, context.translate(ROOT, "You have done this."));
-            }
-
-            visiblity_refresh(context);
         }
+
+        visiblity_refresh(context);
 
         return EVENTRESULT_FILTER;
     }

@@ -830,8 +830,11 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
         if (!sureRiding(context))
             return EVENTRESULT_FILTER;
 
+        if (!checkEntryTire(context, event_info.race_code, main::game.course_code))
+            return EVENTRESULT_FILTER;
+
         main::sound.play("ok");
-        SettingPopup::open(context, doRaceEvent);
+        SettingPopup::open(context, doRaceEvent, false);
 
         return EVENTRESULT_FILTER;
     }
@@ -852,14 +855,9 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
         var price = event_info.entrance_fee;
         main::game.incMoney(-price); 
         main::game.race_code = "eventgen_0000";
-        if (main::game.course_code == "nurburgring" || main::game.course_code.beginWith("sarthe"))
-            main::game.race_code = "eventgenlong_0000";
 
         if (isOpenOrTestCar(context))
             main::game.race_code = "eventgen_2car_0000";
-
-        if (!checkEntryTire(context, main::game.race_code, main::game.course_code))
-            return EVENTRESULT_FILTER;
 
         main::sound.play("next");
 
@@ -875,6 +873,8 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
             offset, range,
             max_entry - 1,
             dirt);
+
+        var isDragRace = main::game.course_code == "lasvegas"
         
         for (var i = 0; i < list.size; i++)
             main::game.setEntryCarCode(i + 1, list[i][0], list[i][1]);
@@ -884,7 +884,8 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
         main::game.major_menu_project = "gtmode";
         main::game.major_menu_page = ROOT.name;
 
-        main::game.overrideLaps(laps);
+        if (!isDragRace)
+            main::game.overrideLaps(laps);
 
         var veil_bg = ROOT["Common"]["Veil"]["bg"];
         var veil_title = ROOT["Common"]["Veil"]["Title"];
@@ -908,8 +909,12 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
         
         context.sync(1.0);
 
+        // Small exception so that Las Vegas doesn't try to boot into quick-mt
         if (page_title == "PowerAndSpeed")
-            exit_menu(context, "machinetest");
+            if (!isDragRace)
+                exit_menu(context, "machinetest");
+            else
+                exit_menu(context, "solo_event");
         else
             exit_menu(context, "solo_event");
 

@@ -71,7 +71,7 @@ module CarData
 		"falcon_xr8_race_00"
 	];
 
-	static audi_carnum = 17;
+	static audi_carnum = 18;
 	static audi_carlist = [
 		"a2_14_02",
 		"quattro_82",
@@ -89,6 +89,7 @@ module CarData
 		"lemans_quattro_03",
 		"a4_dtm_04",
 		"tt_dtm_02",
+		"autounion_v16_typec_sl_37",
 		"r8_race_01"
 	];
 
@@ -491,7 +492,7 @@ module CarData
 		"mini_marcos_gt_70"
 	];
 
-	static mazda_carnum = 51;
+	static mazda_carnum = 52;
 	static mazda_carlist = [
 		"carol_360_deluxe_62",
 		"az1_92",
@@ -538,6 +539,7 @@ module CarData
 		"murao_rx7_03",
 		"kusabi_concept_03",
 		"mazda6_tmv_01",
+		"mazda_suv_concept_05",
 		"rx8_concept_01",
 		"rx8_tmv_01",
 		"mazda6_tmv_n1_01",

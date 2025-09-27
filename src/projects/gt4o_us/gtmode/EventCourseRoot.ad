@@ -745,8 +745,7 @@ module GTmodeProject::EventCourseRoot
     {
         var widget = ROOT["FG%{fg_idx}"];
         show_aspec = !show_aspec;
-
-        print last_focus_race_widget["event_score"];
+        
         // Since otherwise it wouldn't update until the focused event changes
         widget.score.text = context.translate(ROOT, "BestScore").format(last_focus_race_widget["event_score"]);
 
@@ -912,81 +911,110 @@ module GTmodeProject::EventCourseRoot::RaceSelect::ScrollBox::SelectBox
 
 module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
 {
-    function onActivate(context, event, object)
+    // These are split out into a function now that they have two potential callers
+    function checkValidWidget(context, widget)
     {
-        var item = object.getFocusedWidget();
+        var item = widget;
         
         if (item == nil)
         {
             main::sound.play("disable");
-            return EVENTRESULT_FILTER;
+            return nil;
         }
 
         if (!item.defined("id"))
         {
             main::sound.play("disable");
-            return EVENTRESULT_FILTER;
+            return nil;
         }
 
+        return item;
+    }
+
+    function goToRace(context)
+    {
+        if (!sureRiding(context))
+            return;
+
+        if (!checkEntryTire(context, last_select_race, nil))
+            return;
+
+        if (!sureNoGarageFull(context))
+            return;
+
+        if (getSeriesRaceCount(last_select_race) == 0 && isSpotRaceCompleted(last_select_race))
+        {
+            main::sound.play("ok");
+            var result = openConfirmDialog(context, 3, 
+                context.translate(ROOT, "ComfirmClearSingleRaceResult"),
+                nil,
+                context.translate(ROOT, "YesClear"),
+                context.translate(ROOT, "NoGoRace"));
+            
+            if (result)
+            {
+                clearSpotRaceResult(last_select_race);
+                openConfirmDialog(context, 0, context.translate(ROOT, "NotifySingleRaceResultCleared"));
+                init_race_item(context);
+                init_mode(context, MODE_SELECT_RACE);
+                return;
+            }
+
+            context.sync(0.25);
+        }
+
+        // Check again here in case it was disabled within this menu
+        track_rand_active = randomizer_flag & FLAG_TRACK_RANDOMIZER;
+
+        main::sound.play("next");
+        main::game.overwrite_enemy_num = 0;
+        main::game.course_code = "";
+        main::game.race_code = last_select_race;
         if (track_rand_active)
         {
-            
+            main::game.course_code = getRandomCourse(context, last_select_race, true);
         }
+        main::game.major_menu_project = "gtmode";
+        main::game.major_menu_page = ROOT.name;
+        main::game.saveMenuStack();
+
+        if (isChampionship(last_select_race))
+            exit_menu(context, "championship");
+        else
+            exit_menu(context, "solo_event");
+    }
+
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_R1:
+                if (EventHallRoot::is_endurance)
+                    return EVENTRESULT_FILTER;
+                var item = checkValidWidget(context, ROOT.getFocusedWidget());
+                if (item == nil)
+                    return EVENTRESULT_FILTER;
+
+                main::sound.play("ok")
+                SettingPopup::open(context, goToRace, true);
+                return EVENTRESULT_FILTER;
+        }
+        
+        return EVENTRESULT_CONTINUE;
+    }
+
+    function onActivate(context, event, object)
+    {
+        var item = checkValidWidget(context, object.getFocusedWidget())
+
+        if (item == nil)
+            return;
 
         switch (item["id"])
         {
             case "entry":
-                if (!sureRiding(context))
-                    return EVENTRESULT_FILTER;
-
-                if (!checkEntryTire(context, last_select_race, nil))
-                    return EVENTRESULT_FILTER;
-
-                if (!sureNoGarageFull(context))
-                    return EVENTRESULT_FILTER;
-
-                if (getSeriesRaceCount(last_select_race) == 0 && isSpotRaceCompleted(last_select_race))
-                {
-                    main::sound.play("ok");
-                    var result = openConfirmDialog(context, 3, 
-                        context.translate(ROOT, "ComfirmClearSingleRaceResult"),
-                        nil,
-                        context.translate(ROOT, "YesClear"),
-                        context.translate(ROOT, "NoGoRace"));
-                    
-                    if (result)
-                    {
-                        clearSpotRaceResult(last_select_race);
-                        openConfirmDialog(context, 0, context.translate(ROOT, "NotifySingleRaceResultCleared"));
-                        init_race_item(context);
-                        init_mode(context, MODE_SELECT_RACE);
-                        return EVENTRESULT_FILTER;
-                    }
-
-                    context.sync(0.25);
-                }
-
-                //clearFixedGpbs(context);
-
-                // Check again here in case it was disabled within this menu
-                track_rand_active = randomizer_flag & FLAG_TRACK_RANDOMIZER;
-
-                main::sound.play("next");
-                main::game.overwrite_enemy_num = 0;
-                main::game.course_code = "";
-                main::game.race_code = last_select_race;
-                if (track_rand_active)
-                {
-                    main::game.course_code = getRandomCourse(context, last_select_race, true);
-                }
-                main::game.major_menu_project = "gtmode";
-                main::game.major_menu_page = ROOT.name;
-                main::game.saveMenuStack();
-
-                if (isChampionship(last_select_race))
-                    exit_menu(context, "championship");
-                else
-                    exit_menu(context, "solo_event");
+                goToRace(context);
+                return EVENTRESULT_FILTER;
                 break;
 
             case "preview":
@@ -997,7 +1025,6 @@ module GTmodeProject::EventCourseRoot::ModeSelect::ScrollBox::SelectBox
                 if (track_rand_active)
                 {
                     main::game.course_code = getRandomCourse(context, last_select_race, true);
-                    //break;
                 }
                 main::game.major_menu_project = "gtmode";
                 main::game.major_menu_page = ROOT.name;

@@ -64,7 +64,7 @@ module GTmodeProject
 
     static owned_cars = [];
     static is_kaizo = false;
-    static is_debug = true;
+    static is_debug = false;
     static special_paint_allowed = true;
     
     static discount_tuner;
@@ -115,11 +115,11 @@ module GTmodeProject
     {
         main::sound.load();
 
-        // Unset "persistent" vars set by event synth so they don't apply to normal events
-        main::game.overrideLaps(-1); 
-        main::game.toggleMultiCategoryAI(false);
-
         var option = main::game.option;
+
+        // Unset "persistent" vars set by event synth or so they don't apply to normal events
+        main::game.overrideLaps(-1); 
+        main::game.toggleMultiCategoryAI(false);        
         
         if (option.automatic_gear != option.race_display_car_name)
         {
@@ -155,6 +155,8 @@ module GTmodeProject
             switch (k)
             {
                 case "r":
+                    if (v < 0)
+                        v = 0;
                     randomizer_flag = v.toInt();
                     break; 
 
@@ -207,15 +209,12 @@ module GTmodeProject
         render_context.transition.panIn(render_context);
 
         var present_list = PresentRoot::makeEntitledPresentListByProject();
-
-        //checkASpecPoints(context, present_list); // Checked here as cars are pushed to the present list as necessary
-
-        for (var i = 0; i < present_list.size; i++)
-        {
-            print present_list[i];
-        }
         
         var page = nil;
+
+        // Reset the variable we're using for lap count modifier, but only if we haven't suspended a championship, since it may have been using the mult
+        if (!main::game.isSuspended())
+            main::game.option.LAN_auto_machine_num = 1;
 
         if (main::game.isSuspended())
         {
@@ -327,9 +326,9 @@ module GTmodeProject
         {
             var rnd = -1;
             if (use_seed)
-                rnd = main::menu::MRandom::GetValue(0, course_array.size - 1, fnv1a(main::game.username + race_name));
+                rnd = main::menu::MRandom::GetValue(0, course_array.size, fnv1a(main::game.username + race_name));
             else 
-                rnd = main::menu::MRandom::GetValue(0, course_array.size - 1);
+                rnd = main::menu::MRandom::GetValue(0, course_array.size);
                 
             return course_array[rnd];
         }
@@ -707,36 +706,39 @@ module GTmodeProject
         PROJECT.load("projects/gtmode/" + main::game.option.game_zone + "_carlist");
     }
 
-    function copyGarageCar(context, new_col_idx)
+    function copyGarageCar(context, col, is_new)
     {
+        var idx;
         var riding_car = main::game.garage.riding_car;
         riding_car.updateCurrentStatus();
         riding_car.setupPartsBuffer();
-
         var cg = main::menu::MCarGarage(riding_car.car_code);
 
         cg.setupPartsBuffer();
 
-        var conv_mult = 1.0;
-        
-        if (riding_car.getOdometer("%.1t%s").endWith("miles"))
-            conv_mult = 1.60934;
+        if (is_new)
+        {
+            // Restoring a car to brand new
+            idx = main::game.garage.addNewCar(riding_car.car_code, col);
+        }
+        else 
+        {
+            // Repainting a car and preserving as much original condition as we can (but replacing the oil inside copyParts because we have to use addUsedCar and we're not nasty)
+            var conv_mult = 1.0;
+            
+            if (riding_car.getOdometer("%.1t%s").endWith("miles"))
+                conv_mult = 1.60934;
 
-        cg.makeUsed(0, new_col_idx, (riding_car.getOdometer("%.1t").toFloat() * 1000) * conv_mult);
-
-        var idx = main::game.garage.addUsedCar(cg);
-
+            cg.makeUsed(0, col, (riding_car.getOdometer("%.1t").toFloat() * 1000) * conv_mult);
+            idx = main::game.garage.addUsedCar(cg);
+        }
         copyParts(context, riding_car, idx);
-
-        riding_car.replaceOil();
     }
 
     function copyParts(context, from_car, idx)
     {
         var ownedParts = [];
         var fittedParts = [];
-        var wing = from_car.getCurrentWing();
-        logInfo(wing);
         var prev_idx = from_car.getGarageIndex();
 
         for (var i = 1; i < 33; i++)
@@ -762,6 +764,7 @@ module GTmodeProject
             if (r == "OK")
             {
                 var new_car = main::game.garage.riding_car;
+                new_car.replaceOil();
 
                 for (var i = 0; i < ownedParts.size; i++)
                 {
@@ -778,8 +781,6 @@ module GTmodeProject
                         print("Engine Tune part found: %{fittedParts[i][0]}: %{fittedParts[i][1]}");
                     new_car.setParts(fittedParts[i][0], fittedParts[i][1]);
                 }
-
-                new_car.setWing(wing);
 
                 for (var i = 0; i < 10; i++)
                     new_car.setGearSetting(i, from_car.getGearSetting(i));
@@ -960,7 +961,10 @@ module GTmodeProject
     }
 
     function checkEntryTire(context, race_code, course_code)
-    {
+    {   
+        if (canSkipRegs(race_code))
+            return true;
+            
         var [success, tire] = setLimitedTire(main::game.garage.riding_car, race_code, course_code);
         var tire_name = nil;
 
@@ -1260,9 +1264,9 @@ module GTmodeProject
 
     function getCarNum(CarData, category)
     {
-        var name = category + "_carnum";
+        var name = category + "_carlist";
         if (CarData.defined(name))
-            return CarData[name];
+            return CarData[name].size;
         else
             return 0;
     }
@@ -1272,14 +1276,9 @@ module GTmodeProject
         if (!is_debug)
             return;
 
-        if (noLines == nil)
-            noLines = false;
-
-        if (!noLines)
-            print "\n--------------------\n";
-        print "\n%{msg}\n";
-        if (!noLines)
-            print "\n--------------------\n";
+        print "--------------------";
+        print "%{msg}";
+        print "--------------------";
     }
 
     function canEntryGTWorldChamp()
@@ -1296,6 +1295,36 @@ module GTmodeProject
     {
         var [achieve, score] = getRaceEventRecordStatistics();
         return achieve >= 200.0;
+    }
+
+    // This allows you to use illegal cars in races IF you have completed the event already and are over 20% completion
+    // Does not allow you to skip rally tire regs as entering dirt/snow tracks with road tires is unknown behaviour
+    function canSkipRegs(race_code)
+    {
+        // Event gen shouldn't be able to skip tire regs regardless of completion
+        if (race_code.beginWith("eventgen"))
+            return false;
+
+        var [achieve, score] = getRaceEventRecordStatistics();
+        var code = extractSubRaceCode(race_code);
+        var regulation = getViolatedRegulation(main::game.garage.riding_car, code[0]);
+        var race = main::menu::MRaceData(code[0]);
+        var tire = race.getNeedTire();
+
+        // Dirt/snow doesn't have to be violated, if it's there at all then don't bother allowing skips
+        if (tire == 3 || tire == 4)
+        {
+            print "tire req = %{tire}";
+            return false;
+        }
+
+        if (wonRace(race_code) && achieve.toFloat() >= 200.0 && (regulation.tiretype != "DIRT" && regulation.tiretype != "SNOW"))
+            return true;
+        else
+        {
+            logInfo("Cannot skip event requirements. wonRace(%{race_code}) == %{wonRace(race_code)}, achieve = %{achieve}, regulation.tiretype = %{regulation.tiretype}");
+            return false;
+        }
     }
 
     function haveRunEvent(event_list_name)
@@ -1330,6 +1359,18 @@ module GTmodeProject
         }
 
         return false;
+    }
+
+    function haveWonMissionSequence(start, end)
+    {
+        for (var i = start; i <= end; i++)
+        {
+            var unit = main::game.race_record.getUnit("l0m%04d".format(i));
+            if (unit.result != "1")
+                return false;
+        }
+
+        return true;
     }
 
     function restart(context)

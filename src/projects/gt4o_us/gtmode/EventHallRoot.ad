@@ -17,6 +17,7 @@ module GTmodeProject::EventHallRoot
 {
     static is_active = false;
     static is_from_garage = false;
+    static is_endurance = false;
     static page_title;
     static last_select_index;
     static last_select_item;
@@ -47,6 +48,7 @@ module GTmodeProject::EventHallRoot
         is_active = true;
 
         page_title = getEventTitle(main::game.menuRef());
+        is_endurance = page_title == "EnduranceHall";
         bg_name = main::game.menuRef(1);
         return_page = main::game.menuRef(3)
         return_root = return_page;

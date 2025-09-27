@@ -799,6 +799,7 @@ module GTmodeProject::DebugMenuRoot
     static buttons = [
         DebugOption("Clear garage", clearGarage, ["test"]),
         DebugOption("Set credits to 0", adjustCredits, [0, true]),
+        DebugOption("Increase credits by 1,000", adjustCredits, [1000, false]),
         DebugOption("Increase credits by 100,000", adjustCredits, [100000, false]),
         DebugOption("Increase credits by 1,000,000", adjustCredits, [1000000, false]),
         DebugOption("Check unobtainable cars", checkPrizeCars),

@@ -112,6 +112,15 @@ module ChampionshipProject::PrizeRoot
 
         prize_amount = grand_prize_mode ? quick_work.GrandPrize : quick_work.prize;
 
+        // If we've overridden the laps and we're about to show the per-race reward
+        if (!grand_prize_mode && main::game.overrideLaps() != -1)
+        {
+            var finishPos = order + 1;
+            
+            var distanceDriven = (quick_work.CourseLength.toFloat() / 1000.0) * main::game.overrideLaps();
+            prize_amount = calcPrize(distanceDriven, finishPos);
+        }
+
         context.pushEvent(main::menu::MScriptEvent(context, ROOT, "doAction"));
     }
 
@@ -134,6 +143,21 @@ module ChampionshipProject::PrizeRoot
     function doAction(context)
     {
         prize_action(context, ROOT, prize_amount, Prize, Money::label, OK, rank);
+    }
+
+    function calcPrize(totalDistance, finishPos)
+    {
+        var weightPos = 10000;
+        var weightDist = 2000;
+        var mult = 1;
+        var finishPosDiv = finishPos == 1 ? 1 : (finishPos.toFloat() + 2.0) / 2.0;
+        
+        var multPos = (6.0 - (finishPos).toFloat()) / 6.0;
+        var prize = ((((multPos * weightPos) + (totalDistance * weightDist)) * mult) / 10 / finishPosDiv).toInt() * 10; // Quick and dirty way to turn any ending value to 0
+        if (prize > 1500000)
+            prize = 1500000;
+
+        return prize;
     }
 
     function goNext(context)

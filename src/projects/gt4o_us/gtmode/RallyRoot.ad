@@ -1,0 +1,102 @@
+module GTmodeProject::RallyRoot
+{
+    function addActor(widget)
+    {
+        widget.actor = main::menu::MBlinkActor(widget);
+        widget.actor.period = 0.7;
+    }
+
+    function onLoad(context)
+    {
+        addActor(PinUSA::CFA);
+        addActor(PinItaly::CFA);
+        addActor(PinJapan::CFA);
+        addActor(PinFrance::CFA);
+    }
+    
+    function onInitialize(context)
+    {
+        ROOT.setFocus(PinUSA::CF);
+        enterPage(context, ROOT, "Rally");
+    }
+
+    function onCancel(context)
+    {
+        main::sound.play("cancel");
+        start_page(context, TopRoot);
+    }
+}
+
+module GTmodeProject::RallyRoot::PinUSA
+{
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_L3_RIGHT:
+                main::sound.play("cursor");
+                ROOT.setFocus(PinFrance::CF);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::RallyRoot::PinFrance
+{
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_L3_LEFT:
+                main::sound.play("cursor");
+                ROOT.setFocus(PinUSA::CF);
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_L3_RIGHT:
+                main::sound.play("cursor");
+                ROOT.setFocus(PinItaly::CF);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::RallyRoot::PinItaly
+{
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_L3_LEFT:
+                main::sound.play("cursor");
+                ROOT.setFocus(PinFrance::CF);
+                return EVENTRESULT_FILTER;
+
+            case PS2_PAD_CTRL_L3_RIGHT:
+                main::sound.play("cursor");
+                ROOT.setFocus(PinJapan::CF);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+}
+
+module GTmodeProject::RallyRoot::PinJapan
+{
+    function onKeyPress(context, event)
+    {
+        switch (event.keysym)
+        {
+            case PS2_PAD_CTRL_L3_LEFT:
+                main::sound.play("cursor");
+                ROOT.setFocus(PinItaly::CF);
+                return EVENTRESULT_FILTER;
+        }
+
+        return EVENTRESULT_FILTER;
+    }
+}
