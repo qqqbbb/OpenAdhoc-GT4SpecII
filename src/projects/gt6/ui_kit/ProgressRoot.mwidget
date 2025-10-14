@@ -1,6 +1,0 @@
-RootWindow {
-  name string{"ProgressRoot"}
-  has_script digit{1}
-  display_priority digit{100}
-}
-    
