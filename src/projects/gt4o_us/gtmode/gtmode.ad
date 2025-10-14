@@ -284,6 +284,7 @@ module GTmodeProject
 
     function getRandomCourse(context, race_name, use_seed)
     {
+        use_seed = false; // qqq
         module EventSynthModule { }
         EventSynthModule.load("/projects/specii/EventSynthCourses");
         var course_array = [];
