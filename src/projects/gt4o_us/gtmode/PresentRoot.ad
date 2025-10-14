@@ -472,8 +472,9 @@ module GTmodeProject::PresentRoot::CarPane
         {
             var prize_rand = randomizer_flag & FLAG_PRIZE_RANDOMIZER
             if (prize_rand)
-            {
-                car = PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carnum-1, fnv1a(main::game.username + race + func))];
+            { // qqq
+                // car = PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carnum-1, fnv1a(main::game.username + race + func))];
+                car = Util::GetRandomCarLabel();
                 col = "-";
                 Shuffle.visible = true;
             }

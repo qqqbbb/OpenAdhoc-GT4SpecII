@@ -1,0 +1,194 @@
+module GTmodeProject::Util
+{
+    function Randomize(num, minScalar, maxScalar, seed)
+    {
+          // delayOpenConfirmDialog(context, "___ " + Util::QQQ(1));
+        num = num.toFloat();
+        var min = num * minScalar;
+        var max = num * maxScalar;
+        if(seed == nil)
+        {
+            return main::menu::MRandom::GetValue(min.toInt(), max.toInt());
+        }
+        return main::menu::MRandom::GetValue(min.toInt(), max.toInt(), seed);
+    }
+
+    function GetEngineTorqueString(car, check)
+    { // crash for cars that 
+        var torque = car.getCatTq("%.2t %s / %s %s");
+        return torque;
+        if (check == true)
+        {
+            delayOpenConfirmDialog(context, "torque string " + torque + " size " + torque.size);
+            return torque;
+        }
+        // var torque = car.getCurrentTq("%.2t %s / %s %s");
+        // var torque = car.getCurrentTq("%.2t%s/%s%s");
+        if (torque == nil)
+        {
+            delayOpenConfirmDialog(context, "torque string nil !");
+            return torque;
+        }
+        if (torque.size < 7 )
+        {
+            delayOpenConfirmDialog(context, "bad torque string");
+            return torque;
+        }
+        var [torqueS, torqueS1] = torque.split(".");
+        if (torqueS == nil || torqueS1 == nil)
+        {
+            delayOpenConfirmDialog(context, "torque string nil");
+            return torque;
+        }
+        if (torqueS.size == 0 || torqueS1.size == 0)
+        {
+            delayOpenConfirmDialog(context, "bad torque string size 0");
+            return torque;
+        }
+        torqueS1 = torqueS1.substr(2, torqueS1.size);
+        return torqueS + torqueS1;
+    }
+
+    function GenerateMileage(car, modifier, seed)
+    {
+        // modifier *= 10.0; 
+        var metersPerYear = 21726090; 
+        if (modifier != nil)
+        {
+            metersPerYear = 21726090.0 * modifier; 
+            metersPerYear = metersPerYear.toInt();
+        }
+        var label = car.getCarLabel();
+        var year = main::menu::MCarData::GetModelYear(label);
+        var yearsUsed = 2004 - year;
+        // yearsUsed = 50;
+        var meters = yearsUsed * metersPerYear;
+        return meters;
+        // return Randomize(meters, 0.5, 1.5, seed);
+    }
+
+    function GetMileageString(car)
+    {
+        var distance = car.getOdometer("%.1t %s");
+        var [distanceS, distanceUnit] = distance.split(".");
+        distanceUnit = distanceUnit.substr(1, distanceUnit.size);
+        if (distanceS.size < 4)
+        {
+            return distanceS + distanceUnit;
+        } 
+        var distanceS1 = distanceS.substr(0, distanceS.size-3);
+        var distanceS2 = distanceS.substr(distanceS.size-3, distanceS.size);
+        return distanceS1 + "," + distanceS2 + distanceUnit;
+    }
+
+    function GetUsedCarPrice(car)
+    {
+        var label = car.getCarLabel();
+        var year = main::menu::MCarData::GetModelYear(label);
+        var yearsUsed = 2004 - year;
+        var price = main::menu::MCarData::GetPrice(label);
+    }
+
+    function GetRandomCarLabel()
+    {
+        var prizeList = [];
+        for (var i = 0; i < PresentData::allcars_carlist.size; i++)
+        {
+            var current_car = PresentData::allcars_carlist[i];
+            if (isCarOwned(current_car) == false)
+            {
+                prizeList.push(current_car);
+            }
+        }
+        if (prizeList.size > 0)
+        {
+            return prizeList[main::menu::MRandom::GetValue(0, prizeList.size-1)];
+        }
+        return PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carlist.size-1)];
+    }
+
+    function loadUsedCars(context, week, seed, car_list, col_list, id_offset)
+    {
+        // var qqq = last_focus == nil;
+        // delayOpenConfirmDialog(context, "last_focus == nil " + qqq);
+        var spec0 = context.translate(ROOT, "car_spec0");
+        var spec1 = context.translate(ROOT, "car_spec1");
+        var spec2 = context.translate(ROOT, "car_spec2");
+        var spec3 = context.translate(ROOT, "car_spec3");
+
+        for (var i = 0; i < car_list.size; i++)
+        {
+            var car = car_list[i];
+            var col = col_list[i];
+            var cg = main::menu::MCarGarage(car);
+            var item = hidden::Item.doCopy();
+            var meters = -1;
+            // var meters = Util::GenerateMileage(cg, 0.5);
+            // if (main::game.used_car.week != week || carMileages == nil)
+            // {
+            //     carMileages = Array(car_list.size);
+            // }
+            // if (week > -1)
+            // {
+                // if (main::menu::MRandom::GetValue(0, 100, seed * (i + 1)) == 0)
+                // {
+                    // delayOpenConfirmDialog(context, "!!! " + label);
+                    // meters = main::menu::MRandom::GetValue(10000, 15000, seed * (i + 1));
+                // }
+            // }
+            cg.makeUsed(seed + (i * 311), col, meters);
+            cg.updateCurrentStatus();
+            item["chip"].setData(cg);
+            item["Name"].text = cg.short_name;
+            item["Name"].adjustScale();
+            item.defineStatic("col_name", cg.getColorName());
+            var label = cg.getCarLabel();
+
+            var train = cg.getDTrainType();
+            train = context.translate(ROOT, "DriveTrainName", train);
+            item["Spec0"].text = spec0.format(train);
+
+            var power = cg.getCatPs("%d %s / %s %s");
+            var power_ = cg.getCurrentPower("%d %s / %s %s");
+            item["Spec1"].text = spec1.format(power);
+            //  var torque = cg.getCatTq("%.2t%s/%s%s");
+            var check_ = i == car_list.size - 5;
+            var torque = Util::GetEngineTorqueString(cg, check_);
+            if(i == car_list.size - 5)
+            {
+                // delayOpenConfirmDialog(context, "" + label + " power " + power + " real power " + power_ );
+            }
+            item["Spec2"].text = spec2.format(torque);
+
+            var distance = Util::GetMileageString(cg);
+            item["Spec3"].visible = true;
+            item["Spec3a"].visible = false;
+            item["Spec3"].text = spec3.format(distance);
+            // var price = main::menu::MCarData::GetPrice(label);
+            item["Price"].text = "Cr. " + main::menu::MUtility::GetMoneyString(cg.getUsedPrice());
+            // item["Price"].text = "" + price + " " + main::menu::MUtility::GetMoneyString(cg.getUsedPrice());
+            item["Price"].adjustScale();
+            item.defineStatic("gcar", cg);
+            item.defineStatic("week", week);
+            var id = i + id_offset;
+            item.defineStatic("idx", id);
+            var soldout = main::game.used_car.get(week, id);
+            item.defineStatic("soldout", soldout);
+            item["SoldOut"].visible = soldout;
+            item["dot"].visible = isCarOwned(car) && show_owned_cars;
+            ScrollBox::SelectBox.appendChild(context, item);
+        }
+        if (last_focus != nil)
+        {
+            var idx = last_focus.toInt();
+            idx -= id_offset;
+            ScrollBox::SelectBox.index = idx;
+            last_focus = nil;
+        }
+        ScrollBox::SelectBox.visible = true;
+        ScrollBox::SelectBox.actor.out = false;
+        ScrollBox::SelectBox.callFocus(ROOT);
+        ScrollBox::SelectBox.onValueChanged(context, ScrollBox::SelectBox.index);
+    }
+
+}

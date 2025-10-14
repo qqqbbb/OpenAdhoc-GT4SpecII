@@ -94,3 +94,5 @@ files_to_compile:
     is_main: true
   - name: DebugMenuRoot.ad
     is_main: true
+  - name: Util.ad
+    is_main: true
