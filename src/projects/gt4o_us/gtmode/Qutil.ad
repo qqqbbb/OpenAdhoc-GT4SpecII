@@ -1,4 +1,4 @@
-module GTmodeProject::Util
+module GTmodeProject::Qutil
 {
     function Randomize(num, minScalar, maxScalar, seed)
     {

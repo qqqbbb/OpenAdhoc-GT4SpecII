@@ -472,7 +472,7 @@ module GTmodeProject::PresentRoot::CarPane
         if (prize_rand)
         { // qqq
             // car = PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carnum-1, fnv1a(main::game.username + race + func))];
-            car = Util::GetRandomCarLabel();
+            car = Qutil::GetRandomCarLabel();
             col = "-";
             Shuffle.visible = true;
         }
