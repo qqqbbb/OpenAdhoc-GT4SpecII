@@ -1994,7 +1994,7 @@ module GTmodeProject::TopRoot::ScrollWindow::clip::space::EventGen
             return EVENTRESULT_FILTER;
             
         // if (!main::game.race_record.isLicensePassed("lib"))
-        // {
+        // { qqq
         //     main::sound.play("disable");
         //     openConfirmDialog(context, 2, context.translate(TopRoot, "NeedLicense_ib"));
         //     return EVENTRESULT_FILTER;

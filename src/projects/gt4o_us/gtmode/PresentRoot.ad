@@ -471,6 +471,10 @@ module GTmodeProject::PresentRoot::CarPane
         var prize_rand = randomizer_flag & FLAG_PRIZE_RANDOMIZER
         if (prize_rand)
         { // qqq
+            // var isChampionship = isChampionship(race);
+            var price = main::menu::MCarData::GetPrice(car);
+            // delayOpenConfirmDialog(context, " " + main::menu::MCarData::GetCarName(car) + " " + price);
+            // delayOpenConfirmDialog(context, " " + car + " " + price);
             // car = PresentData::allcars_carlist[main::menu::MRandom::GetValue(0, PresentData::allcars_carnum-1, fnv1a(main::game.username + race + func))];
             car = Qutil::GetRandomCarLabel();
             col = "-";

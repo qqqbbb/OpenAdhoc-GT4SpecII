@@ -13,6 +13,32 @@ module GTmodeProject::Qutil
         return main::menu::MRandom::GetValue(min.toInt(), max.toInt(), seed);
     }
 
+    function GetTotalEventScore__(eventinfo)
+    {
+        var scoreTotal = 0;
+        var racelist = extractSubRaceCode(eventinfo.race_code);
+        for (var i = 0; i < racelist.size; i++)
+        {
+            var racecode = racelist[i];
+            var unit = main::game.race_record.getUnit(racecode);
+            scoreTotal += unit.best_score;
+        }
+        return scoreTotal;
+    }
+
+    function GetTotalEventScore(raceCode)
+    {
+        var scoreTotal = 0;
+        var racelist = extractSubRaceCode(raceCode);
+        for (var i = 0; i < racelist.size; i++)
+        {
+            var racecode_ = racelist[i];
+            var unit = main::game.race_record.getUnit(racecode_);
+            scoreTotal += unit.best_score;
+        }
+        return scoreTotal;
+    }
+
     function GetEngineTorqueString(car, check)
     { // crash for cars that 
         var torque = car.getCatTq("%.2t %s / %s %s");

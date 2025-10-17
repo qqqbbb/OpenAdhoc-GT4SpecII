@@ -31,7 +31,7 @@ module GTmodeProject::EventCourseRoot
     static orig_camera_view_angle = Car::CarFace.view_angle;
     static camera_view_angle;
     static watcher = nil;
-    
+
     function onLoad(context)
     {
         hidden.visible = false;
@@ -419,9 +419,9 @@ module GTmodeProject::EventCourseRoot
     }
 
     function init_race_item(context)
-    {
+    { // Enter event menu
         ROOT.setFocus(nil);
-        
+
         clear_race_select(context);
 
         var composite = RaceSelect::ScrollBox::SelectBox;
@@ -504,7 +504,7 @@ module GTmodeProject::EventCourseRoot
         item.defineStatic("tooltip_text", format_string.build(event_name, series_count));
         item.defineStatic("event_name", context.translate(ROOT, "SeriesRaceFormat").format(series_count));
 
-        var racedata = main::menu::MRaceData(racecode);
+        // var racedata = main::menu::MRaceData(racecode);
         var prize_gc = racedata.getPrizeGC();
 
         if (prize_gc > 0)
@@ -520,6 +520,7 @@ module GTmodeProject::EventCourseRoot
     function add_series_race_item(context, target, eventinfo, index)
     {
         var racelist = extractSubRaceCode(eventinfo.race_code);
+
         var racecode = racelist[index];
         var racedata = main::menu::MRaceData(racecode);
         var coursecode = racedata.course_code;
@@ -599,8 +600,9 @@ module GTmodeProject::EventCourseRoot
             item.defineStatic("event_name", course_name);
         }
 
-        var racedata = main::menu::MRaceData(racecode);
+        // var racedata = main::menu::MRaceData(racecode);
         var unit = main::game.race_record.getUnit(racecode);
+
         var lapstext = nil;
         var timetext = nil;
 
@@ -748,7 +750,8 @@ module GTmodeProject::EventCourseRoot
         
         // Since otherwise it wouldn't update until the focused event changes
         widget.score.text = context.translate(ROOT, "BestScore").format(last_focus_race_widget["event_score"]);
-
+        // delayOpenConfirmDialog(context, " " + widget.score.text);
+        
         widget.spec.visible = !show_aspec;
         widget.score.visible = show_aspec;
         main::sound.play("ok");

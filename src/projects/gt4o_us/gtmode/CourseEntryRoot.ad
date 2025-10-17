@@ -820,12 +820,12 @@ module GTmodeProject::CourseEntryRoot::Buttons::Unit::RaceEvent
 {
     function onActivate(context, event, object)
     {
-        if (!main::game.race_record.isLicensePassed("lib"))
-        {
-            main::sound.play("disable");
-            openConfirmDialog(context, 2, context.translate(TopRoot, "International B License required"));
-            return EVENTRESULT_FILTER;
-        }
+        // if (!main::game.race_record.isLicensePassed("lib"))
+        // { qqq
+        //     main::sound.play("disable");
+        //     openConfirmDialog(context, 2, context.translate(TopRoot, "International B License required"));
+        //     return EVENTRESULT_FILTER;
+        // }
 
         if (!sureRiding(context))
             return EVENTRESULT_FILTER;
